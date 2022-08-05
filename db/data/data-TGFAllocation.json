@@ -1,0 +1,312 @@
+[
+    {
+      "allocationId": "138131c9-1235-48a1-98ef-00ecf5057eb6",
+      "geographicAreaId": "f1b33974-aeec-4ab8-9519-bd3600122512",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2017,
+      "periodEndYear": 2019,
+      "allocationAmount": 35599651.00,
+      "status": "Original",
+      "dateTimeCreated": "2020-09-16T15:44:08.8833333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "f1b33974-aeec-4ab8-9519-bd3600122512",
+        "geographicAreaCode_ISO2": "ZA",
+        "geographicAreaCode_ISO3": "ZAF",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "South Africa",
+        "geographicAreaParentId": "6e7b481f-db65-4a87-8ca7-4012a28b7b05",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "a588bf45-1b6b-4ada-909b-015366f7feb6",
+      "geographicAreaId": "16aeb894-1042-4a7a-9757-016e29cbdf8f",
+      "multiCountryName": null,
+      "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+      "periodStartYear": 2014,
+      "periodEndYear": 2016,
+      "allocationAmount": 17390461.20,
+      "status": " Original ",
+      "dateTimeCreated": "2019-12-19T12:02:36.8133333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+        "componentCode": "H",
+        "componentName": "HIV",
+        "componentDescription": "Prevention and treatment of HIV",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "16aeb894-1042-4a7a-9757-016e29cbdf8f",
+        "geographicAreaCode_ISO2": "NI",
+        "geographicAreaCode_ISO3": "NIC",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Nicaragua",
+        "geographicAreaParentId": "a3548a38-0010-40f7-bd7b-4968b4fc64d9",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "230e1f3f-acdf-4d77-8b3b-01d83cb2163f",
+      "geographicAreaId": "a1313a6f-19ba-457f-b0eb-5ff2c5c55b6d",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2014,
+      "periodEndYear": 2016,
+      "allocationAmount": 11532213.14,
+      "status": " Original ",
+      "dateTimeCreated": "2019-12-19T12:02:36.8133333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "a1313a6f-19ba-457f-b0eb-5ff2c5c55b6d",
+        "geographicAreaCode_ISO2": "YE",
+        "geographicAreaCode_ISO3": "YEM",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Yemen",
+        "geographicAreaParentId": "63124218-68f1-4677-a2a9-9b217d39735c",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "a76f6f61-4873-4676-8300-02463cb2f3a9",
+      "geographicAreaId": "778aa112-0067-4fe9-a0b4-e4bd72ef67de",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2020,
+      "periodEndYear": 2022,
+      "allocationAmount": 20556048.00,
+      "status": "Original",
+      "dateTimeCreated": "2020-09-16T15:44:08.8833333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "778aa112-0067-4fe9-a0b4-e4bd72ef67de",
+        "geographicAreaCode_ISO2": "NP",
+        "geographicAreaCode_ISO3": "NPL",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Nepal",
+        "geographicAreaParentId": "f8b0d127-a795-45ea-b80d-d34f530bcbaf",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "ff6cea9b-a4ad-439e-bf3c-024c94d080d4",
+      "geographicAreaId": "d75fca8c-d7e4-4c8d-9c44-91d6112827c7",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2020,
+      "periodEndYear": 2022,
+      "allocationAmount": 13948350.00,
+      "status": "Original",
+      "dateTimeCreated": "2020-09-16T15:44:08.8833333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "d75fca8c-d7e4-4c8d-9c44-91d6112827c7",
+        "geographicAreaCode_ISO2": "KH",
+        "geographicAreaCode_ISO3": "KHM",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Cambodia",
+        "geographicAreaParentId": "234efa96-edf1-4a98-9f7b-50de9c26f21a",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "fcaab765-b1b5-477a-a840-02c5846efa01",
+      "geographicAreaId": "2d777324-7b1f-48ad-a1e0-72f6e4d2b646",
+      "multiCountryName": null,
+      "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+      "periodStartYear": 2014,
+      "periodEndYear": 2016,
+      "allocationAmount": 18087964.07,
+      "status": " Original ",
+      "dateTimeCreated": "2019-12-19T12:02:36.8133333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+        "componentCode": "H",
+        "componentName": "HIV",
+        "componentDescription": "Prevention and treatment of HIV",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "2d777324-7b1f-48ad-a1e0-72f6e4d2b646",
+        "geographicAreaCode_ISO2": "BW",
+        "geographicAreaCode_ISO3": "BWA",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Botswana",
+        "geographicAreaParentId": "6e7b481f-db65-4a87-8ca7-4012a28b7b05",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "6850946d-3661-4c5f-81f8-032521bfdb2c",
+      "geographicAreaId": "778aa112-0067-4fe9-a0b4-e4bd72ef67de",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2017,
+      "periodEndYear": 2019,
+      "allocationAmount": 16138548.00,
+      "status": "Original",
+      "dateTimeCreated": "2020-09-16T15:44:08.8833333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "778aa112-0067-4fe9-a0b4-e4bd72ef67de",
+        "geographicAreaCode_ISO2": "NP",
+        "geographicAreaCode_ISO3": "NPL",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Nepal",
+        "geographicAreaParentId": "f8b0d127-a795-45ea-b80d-d34f530bcbaf",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "ea3a1571-1016-43ad-9173-03849491eb22",
+      "geographicAreaId": "6edd1ebf-5c1a-4c58-a3f4-69bd2e882d35",
+      "multiCountryName": null,
+      "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+      "periodStartYear": 2020,
+      "periodEndYear": 2022,
+      "allocationAmount": 21312156.00,
+      "status": "Original",
+      "dateTimeCreated": "2020-09-16T15:44:08.8833333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "d6adb260-7f63-4a94-8b4e-58b933baf76c",
+        "componentCode": "H",
+        "componentName": "HIV",
+        "componentDescription": "Prevention and treatment of HIV",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "6edd1ebf-5c1a-4c58-a3f4-69bd2e882d35",
+        "geographicAreaCode_ISO2": "ER",
+        "geographicAreaCode_ISO3": "ERI",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Eritrea",
+        "geographicAreaParentId": "8e8222d9-d177-4514-bb01-44b3a36a3935",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "e2b75ad9-246c-4213-b95f-03dbe467e733",
+      "geographicAreaId": "c357c367-5c94-4ccc-b849-fc4f61159000",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2014,
+      "periodEndYear": 2016,
+      "allocationAmount": 28188050.53,
+      "status": " Original ",
+      "dateTimeCreated": "2019-12-19T12:02:36.8133333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "c357c367-5c94-4ccc-b849-fc4f61159000",
+        "geographicAreaCode_ISO2": "SD",
+        "geographicAreaCode_ISO3": "SDN",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Sudan",
+        "geographicAreaParentId": "30b82adc-45a1-44ee-baa1-53ff79dc6bac",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    },
+    {
+      "allocationId": "19ff5f98-0350-4f08-b2ee-0411046a4ba6",
+      "geographicAreaId": "9fa56c37-6f5d-4f04-a8ef-d41b4b7e1502",
+      "multiCountryName": null,
+      "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+      "periodStartYear": 2014,
+      "periodEndYear": 2016,
+      "allocationAmount": 1386422.88,
+      "status": " Original ",
+      "dateTimeCreated": "2019-12-19T12:02:36.8133333Z",
+      "dateTimeUpdated": null,
+      "component": {
+        "componentId": "7a7e3f22-e4d1-4f2a-b6a4-9f1b794429c3",
+        "componentCode": "T",
+        "componentName": "Tuberculosis",
+        "componentDescription": "Prevention and treatment of tuberculosis",
+        "dateTimeCreated": "2018-10-15T12:19:26.75Z",
+        "dateTimeUpdated": "2022-07-15T04:05:13.36Z"
+      },
+      "geographicArea": {
+        "geographicAreaId": "9fa56c37-6f5d-4f04-a8ef-d41b4b7e1502",
+        "geographicAreaCode_ISO2": "ST",
+        "geographicAreaCode_ISO3": "STP",
+        "geographicAreaLevelId": "7ea8f259-7e66-4351-9158-fe4dc3da7c1b",
+        "geographicAreaName": "Sao Tome and Principe",
+        "geographicAreaParentId": "8bb34726-8da9-4cf2-9645-c573f458acf4",
+        "incomeLevelClassificationId": null,
+        "dateTimeCreated": "2018-12-03T12:22:06.31Z",
+        "dateTimeUpdated": null
+      }
+    }
+  ]

@@ -1,0 +1,502 @@
+[
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Tue Jan 01 00:00:00 UTC 2019",
+        "transaction_value": 130273.39,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "15110"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2019-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8757410080898147,
+        "transaction_value_usd": 148757.89622339958
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "2",
+        "transaction_date_iso_date": "Tue Jan 01 00:00:00 UTC 2019",
+        "transaction_value": 135978.34,
+        "transaction_description_narrative": [
+            "Inclus des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "15110"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2019-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8757410080898147,
+        "transaction_value_usd": 155272.3222321162
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Wed Jan 01 00:00:00 UTC 2020",
+        "transaction_value": 58052.85,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "15110"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2020-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.9008213553020108,
+        "transaction_value_usd": 64444.35365382419
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "2",
+        "transaction_date_iso_date": "Wed Jan 01 00:00:00 UTC 2020",
+        "transaction_value": 140435.21,
+        "transaction_description_narrative": [
+            "Inclus des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "15110"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2020-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.9008213553020108,
+        "transaction_value_usd": 155896.8481080441
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Mon Jan 01 00:00:00 UTC 2018",
+        "transaction_value": 22525.0,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "31181"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2018-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8200447385183854,
+        "transaction_value_usd": 27468.013563134384
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Wed Jan 01 00:00:00 UTC 2020",
+        "transaction_value": 7781.49,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Institut Agronomique et Vétérinaire Hassan II"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "31194"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2020-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.9008213553020108,
+        "transaction_value_usd": 8638.216616646665
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Tue Jan 01 00:00:00 UTC 2019",
+        "transaction_value": 11855.07,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "11000"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2019-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8757410080898147,
+        "transaction_value_usd": 13537.187239705188
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Wed Jan 01 00:00:00 UTC 2020",
+        "transaction_value": 3144.96,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "11000"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2020-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.9008213553020108,
+        "transaction_value_usd": 3491.2138588739563
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Tue Jan 01 00:00:00 UTC 2019",
+        "transaction_value": 14990.0,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Commune de Gourrama"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "11000"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2019-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8757410080898147,
+        "transaction_value_usd": 17116.93281635459
+    },
+    {
+        "transaction_humanitarian": "0",
+        "transaction_type": "3",
+        "transaction_date_iso_date": "Mon Jan 01 00:00:00 UTC 2018",
+        "transaction_value": 35000.0,
+        "transaction_description_narrative": [
+            "Peut inclure des dépenses liées aux bourses de recherche/formation et à la gestion du projet, réalisées en Belgique"
+        ],
+        "transaction_provider_org_ref": "BE-BCE_KBO-0546740696",
+        "transaction_provider_org_provider_activity_id": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "transaction_provider_org_type": "80",
+        "transaction_provider_org_narrative_text": "Académie de Recherche et d'Enseignement Supérieur - ARES",
+        "transaction_receiver_org_type": "80",
+        "transaction_receiver_org_narrative": [
+            "Université Moulay Ismail (UMI)"
+        ],
+        "transaction_sector_vocabulary": [
+            "1"
+        ],
+        "transaction_sector_code": [
+            "12181"
+        ],
+        "transaction_value_currency": "EUR",
+        "transaction_value_date": "2018-01-01T00:00:00Z",
+        "default_lang": "fr",
+        "default_currency": "EUR",
+        "default_humanitarian": "0",
+        "iati_identifier": "BE-BCE_KBO-0546740696-PG2017-2021_MA",
+        "reporting_org_ref": "BE-BCE_KBO-0546740696",
+        "title_narrative": [
+            "PG 2017-2021_Outcome_ Renforcement et valorisation, par des partenariats, de la contribution des acteurs académiques au développement humain durable du Maroc_ARES"
+        ],
+        "activity_description_narrative": [
+            "La conjugaison des instruments de coopération au développement de l’ARES agit à différents échelons pour renforcer les piliers d’une université performante (l’enseignement, la recherche et le service à la société) : 1. L’appui institutionnel agit à un échelon transversal. Il vise à soutenir ou à créer les bases solides d’une université qui soit en mesure d’exercer pleinement ses trois missions fondamentales. 2. Les projets de formation Sud agissent au niveau des facultés ou des départements. Ils ont pour objet la création de formations locales de haut niveau. 3. Les projets de recherche pour le développement consistent essentiellement en un soutien à une recherche de qualité et en un appui à la valorisation des résultats pour améliorer la qualité de vie des populations. 4. Les projets d’initiative innovants répondent à une problématique de développement par une approche innovante de la thématique traitée pour constituer l’amorce d’un projet ultérieur. Ils ont une envergure limitée.",
+            "Renforcer et valoriser, par des partenariats, la contribution des acteurs académiques au développement humain durable du Maroc.",
+            "Traduction en anglais",
+            "Groupe-cible : Communauté académique; les étudiants; la société civile; les institutions publiques; le personnel des instituts de recherche et de diffusion des techniques",
+            "Bénéficiaires : organisations de la société civile et population locale; le secteur privé; les institutions publiques; les ONG locales"
+        ],
+        "activity_recipient_country_code": [
+            "MA"
+        ],
+        "default_flow_type_code": "30",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "transaction_usd_conversion_rate": 0.8200447385183854,
+        "transaction_value_usd": 42680.59821130759
+    }
+]

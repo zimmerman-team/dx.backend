@@ -1,0 +1,222 @@
+[
+    {
+        "budget_period_start_iso_date": "Thu Jul 01 00:00:00 UTC 2021",
+        "budget_period_end_iso_date": "Thu Sep 30 00:00:00 UTC 2021",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Thu Sep 30 00:00:00 UTC 2021",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Fri Oct 01 00:00:00 UTC 2021",
+        "budget_period_end_iso_date": "Fri Dec 31 00:00:00 UTC 2021",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Fri Dec 31 00:00:00 UTC 2021",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Sat Jan 01 00:00:00 UTC 2022",
+        "budget_period_end_iso_date": "Thu Mar 31 00:00:00 UTC 2022",
+        "budget_value": -2.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Thu Mar 31 00:00:00 UTC 2022",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": -2.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Fri Apr 01 00:00:00 UTC 2022",
+        "budget_period_end_iso_date": "Thu Jun 30 00:00:00 UTC 2022",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Thu Jun 30 00:00:00 UTC 2022",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Fri Jul 01 00:00:00 UTC 2022",
+        "budget_period_end_iso_date": "Fri Sep 30 00:00:00 UTC 2022",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Fri Sep 30 00:00:00 UTC 2022",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Sat Oct 01 00:00:00 UTC 2022",
+        "budget_period_end_iso_date": "Sat Dec 31 00:00:00 UTC 2022",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Sat Dec 31 00:00:00 UTC 2022",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-44036-013-LN2941",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Fri Jan 01 00:00:00 UTC 2010",
+        "budget_period_end_iso_date": "Wed Mar 31 00:00:00 UTC 2010",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Wed Mar 31 00:00:00 UTC 2010",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-34174-013-LN2181",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Thu Apr 01 00:00:00 UTC 2010",
+        "budget_period_end_iso_date": "Wed Jun 30 00:00:00 UTC 2010",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Wed Jun 30 00:00:00 UTC 2010",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-34174-013-LN2181",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Thu Jul 01 00:00:00 UTC 2010",
+        "budget_period_end_iso_date": "Thu Sep 30 00:00:00 UTC 2010",
+        "budget_value": 0.0,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Thu Sep 30 00:00:00 UTC 2010",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-34174-013-LN2181",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 0.0,
+        "budget_usd_conversion_rate": 1.0
+    },
+    {
+        "budget_period_start_iso_date": "Fri Oct 01 00:00:00 UTC 2010",
+        "budget_period_end_iso_date": "Fri Dec 31 00:00:00 UTC 2010",
+        "budget_value": 328418006,
+        "budget_value_currency": "USD",
+        "budget_value_date": "Fri Dec 31 00:00:00 UTC 2010",
+        "default_currency": "USD",
+        "default_lang": "en",
+        "iati_identifier": "XM-DAC-46004-34174-013-LN2181",
+        "reporting_org_ref": "XM-DAC-46004",
+        "reporting_org_type": "40",
+        "recipient_country_code": [
+            "CN"
+        ],
+        "default_flow_type_code": "20",
+        "default_aid_type_code": [
+            "C01"
+        ],
+        "default_tied_status_code": "5",
+        "budget_value_usd": 328418006,
+        "budget_usd_conversion_rate": 1.0
+    }
+]
