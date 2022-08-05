@@ -9,6 +9,7 @@ cds.once('bootstrap', () => {
         'IATIBudget.json',
         'IATITransaction.json',
         'TGFAllocation.json',
+        'IATIAllBudgets.json',
     ]
     const lookupType = {
         // more types can be found at https://docs.progress.com/bundle/datadirect-hybrid-data-pipeline-46/page/Entity-Data-Model-EDM-types-for-OData-Version-4.html
