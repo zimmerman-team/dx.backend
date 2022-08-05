@@ -1,5 +1,0 @@
-To start:
-cds watch <folder name> outside of folder, so /home/zimmerman/Projects/OData/SAP
-
-`cds watch /home/zimmerman/Projects/OData/SAP/data`
-
