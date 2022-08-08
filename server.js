@@ -4,9 +4,9 @@ const fs = require('fs')
 const xml2json = require('xml2json')
 const csvtojson = require('csvtojson')
 
-const serviceFile = '/home/zimmerman/Projects/OData/SAP/data/srv/data-service.cds'
-const modelFile = '/home/zimmerman/Projects/OData/SAP/data/db/schema.cds'
-const dataFolder = `/home/zimmerman/Projects/OData/SAP/data/db/data`
+const serviceFile = path.join(__dirname, '/srv/data-service.cds')
+const modelFile = path.join(__dirname, '/db/schema.cds')
+const dataFolder = path.join(__dirname, '/db/data')
 
 const lookupType = {
     // more types can be found at https://docs.progress.com/bundle/datadirect-hybrid-data-pipeline-46/page/Entity-Data-Model-EDM-types-for-OData-Version-4.html
@@ -27,7 +27,7 @@ cds.on('loaded', () => {
 
     console.log("Preparing data models...")
     for (let i in sources) {
-        const filepath = `/home/zimmerman/Projects/OData/SAP/data/db/data/${sources[i]}`
+        const filepath = path.join(__dirname, `/db/data/${sources[i]}`)
         const extension = 'utf8'
         const name = path.parse(sources[i]).name.replace('data-', '')
 
