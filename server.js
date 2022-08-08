@@ -13,6 +13,8 @@ const lookupType = {
     'number': '  : Decimal(32,2);',
     'string': '  : localized String(1111);',
     'object': '  : localized String(1111);',
+    'undefined': '  : localized String(1111);',
+    undefined: '  : localized String(1111);',
 }
 
 cds.on('loaded', () => {
@@ -122,7 +124,8 @@ function createModelFile(data, name) {
 
     // add each key with its type to the entity
     for (let key in allFields) {
-        res += `\t${key}${lookupType[allFields[key]]}\n`
+        let lookup = lookupType[allFields[key]] || lookupType['undefined']
+        res += `\t${key}${lookup}\n`
     }
     return res += `}\n` // add the closing bracket for the entity
 }
