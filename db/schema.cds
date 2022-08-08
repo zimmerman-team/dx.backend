@@ -239,3 +239,19 @@ entity HXLPalestine : managed {
 	createdAt  : localized String(1111);
 	updatedAt  : localized String(1111);
 }
+
+entity HXLUkraineFunding : managed {
+	key ID : Integer;
+	countryCode  : localized String(1111);
+	datasource_id  : localized String(1111);
+	name  : localized String(1111);
+	code  : localized String(1111);
+	startDate  : localized String(1111);
+	endDate  : localized String(1111);
+	year  : localized String(1111);
+	clusterCode  : localized String(1111);
+	cluster  : localized String(1111);
+	requirements  : localized String(1111);
+	funding  : localized String(1111);
+	percentFunded  : localized String(1111);
+}

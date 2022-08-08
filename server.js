@@ -48,7 +48,7 @@ cds.on('loaded', () => {
             // If HXL is in the filename, the second row can contain HXL tags, these need to be removed
             if (name.includes('HXL')) {
                 hxlTags = csvContent.shift()
-                if (hxlTags.includes('#')) {
+                if (hxlTags.match(/#.*,#.*,#.*/g)?.length > 0) {
                 // write the updated file
                     if (!fs.readFileSync(filepath, 'utf8').includes(csvContent)) {
                         console.log("UPDATE THE HXL CSV FILE!!!")

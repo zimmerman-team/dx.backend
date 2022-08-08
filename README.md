@@ -50,6 +50,7 @@ Data searched for using [humdata search](https://data.humdata.org/dataset?vocab_
 - Providing a field named 'ID' is not preferred, as it should be the ID integer for the internal API
 - A provided datasource MUST be a correct file, otherwise data may not be served as expected
 - For CSV files, a header row is required
+- Capability to process HXL files is included, but the filename MUST include HXL, to ensure processing
 
 ## Additional SAP Cloud information
 Learn more at [](https://cap.cloud.sap/docs/get-started/).
