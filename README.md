@@ -38,8 +38,8 @@ The IATI.cloud dataset is one we host ourselves and know how to use to build pro
 ### HXL data
 Data searched for using [humdata search](https://data.humdata.org/dataset?vocab_Topics=hxl&sort=total_res_downloads%20desc#dataset-filter-start)
 
-[Palestine](https://data.humdata.org/dataset/fts-requirements-and-funding-data-for-occupied-palestinian-territory) data, 200 rows csv.
-
+[Palestine](https://data.humdata.org/dataset/fts-requirements-and-funding-data-for-occupied-palestinian-territory) data, csv.
+[Ukraine](https://data.humdata.org/dataset/fts-requirements-and-funding-data-for-ukraine) data, csv.
 
 ## Used / Useful packages
 [csvtojson](https://www.npmjs.com/package/csvtojson) for converting csv files to json
