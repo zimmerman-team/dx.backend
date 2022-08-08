@@ -7,6 +7,8 @@
   "private": true,
   "dependencies": {
     "@sap/cds": ">=5",
+    "@sap/cds-dk": ">=6",
+    "csvtojson": "^2.0.10",
     "express": "^4",
     "xml2json": "^0.12.0"
   },
