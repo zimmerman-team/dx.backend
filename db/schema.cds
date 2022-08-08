@@ -95,6 +95,29 @@ entity IATIActivity : managed {
 	document_link_document_date_iso_date  : localized String(1111);
 }
 
+entity IATIAllBudgets : managed {
+	key ID : Integer;
+	budget_period_start_iso_date  : localized String(1111);
+	budget_period_end_iso_date  : localized String(1111);
+	budget_value  : Decimal(32,2);
+	budget_value_currency  : localized String(1111);
+	budget_value_date  : localized String(1111);
+	default_currency  : localized String(1111);
+	default_lang  : localized String(1111);
+	iati_identifier  : localized String(1111);
+	reporting_org_ref  : localized String(1111);
+	reporting_org_type  : localized String(1111);
+	recipient_country_code  : localized String(1111);
+	default_flow_type_code  : localized String(1111);
+	default_aid_type_code  : localized String(1111);
+	default_tied_status_code  : localized String(1111);
+	budget_value_usd  : Decimal(32,2);
+	budget_usd_conversion_rate  : Decimal(32,2);
+	budget_type  : localized String(1111);
+	budget_status  : localized String(1111);
+	default_humanitarian  : localized String(1111);
+}
+
 entity IATIBudget : managed {
 	key ID : Integer;
 	budget_period_start_iso_date  : localized String(1111);
@@ -176,25 +199,43 @@ entity TGFAllocation : managed {
 	geographicArea_dateTimeUpdated  : localized String(1111);
 }
 
-entity IATIAllBudgets : managed {
+entity HXLPalestine : managed {
 	key ID : Integer;
-	budget_period_start_iso_date  : localized String(1111);
-	budget_period_end_iso_date  : localized String(1111);
-	budget_value  : Decimal(32,2);
-	budget_value_currency  : localized String(1111);
-	budget_value_date  : localized String(1111);
-	default_currency  : localized String(1111);
-	default_lang  : localized String(1111);
-	iati_identifier  : localized String(1111);
-	reporting_org_ref  : localized String(1111);
-	reporting_org_type  : localized String(1111);
-	recipient_country_code  : localized String(1111);
-	default_flow_type_code  : localized String(1111);
-	default_aid_type_code  : localized String(1111);
-	default_tied_status_code  : localized String(1111);
-	budget_value_usd  : Decimal(32,2);
-	budget_usd_conversion_rate  : Decimal(32,2);
-	budget_type  : localized String(1111);
-	budget_status  : localized String(1111);
-	default_humanitarian  : localized String(1111);
+	date  : localized String(1111);
+	budgetYear  : localized String(1111);
+	description  : localized String(1111);
+	amountUSD  : localized String(1111);
+	srcOrganization  : localized String(1111);
+	srcOrganizationTypes  : localized String(1111);
+	srcLocations  : localized String(1111);
+	srcUsageYearStart  : localized String(1111);
+	srcUsageYearEnd  : localized String(1111);
+	destPlan  : localized String(1111);
+	destPlanCode  : localized String(1111);
+	destPlanId  : localized String(1111);
+	destOrganization  : localized String(1111);
+	destOrganizationTypes  : localized String(1111);
+	destGlobalClusters  : localized String(1111);
+	destLocations  : localized String(1111);
+	destProject  : localized String(1111);
+	destProjectCode  : localized String(1111);
+	destEmergency  : localized String(1111);
+	destUsageYearStart  : localized String(1111);
+	destUsageYearEnd  : localized String(1111);
+	contributionType  : localized String(1111);
+	flowType  : localized String(1111);
+	method  : localized String(1111);
+	boundary  : localized String(1111);
+	onBoundary  : localized String(1111);
+	status  : localized String(1111);
+	firstReportedDate  : localized String(1111);
+	decisionDate  : localized String(1111);
+	keywords  : localized String(1111);
+	originalAmount  : localized String(1111);
+	originalCurrency  : localized String(1111);
+	exchangeRate  : localized String(1111);
+	datasource_id  : localized String(1111);
+	refCode  : localized String(1111);
+	createdAt  : localized String(1111);
+	updatedAt  : localized String(1111);
 }
