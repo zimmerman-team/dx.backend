@@ -45,10 +45,13 @@ Data searched for using [humdata search](https://data.humdata.org/dataset?vocab_
 [csvtojson](https://www.npmjs.com/package/csvtojson) for converting csv files to json
 [xml2json](https://www.npmjs.com/package/xml2json) for converting xml files to json
 [@sap/cds](https://www.npmjs.com/package/@sap/cds) for editing the cds server behaviour
+[type-detect](https://www.npmjs.com/package/type-detect) for detecting data types better than the build in typeof
+[moment](https://www.npmjs.com/package/moment) for detecting dates from strings
 
 ## Datasource requirements
+- A maximum filesize of 35 MB Should be respected. In most cases, it will work (slowly), but larger than 40mb XLSX files cannot be processed.
+- A provided datasource MUST be a correct file, otherwise data may not be served as expected. Incorrect files include sections with additional information and columns with many different data types.
 - Providing a field named 'ID' is not preferred, as it should be the ID integer for the internal API
-- A provided datasource MUST be a correct file, otherwise data may not be served as expected
 - For CSV files, a header row is required
 - Capability to process HXL files is included, but the filename MUST include HXL, to ensure processing
 
