@@ -14,6 +14,11 @@ Global installation of CDS.
 Install the local packages
 - `npm install`
 
+## Create a .env file containing
+```
+DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed>
+```
+
 ## Running
 
 - Open a new terminal and run `cds watch` 

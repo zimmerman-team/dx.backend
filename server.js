@@ -6,12 +6,12 @@ const csvtojson = require('csvtojson')
 const typeDetect = require('type-detect')
 const moment = require('moment')
 const XLSX = require('xlsx')
+require('dotenv').config()
 
 // CONSTS
 const serviceFile = path.join(__dirname, '/srv/data-service.cds')
 const modelFile = path.join(__dirname, '/db/schema.cds')
 const dataFolder = path.join(__dirname, '/db/data')
-
 const lookupType = {
     // more types can be found at
     // https://cap.cloud.sap/docs/cds/types
@@ -24,22 +24,30 @@ const lookupType = {
     'boolean': '  : Boolean;',
 }
 
+console.debug("Gathering config files...")
+let configPaths = []
+listConfigFiles(process.env.DATA_EXPLORER_SERVER)
+
 cds.on('loaded', () => {
     // Gather the names of the datasources within the datasource folder
     let sources = []
-    fs.readdirSync(dataFolder).forEach(file => {sources.push(file)})
+    fs.readdirSync(dataFolder).forEach(file => { sources.push(file) })
 
     // create an empty string which will contain the models to be appended to the model file
-    let appendString = ``
-
     console.debug("Preparing data models...")
+    let appendString = ``
     for (let i in sources) {
         const filepath = path.join(__dirname, `/db/data/${sources[i]}`)
+        // if the file is a directory, skip
+        if (fs.statSync(filepath).isDirectory()) continue
         const extension = 'utf8'
         const name = path.parse(sources[i]).name.replace('data-', '')
 
         // if the name is already in the data-service file, skip.
         if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue
+
+        // Generate empty configs for the data source if they don't exist
+        generateConfigs(name);
         
         console.debug('-- Preparing data model for ' + sources[i])
         if (sources[i].includes('xml')) {
@@ -67,7 +75,7 @@ cds.on('loaded', () => {
             } else {
                 // convert the xlsx file to a csv file
                 let workbook = XLSX.readFile(filepath)
-                XLSX.writeFile(workbook, filepathCSV, {bookType: 'csv'})
+                XLSX.writeFile(workbook, filepathCSV, { bookType: 'csv' })
             }
         } else if (sources[i].includes('.csv')) {
             // process CSV files
@@ -78,7 +86,7 @@ cds.on('loaded', () => {
             if (name.includes('HXL')) {
                 hxlTags = csvContent.shift()
                 if (hxlTags.match(/#.*,#.*,#.*/g)?.length > 0) {
-                // write the updated file
+                    // write the updated file
                     if (!fs.readFileSync(filepath, 'utf8').includes(csvContent)) {
                         csvContent = [headers, ...csvContent].join('\n')
                         fs.writeFileSync(filepath, csvContent)
@@ -101,30 +109,34 @@ cds.on('loaded', () => {
         }
     }
 
+    // write the new model to the model file.
     if (!fs.readFileSync(modelFile, 'utf8').includes(appendString)) {
         fs.appendFileSync(modelFile, appendString)
     }
-    createServiceFile()
+    createServiceFile() // make sure the service file is up to date with the latest models.
     console.debug("Ready to serve your data at http://localhost:4004/")
 })
 
+// Create a service file for each of the models available in the data/schema.cds folder.
 function createServiceFile() {
     console.debug("Preparing data services...")
     let writeStr = `using { data as my } from '../db/schema';\nservice CatalogService @(path:'/data') {\n`
-    
+
     // get the name from each created model, found in the model file
     let modelFileContent = fs.readFileSync(modelFile, 'utf8')
     let modelIndexes = modelFileContent.match(/entity ([a-zA-Z0-9]+) : managed/g)
     for (let i in modelIndexes) {
+        // remove surrounding cds tags from model name and create a service string
         const name = modelIndexes[i].replace('entity ', '').replace(' : managed', '')
         writeStr += `\t@readonly entity ${name} as SELECT from my.${name} {*} excluding { createdAt, createdBy, modifiedAt, modifiedBy };\n`
     }
-    writeStr += `}\n`
+    writeStr += `}\n` // close the new service file string
     if (!fs.readFileSync(serviceFile, 'utf8').includes(writeStr)) {
         fs.writeFileSync(serviceFile, writeStr)
     }
 }
 
+// Create a model for the data source
 function createModelFile(data, name) {
     let allFields = {}
     // gather all the headers and the type of their content
@@ -155,6 +167,8 @@ function createModelFile(data, name) {
     return res += `}\n` // add the closing bracket for the entity
 }
 
+// This function is used to detect the type of content that is provided in a field by the user.
+// We can and should improve this (TODO: 12-08-2022)
 function detectType(data, allFields, key) {
     if (allFields[key]) return allFields[key]
     if (data === '') {
@@ -182,5 +196,60 @@ function detectType(data, allFields, key) {
             if (moment(data, moment.ISO_8601).isValid()) type = 'date'
         }
     }
+
+    // todo: check https://github.com/cigolpl/type-detection/blob/master/index.js if we can introduce better type detection
     return type
+}
+
+// This function synchronously reads in all of the available data mapping filepaths from the data explorer
+function listConfigFiles(dir) {
+    fs.readdirSync(dir).forEach(file => {
+        const abs = path.join(dir, file);
+        if (fs.statSync(abs).isDirectory()) return listConfigFiles(abs);
+        else if (path.extname(abs) === '.json') return configPaths.push(abs);
+    });
+}
+
+// Function to generate a configuration for a given dataset name.
+// Currently, this duplicates the initial configuration within the file and appends a new key to each configuration,
+// where the value will be used for that new dataset.
+function generateConfigs(name) {
+    // Generate empty json config objects for the data source in the data explorer project folder
+    configPaths.forEach(configPath => {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+        if (!Object.keys(config).includes(name)) {
+            if (Array.isArray(config[Object.keys(config)[0]])) {
+                // if the key contains an array, check each element if they are an object
+                // copy with deep nested objects using JSON stringify and parse.
+                config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
+                config[Object.keys(config)[1]].forEach(item => {
+                    if (typeof item === 'object') clearConfig(item)
+                })
+            } else {
+                config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
+                clearConfig(config[name])
+            }
+            // write the config to the data source config file
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+        }
+    })
+}
+
+// Function to remove string values from the created config, where obj is the config object with the key selected.
+// We could introduce a "field name filter", for example allowing all OData api filtering and value names to remain in the config.
+const clearConfig = (obj) => {
+    Object.keys(obj).forEach(key => {
+        // if the data is an array, check each element if they are an object.
+        if (Array.isArray(obj[key])) {
+            obj[key].forEach(item => {
+                if (typeof item === 'object') clearConfig(item)
+            })
+        // if the element is an object, process the object's keys.
+        } else if (typeof obj[key] === 'object') {
+            clearConfig(obj[key])
+        // if the element is a string, remove the string value.
+        } else {
+            obj[key] = ''
+        }
+    })
 }

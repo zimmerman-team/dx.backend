@@ -9,6 +9,7 @@
     "@sap/cds": ">=5",
     "@sap/cds-dk": ">=6",
     "csvtojson": "^2.0.10",
+    "dotenv": "^16.0.1",
     "express": "^4",
     "moment": "^2.29.4",
     "type-detect": "^4.0.8",
