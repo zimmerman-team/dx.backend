@@ -20,7 +20,8 @@
     "sqlite3": "^5.0.4"
   },
   "scripts": {
-    "start": "cds watch"
+    "start": "cds watch",
+    "reset": "bash .help_scripts/reset_model_file.sh"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
