@@ -43,11 +43,12 @@ cds.on('loaded', () => {
         const extension = 'utf8'
         const name = path.parse(sources[i]).name.replace('data-', '')
 
+        // Generate empty configs for the data source if they don't exist
+        generateConfigs(name);
+        
         // if the name is already in the data-service file, skip.
         if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue
 
-        // Generate empty configs for the data source if they don't exist
-        generateConfigs(name);
         
         console.debug('-- Preparing data model for ' + sources[i])
         if (sources[i].includes('xml')) {
@@ -216,8 +217,26 @@ function listConfigFiles(dir) {
 function generateConfigs(name) {
     // Generate empty json config objects for the data source in the data explorer project folder
     configPaths.forEach(configPath => {
-        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
-        if (!Object.keys(config).includes(name)) {
+        let config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+        // Specific files first
+        if (configPath.includes('mapping/datasources.json')) {
+            if (!config.includes(name)) config.push(name)
+        }
+        else if (configPath.includes('mapping/datasets.json')) {
+            if (!Object.keys(config).includes(name)) {
+                config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
+                // for each key, set the value to false
+                for (let key in config[name]) {
+                    config[name][key] = false
+                }
+            }
+        }
+        else if (configPath.includes('filtering/index.json')) {
+            if (!Object.keys(config).includes(name)) {
+                config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
+            }
+        }
+        else if (!Object.keys(config).includes(name)) {
             if (Array.isArray(config[Object.keys(config)[0]])) {
                 // if the key contains an array, check each element if they are an object
                 // copy with deep nested objects using JSON stringify and parse.
@@ -229,7 +248,10 @@ function generateConfigs(name) {
                 config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
                 clearConfig(config[name])
             }
-            // write the config to the data source config file
+        }
+        // write the config to the data source config file only if it has changed
+        const originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        if (JSON.stringify(config, null, 2) !== JSON.stringify(originalConfig, null, 2)) {
             fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
         }
     })
