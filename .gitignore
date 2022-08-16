@@ -29,3 +29,6 @@ mta_archives/
 # .vscode
 # .idea
 .env
+
+# Additional local datasets
+db/data/data_backup/*
