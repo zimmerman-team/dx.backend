@@ -1,6 +1,7 @@
 # Getting Started
 File or Folder | Purpose
 ---------|----------
+`app/` | javascript to support data processing
 `db/` | domain models and data go here
 `srv/` | service models go here
 `package.json` | project metadata and configuration
