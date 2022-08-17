@@ -1,12 +1,17 @@
-const cds = require('@sap/cds')
-const path = require('path')
-const fs = require('fs')
-const xml2json = require('xml2json')
-const csvtojson = require('csvtojson')
-const typeDetect = require('type-detect')
-const moment = require('moment')
-const XLSX = require('xlsx')
-require('dotenv').config()
+import 'dotenv/config';
+import cds from '@sap/cds'
+import path from 'path'
+import fs from 'fs'
+import xml2json from 'xml2json'
+import csvtojson from 'csvtojson'
+import typeDetect from 'type-detect'
+import moment from 'moment'
+import XLSX from 'xlsx'
+import { fileURLToPath } from 'url'
+import _ from 'lodash'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+console.log("__dirname: " + __dirname)
 
 // CONSTS
 const serviceFile = path.join(__dirname, '/srv/data-service.cds')
@@ -44,7 +49,7 @@ cds.on('loaded', () => {
         const name = path.parse(sources[i]).name.replace('data-', '')
 
         // Generate empty configs for the data source if they don't exist
-        generateConfigs(name);
+        generateConfigs(name)
         
         // if the name is already in the data-service file, skip.
         if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue
@@ -189,20 +194,20 @@ function getMostCommonFieldTypes(data) {
 
     const mostOf = (fields) => {
         // This approach is O(n).
-        if(fields.length == 0) return 'string';
-        let mostOfMapping = {};
-        let maxEl = fields[0], maxCount = 1;
+        if(fields.length == 0) return 'string'
+        let mostOfMapping = {}
+        let maxEl = fields[0], maxCount = 1
 
         for(const element of fields) {
-            let el = element;
-            if(mostOfMapping[el] == null) mostOfMapping[el] = 1;
-            else mostOfMapping[el]++;
+            let el = element
+            if(mostOfMapping[el] == null) mostOfMapping[el] = 1
+            else mostOfMapping[el]++
             if(mostOfMapping[el] > maxCount){
-                maxEl = el;
-                maxCount = mostOfMapping[el];
+                maxEl = el
+                maxCount = mostOfMapping[el]
             }
         }
-        return maxEl;
+        return maxEl
     }
     Object.keys(allFields).forEach((key) => {
         // replace the array at the key with the most common type
@@ -257,9 +262,9 @@ function detectTypeDate(data, type) {
 // This function synchronously reads in all of the available data mapping filepaths from the data explorer
 function listConfigFiles(dir) {
     fs.readdirSync(dir).forEach(file => {
-        const abs = path.join(dir, file);
-        if (fs.statSync(abs).isDirectory()) return listConfigFiles(abs);
-        else if (path.extname(abs) === '.json') return configPaths.push(abs);
+        const abs = path.join(dir, file)
+        if (fs.statSync(abs).isDirectory()) return listConfigFiles(abs)
+        else if (path.extname(abs) === '.json') return configPaths.push(abs)
     });
 }
 
@@ -270,11 +275,19 @@ function generateConfigs(name) {
     // Generate empty json config objects for the data source in the data explorer project folder
     configPaths.forEach((configPath) => {
         let config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
+        const configType = typeDetect(config)
+        const originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'))
         // Specific files first
         config = generateDataSourceConfigs(name, configPath, config)
         config = generateDataSetConfigs(name, configPath, config)
         config = generateFilterDefaultConfigs(name, configPath, config)
-        if (!Object.keys(config).includes(name)) {
+        if (
+            // only generate the configs if it was not a specific file and if the config does not yet exist
+            _.isEqual(config, originalConfig) && (
+                (configType === 'Object' && !Object.keys(config).includes(name)) ||
+                (configType === 'Array' && !config.includes(name))
+            )
+        ) {
             if (Array.isArray(config[Object.keys(config)[0]])) {
                 // if the key contains an array, check each element if they are an object
                 // copy with deep nested objects using JSON stringify and parse.
@@ -288,8 +301,7 @@ function generateConfigs(name) {
             }
         }
         // write the config to the data source config file only if it has changed
-        const originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        if (JSON.stringify(config, null, 2) !== JSON.stringify(originalConfig, null, 2)) {
+        if (!_.isEqual(config, originalConfig)) {
             fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
         }
     })
