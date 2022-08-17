@@ -3,11 +3,11 @@ namespace data;
 
 entity IATIAllBudgets : managed {
 	key ID : Integer;
-	budget_period_start_iso_date  : String;
-	budget_period_end_iso_date  : String;
+	budget_period_start_iso_date  : DateTime;
+	budget_period_end_iso_date  : DateTime;
 	budget_value  : Decimal;
 	budget_value_currency  : String;
-	budget_value_date  : String;
+	budget_value_date  : DateTime;
 	default_currency  : String;
 	default_lang  : String;
 	iati_identifier  : String;
@@ -30,7 +30,7 @@ entity IATICovidActivities : managed {
 	hierarchy  : Decimal;
 	default_lang  : String;
 	iati_identifier  : String;
-	reporting_org_ref  : Decimal;
+	reporting_org_ref  : String;
 	reporting_org_type_code  : Decimal;
 	reporting_org_narrative  : String;
 	title_narrative  : String;
@@ -211,11 +211,6 @@ entity IATICovidActivities : managed {
 	result_document_link_language_code  : String;
 	result_document_link_document_date_iso_date  : String;
 	transaction_recipient_region_code  : String;
-	transaction_recipient_region_vocabulary  : String;
-	result_document_link_description_narrative  : String;
-	result_document_link_description_narrative_text  : String;
-	result_document_link_description_narrative_lang  : String;
-	transaction_sector_vocabulary_uri  : String;
 }
 
 entity HXLPalestine : managed {
@@ -231,7 +226,7 @@ entity HXLPalestine : managed {
 	srcUsageYearEnd  : Decimal;
 	destPlan  : String;
 	destPlanCode  : String;
-	destPlanId  : String;
+	destPlanId  : Decimal;
 	destOrganization  : String;
 	destOrganizationTypes  : String;
 	destGlobalClusters  : String;
