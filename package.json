@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "cds watch",
-    "reset": "bash .help_scripts/reset_model_file.sh"
+    "reset": "bash .help_scripts/reset_model_file.sh && cds watch"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
