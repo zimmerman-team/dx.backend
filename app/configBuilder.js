@@ -20,7 +20,7 @@ function listConfigFiles(dir) {
 // Currently, this duplicates the initial configuration within the file and appends a new key to each configuration,
 // where the value will be used for that new dataset.
 export function generateConfigs(name) {
-    console.debug("Generating DX config files...");
+    console.debug(`Checking DX config files for ${name}...`);
     // Generate empty json config objects for the data source in the data explorer project folder
     configPaths.length > 0 && configPaths.forEach((configPath) => {
         let config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -46,7 +46,7 @@ export function generateConfigs(name) {
                 });
             } else {
                 config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]));
-                clearConfig(config[name]);
+                if (typeof config[name] === 'object') clearConfig(config[name]);
             }
         }
         // write the config to the data source config file only if it has changed
