@@ -9,11 +9,13 @@ File or Folder | Purpose
 `server.js` | javascript to override default server behaviour
 
 ## Requirements
-Global installation of CDS.
-- `sudo npm i --global @sap/cds-dk`
-
 Install the local packages
 - `npm install`
+- run with `npm start`
+
+Note: if you want to manually control the running of the API, 
+- install cds once with `sudo npm i --global @sap/cds-dk`
+- run with `cds watch`
 
 ## Create a .env file containing
 ```
@@ -43,9 +45,12 @@ The IATI.cloud dataset is one we host ourselves and know how to use to build pro
 
 ### HXL data
 Data searched for using [humdata search](https://data.humdata.org/dataset?vocab_Topics=hxl&sort=total_res_downloads%20desc#dataset-filter-start)
+[who data per country](https://data.humdata.org/dataset?vocab_Topics=hxl&q=budget&sort=total_res_downloads%20desc&ext_page_size=25)
 
 [Palestine](https://data.humdata.org/dataset/fts-requirements-and-funding-data-for-occupied-palestinian-territory) data, csv.
 [Ukraine](https://data.humdata.org/dataset/fts-requirements-and-funding-data-for-ukraine) data, csv.
+[acaps](https://data.humdata.org/dataset/acaps-covid19-government-measures-dataset)
+[marawi](https://data.humdata.org/dataset/philippines-who-is-doing-what-where-in-marawi-conflict)
 
 ## Used / Useful packages
 [csvtojson](https://www.npmjs.com/package/csvtojson) for converting csv files to json

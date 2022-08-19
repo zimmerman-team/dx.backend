@@ -74,7 +74,7 @@ function processXLSX(filepath) {
         let csvContent = fs.readFileSync(filepathCSV, DEFAULT_ENCODING);
         csvContent = csvContent.split('\n'); // now an array of data rows
         // clean the headers row and update the file
-        let headers = csvContent.shift().replace(',id', ',datasource_id').replaceAll(' ', '');
+        let headers = csvContent.shift().replaceAll(/[^a-z0-9,]/gi, '');
         csvContent = [headers, ...csvContent].join('\n');
         console.debug('RELOAD - XLSX datasource converted.');
         fs.writeFileSync(filepathCSV, csvContent);

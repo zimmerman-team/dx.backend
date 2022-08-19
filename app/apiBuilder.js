@@ -37,7 +37,7 @@ export function createModelFile(data, name) {
     // check if an ID is present within the data source, if not, add a default ID field
     let idFound = false;
     for (let key in allFields) {
-        if (key == 'id') {
+        if (key.toLowerCase() == 'id') {
             idFound = true;
             break;
         }
