@@ -9,22 +9,20 @@ File or Folder | Purpose
 `server.js` | javascript to override default server behaviour
 
 ## Requirements
-Install the local packages
+Install the local packages:
 - `npm install`
-- run with `npm start`
-
-Note: if you want to manually control the running of the API, 
-- install cds once with `sudo npm i --global @sap/cds-dk`
-- run with `cds watch`
 
 ## Create a .env file containing
 ```
-DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed>
+DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed + /src/config>
 ```
 
 ## Running
-
-- Open a new terminal and run `cds watch` 
+- run with: `npm start`
+- starting a clean run (removing existing API mapping) with: `npm run reset`
+- Note: if you want to manually control the running of the API, 
+    - install cds once with: `sudo npm i --global @sap/cds-dk`
+    - run with: `cds watch`
 
 ## Demo calls
 [Budget aggregation](http://localhost:4004/data/IATIBudget?$apply=groupby((budget_value_currency),aggregate(budget_value%20with%20sum%20as%20amount)))
@@ -65,6 +63,7 @@ Data searched for using [humdata search](https://data.humdata.org/dataset?vocab_
 - Providing a field named 'ID' is not preferred, as it should be the ID integer for the internal API
 - For CSV files, a header row is required
 - Capability to process HXL files is included, but the filename MUST include HXL, to ensure processing
+- CSV and XLSX Datasources must not have linebreaks, as the parser uses linebreaks to detect the next row of data.
 
 ## Additional SAP Cloud information
 Learn more at [](https://cap.cloud.sap/docs/get-started/).
