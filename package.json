@@ -49,5 +49,13 @@
       "no-console": "off",
       "require-atomic-updates": "off"
     }
+  },
+  "cds": {
+    "query": {
+      "limit": {
+        "default": 999999999,
+        "max": 999999999
+      }
+    }
   }
 }
