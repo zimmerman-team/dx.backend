@@ -27,9 +27,10 @@ export function generateConfigs(name) {
         const configType = typeDetect(config);
         const originalConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         // Specific files first
-        config = generateDataSourceConfigs(name, configPath, config);
-        config = generateDataSetConfigs(name, configPath, config);
-        config = generateFilterDefaultConfigs(name, configPath, config);
+        // config = generateDataSourceConfigs(name, configPath, config);
+        // config = generateDataSetConfigs(name, configPath, config);
+        // config = generateFilterDefaultConfigs(name, configPath, config);
+        config = generateURLS(name, configPath, config)
         if (
             // only generate the configs if it was not a specific file and if the config does not yet exist
             _.isEqual(config, originalConfig) && (
@@ -80,6 +81,15 @@ function generateFilterDefaultConfigs(name, configPath, config) {
     if (configPath.includes('filtering/index.json')) {
         if (!Object.keys(config).includes(name)) {
             config[name] = JSON.parse(JSON.stringify(config[Object.keys(config)[0]]))
+        }
+    }
+    return config
+}
+
+function generateURLS(name, configPath, config) {
+    if (configPath.includes('urls/index.json')) {
+        if (!Object.keys(config).includes(name)) {
+            config[name] = "http://localhost:4004/data/" + name
         }
     }
     return config

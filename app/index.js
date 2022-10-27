@@ -26,7 +26,7 @@ export function onLoad() {
         const name = path.parse(sources[i]).name.replace('data-', '');
 
         // Generate empty configs for the data source if they don't exist
-        generateConfigs(name);
+        // generateConfigs(name);
         // if the name is already in the data-service file, skip.
         if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue;
 
