@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { processDataset } from './processDataset.js';
 import { createServiceFile } from './apiBuilder.js';
 import { generateConfigs } from './configBuilder.js';
+import { exec } from 'child_process';
 // Constants
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const modelFile = path.join(__dirname, '../db/schema.cds');
@@ -27,6 +28,7 @@ export function onLoad() {
 
         // Generate empty configs for the data source if they don't exist
         // generateConfigs(name);
+        addDataScraper(name)
         // if the name is already in the data-service file, skip.
         if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue;
 
@@ -41,4 +43,23 @@ export function onLoad() {
     }
     createServiceFile(); // make sure the service file is up to date with the latest models.
     console.debug("Ready to serve your data at http://localhost:4004/");
+}
+
+function addDataScraper(name) {
+    // load the additional datasets json list
+    const datascraperDatasetsLoc = process.env.DATA_EXPLORER_SSR + "additionalDatasets.json";
+    let additionalDatasets = JSON.parse(fs.readFileSync(datascraperDatasetsLoc, 'utf8'));
+    // check if the name is already in the ids of the loaded list
+    for (const dataset of additionalDatasets) {
+        if (dataset.id === name.substring(2)) return;
+    }
+    const dsObj = {
+        "id": name.substring(2),
+        "url": "http://localhost:4004/data/" + name + "?",
+        "dataPath": "value",
+        "countUrl": "http://localhost:4004/data/" + name + "?$top=0&$count=true",
+        "countPath": "@odata.count"
+    };
+    additionalDatasets.push(dsObj);
+    fs.writeFileSync(datascraperDatasetsLoc, JSON.stringify(additionalDatasets, null, 2))
 }

@@ -1,30 +1,7 @@
 using { managed } from '@sap/cds/common';
 namespace data;
 
-entity IATIAllBudgets : managed {
-	key ID : Integer;
-	budget_period_start_iso_date  : DateTime;
-	budget_period_end_iso_date  : DateTime;
-	budget_value  : Decimal;
-	budget_value_currency  : String;
-	budget_value_date  : DateTime;
-	default_currency  : String;
-	default_lang  : String;
-	iati_identifier  : String;
-	reporting_org_ref  : String;
-	reporting_org_type  : Decimal;
-	recipient_country_code  : String;
-	default_flow_type_code  : Decimal;
-	default_aid_type_code  : String;
-	default_tied_status_code  : Decimal;
-	budget_value_usd  : Decimal;
-	budget_usd_conversion_rate  : Decimal;
-	budget_type  : Decimal;
-	budget_status  : Decimal;
-	default_humanitarian  : Decimal;
-}
-
-entity IATICovidActivities : managed {
+entity dx635a6f3b6692175e6f886614 : managed {
 	key ID : Integer;
 	default_currency  : String;
 	hierarchy  : Decimal;
@@ -213,7 +190,47 @@ entity IATICovidActivities : managed {
 	transaction_recipient_region_code  : String;
 }
 
-entity HXLPalestine : managed {
+entity dx635a6f456692175e6f886615 : managed {
+	key ID : Integer;
+	budget_period_start_iso_date  : DateTime;
+	budget_period_end_iso_date  : DateTime;
+	budget_value  : Decimal;
+	budget_value_currency  : String;
+	budget_value_date  : DateTime;
+	default_currency  : String;
+	default_lang  : String;
+	iati_identifier  : String;
+	reporting_org_ref  : String;
+	reporting_org_type  : Decimal;
+	recipient_country_code  : String;
+	default_flow_type_code  : Decimal;
+	default_aid_type_code  : String;
+	default_tied_status_code  : Decimal;
+	budget_value_usd  : Decimal;
+	budget_usd_conversion_rate  : Decimal;
+	budget_type  : Decimal;
+	budget_status  : Decimal;
+	default_humanitarian  : Decimal;
+}
+
+entity dx635a6f346692175e6f886613 : managed {
+	key ID : Integer;
+	DonorName  : String;
+	Textbox5  : String;
+	GeographicAreaCode_ISO2  : String;
+	GeographicAreaCode_ISO3  : String;
+	GeographicAreaName  : String;
+	DonorParentName  : String;
+	ReplenishmentCycle  : String;
+	Indicator  : String;
+	TransactionType  : String;
+	SourceCurrency  : String;
+	Year  : Decimal;
+	Month  : String;
+	Amount  : Decimal;
+}
+
+entity dx635baaea58a3994c29e74d3f : managed {
 	key ID : Integer;
 	date  : DateTime;
 	budgetYear  : Decimal;
@@ -252,21 +269,4 @@ entity HXLPalestine : managed {
 	refCode  : String;
 	createdAt  : DateTime;
 	updatedAt  : DateTime;
-}
-
-entity TGFPledgesContributions : managed {
-	key ID : Integer;
-	DonorName  : String;
-	Textbox5  : String;
-	GeographicAreaCode_ISO2  : String;
-	GeographicAreaCode_ISO3  : String;
-	GeographicAreaName  : String;
-	DonorParentName  : String;
-	ReplenishmentCycle  : String;
-	Indicator  : String;
-	TransactionType  : String;
-	SourceCurrency  : String;
-	Year  : Decimal;
-	Month  : String;
-	Amount  : Decimal;
 }
