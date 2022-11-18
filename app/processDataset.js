@@ -1,24 +1,32 @@
 // Imports
-import path from 'path';
-import xml2json from 'xml2json';
-import csvtojson from 'csvtojson';
-import XLSX from 'xlsx';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+// import path from 'path';
+// import xml2json from 'xml2json';
+// import csvtojson from 'csvtojson';
+// import XLSX from 'xlsx';
+// import fs from 'fs';
+
+const path = require('path')
+const fs = require('fs')
+const xml2json = require('xml2json');
+const csvtojson = require('csvtojson');
+const XLSX = require('xlsx');
+
+// import { fileURLToPath } from 'url';
 // Project
-import { createModelFile } from './apiBuilder.js';
+// import { createModelFile } from './apiBuilder.js';
+const createModelFile = require('./apiBuilder.js').createModelFile;
 // Constants
 const DEFAULT_ENCODING = 'utf8';
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const modelFile = path.join(__dirname, '../db/schema.cds');
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const modelFile = path.join(__dirname, '../staging/db/schema.cds');
 
-export function processDataset(filepath, name, appendString, source) {
+module.exports = {processDataset: async function(filepath, name, appendString, source) {
     if (source.includes('.xml')) appendString = processXML(filepath, name, appendString);
     if (source.includes('.json')) appendString = processJSON(filepath, name, appendString);
-    if (source.includes('.csv')) processCSV(filepath, name);
+    if (source.includes('.csv')) await processCSV(filepath, name);
     if (source.includes('.xlsx')) processXLSX(filepath);
     return appendString;
-}
+}}
 
 function processXML(filepath, name, appendString) {
     // process XML files
@@ -34,7 +42,7 @@ function processJSON(filepath, name, appendString) {
     return appendString;
 }
 
-function processCSV(filepath, name) {
+async function processCSV(filepath, name) {
     // process CSV files
     // If HXL is in the filename, the second row can contain HXL tags, these need to be removed
     if (name.includes('HXL')) {
@@ -53,7 +61,7 @@ function processCSV(filepath, name) {
     }
 
     // Get the data into JSON format to pre-process for the OData model
-    csvtojson().fromFile(filepath).then(json => {
+    res = await csvtojson().fromFile(filepath).then(json => {
         // This method is Async, and therefore requires a direct write into the model file,
         // if we write to the model file using the appendString +=, this will be accessed
         // before the appendString is loaded with the data.

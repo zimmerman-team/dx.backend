@@ -32,7 +32,7 @@ DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed + /src/
 provided files need to be in the pattern of namespace-entity.extension, where namespace in current development is 'data'
 
 [](https://cap.cloud.sap/docs/node.js/cds-serve#cdsonce--bootstrap-expressjs-app)
-This is how we hook into our filesystem, meaning that if we update the files in the /db/data folder, the app reloads and creates an api endpoint for this new file
+This is how we hook into our filesystem, meaning that if we update the files in the /api/db/data folder, the app reloads and creates an api endpoint for this new file
 
 ## Datasets
 ### The global fund data

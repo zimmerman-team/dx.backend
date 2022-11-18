@@ -5,13 +5,13 @@
   "repository": "<Add your repository here>",
   "license": "UNLICENSED",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@sap/cds": ">=5",
     "@sap/cds-dk": ">=6",
     "csvtojson": "^2.0.10",
     "dotenv": "^16.0.1",
     "express": "^4",
+    "fs-extra": "^10.1.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "type-detect": "^4.0.8",
@@ -22,8 +22,8 @@
     "sqlite3": "^5.0.4"
   },
   "scripts": {
-    "start": "cds watch",
-    "reset": "bash .help_scripts/reset_model_file.sh && cds watch"
+    "start": "cds watch api",
+    "reset": "bash .help_scripts/reset_model_file.sh && cds watch api"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

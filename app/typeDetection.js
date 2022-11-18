@@ -1,10 +1,12 @@
 // Imports
-import typeDetect from 'type-detect';
-import moment from 'moment';
+const typeDetect = require('type-detect');
+// import typeDetect from 'type-detect';
+const moment = require('moment');
+// import moment from 'moment';
 
 // This function is used to detect the type of content that is provided in a field by the user.
 // We can and should improve this (TODO: 12-08-2022)
-export function detectType(data, key) {
+module.exports = { detectType: function(data, key) {
     let type = typeDetect(data);
     if (data === '') type = 'skip';
     else if (type === 'Object' || type === 'Array') return 'string';
@@ -17,7 +19,7 @@ export function detectType(data, key) {
     type = detectTypeDecimal(data, type);
     type = detectTypeDate(data, type);
     return type;
-}
+}}
 
 function detectTypeBoolean(data, key, type) {
     if (

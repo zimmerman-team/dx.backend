@@ -1,16 +1,20 @@
 // Imports
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
+const path = require('path')
+const fs = require('fs')
+// import path from 'path';
+// import fs from 'fs';
+// import { fileURLToPath } from 'url';
 // Project
-import { getMostCommonFieldTypes } from './dataFieldTypes.js';
+// import { getMostCommonFieldTypes } from './dataFieldTypes.js';
+const getMostCommonFieldTypes = require('./dataFieldTypes').getMostCommonFieldTypes
 // Constants
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const serviceFile = path.join(__dirname, '../srv/data-service.cds');
-const modelFile = path.join(__dirname, '../db/schema.cds');
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const serviceFile = path.join(__dirname, '../staging/srv/data-service.cds');
+const modelFile = path.join(__dirname, '../staging/db/schema.cds');
 
 // Create a service file for each of the models available in the data/schema.cds folder.
-export function createServiceFile() {
+module.exports = {
+createServiceFile: function() {
     console.debug("Preparing data services...");
     let writeStr = `using { data as my } from '../db/schema';\nservice CatalogService @(path:'/data') {\n`;
 
@@ -27,10 +31,10 @@ export function createServiceFile() {
         console.debug('RELOAD - ServiceFile updated.');
         fs.writeFileSync(serviceFile, writeStr);
     }
-}
+},
 
 // Create a model for the data source
-export function createModelFile(data, name) {
+createModelFile: function(data, name) {
     const allFields = getMostCommonFieldTypes(data);
     // create the entity header
     let res = `\nentity ${name} : managed {\n\t`;
@@ -50,4 +54,4 @@ export function createModelFile(data, name) {
     }
     res += `}\n`; // add the closing bracket for the entity
     return res;
-}
+}}

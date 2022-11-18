@@ -31,4 +31,4 @@ mta_archives/
 .env
 
 # Additional local datasets
-db/data/data_backup/*
+api/db/data/data_backup/*

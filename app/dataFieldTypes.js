@@ -1,5 +1,6 @@
 // Project
-import { detectType } from './typeDetection.js'
+// import { detectType } from './typeDetection.js'
+const detectType = require('./typeDetection').detectType;
 // Constants
 const lookupType = {
     // more types can be found at
@@ -13,7 +14,7 @@ const lookupType = {
     'boolean': '  : Boolean;',
 };
 
-export function getMostCommonFieldTypes(data) {
+module.exports = {getMostCommonFieldTypes: function(data) {
     let allFields = {};
     // gather all the headers and the type of their content
     data.forEach((item) => {
@@ -30,7 +31,7 @@ export function getMostCommonFieldTypes(data) {
         allFields[key] = lookupType[mostOf(allFields[key])];
     });
     return allFields;
-}
+}}
 
 function mostOf(fields) {
     // This approach is O(n).
