@@ -18,8 +18,6 @@ const createServiceFile = require('./apiBuilder.js').createServiceFile;
 const modelFile = path.join(__dirname, '../staging/db/schema.cds');
 const dataFolder = path.join(__dirname, '../staging/db/data');
 
-console.log(modelFile,"\n", dataFolder, "\nHELLOOOOOOOOOOO")
-
 module.exports = {onLoad: async function() {
     // Gather the names of the datasources within the datasource folder
     let sources = [];

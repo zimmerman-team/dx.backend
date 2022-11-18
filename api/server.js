@@ -61,15 +61,14 @@ module.exports = async function cds_server (options) {
 
     // copy the new data files, schema and dataservice file from
     console.debug("SERVER::copy staging files to data files")
-    fs.copySync('../staging', '.', { overwrite: true });
-    
-    // remove the staging data files
-    fs.unlinkSync('../staging/db/data')
-    fs.mkdirSync('../staging/db/data')
-
-    // return
-    console.debug("SERVER::return response")
-    return response.json({data: "data updated"});
+    fs.copy("../staging", ".", { overwrite: true }).then(() => {
+      fs.unlink("../staging/db/data", (error1) => {
+        fs.mkdir("../staging/db/data", (error2) => {
+          console.debug("SERVER::return response");
+          return response.json({ data: "data updated" });
+        });
+      });
+    });
   }
   var customAPI = function (app) {
     const bodyParser = require('body-parser');

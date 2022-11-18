@@ -15,7 +15,7 @@ const modelFile = path.join(__dirname, '../staging/db/schema.cds');
 // Create a service file for each of the models available in the data/schema.cds folder.
 module.exports = {
 createServiceFile: function() {
-    console.debug("Preparing data services...");
+    console.debug("SERVICEFILE::Preparing data services...");
     let writeStr = `using { data as my } from '../db/schema';\nservice CatalogService @(path:'/data') {\n`;
 
     // get the name from each created model, found in the model file
@@ -28,7 +28,6 @@ createServiceFile: function() {
     }
     writeStr += `}\n`; // close the new service file string
     if (!fs.readFileSync(serviceFile, 'utf8').includes(writeStr)) {
-        console.debug('RELOAD - ServiceFile updated.');
         fs.writeFileSync(serviceFile, writeStr);
     }
 },

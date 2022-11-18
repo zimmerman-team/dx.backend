@@ -13,11 +13,18 @@ module.exports = { detectType: function(data, key) {
     else if (key.toLowerCase().includes('name')) return 'string';
     else if (key.toLowerCase().includes('summary')) return 'string';
     else if (key.toLowerCase().includes('reference')) return 'string';
-    else if (key.toLowerCase().includes('date')) return 'date';
-
-    type = detectTypeBoolean(data, key, type);
-    type = detectTypeDecimal(data, type);
-    type = detectTypeDate(data, type);
+    else if (key.toLowerCase().endswith('date')) return 'date';
+    else if (key.toLowerCase().endswith('dates')) return 'date';
+    const bool = detectTypeBoolean(data, key, type);
+    if (bool === 'boolean') return bool;
+    const dec = detectTypeDecimal(data, key, type);
+    if (dec === 'number') return dec;
+    const date = detectTypeDate(data, key, type);
+    if (date === 'date') {
+        return date;
+    } else if (type === 'date') {
+        type = 'string'
+    }
     return type;
 }}
 
@@ -40,7 +47,7 @@ function detectTypeDecimal(data, type) {
 
 function detectTypeDate(data, type) {
     // only detect dates if they are at least 8 characters, yy/mm/dd
-    if (data.length > 7 && (moment(data, 'MM/DD/YY hh:mm:ss A').isValid() || moment(data, moment.ISO_8601).isValid()))
+    if (data.length > 7 && data.length < 20 && (moment(data, 'MM/DD/YY hh:mm:ss A').isValid() || moment(data, moment.ISO_8601).isValid()))
         // this date check could be expanded with a user provided date format
         type = 'date';
     return type;
