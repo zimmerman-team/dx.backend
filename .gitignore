@@ -32,3 +32,4 @@ mta_archives/
 
 # Additional local datasets
 api/db/data/data_backup/*
+staging/

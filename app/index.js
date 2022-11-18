@@ -24,7 +24,7 @@ module.exports = {onLoad: async function() {
     fs.readdirSync(dataFolder).forEach(file => { sources.push(file) });
 
     // create an empty string which will contain the models to be appended to the model file
-    console.debug("Preparing data models...");
+    console.debug("ONLOAD::Preparing data models...");
     let appendString = ``;
     for (let i in sources) {
         const filepath = path.join(__dirname, `../staging/db/data/${sources[i]}`);

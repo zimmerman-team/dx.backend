@@ -13,8 +13,6 @@ module.exports = { detectType: function(data, key) {
     else if (key.toLowerCase().includes('name')) return 'string';
     else if (key.toLowerCase().includes('summary')) return 'string';
     else if (key.toLowerCase().includes('reference')) return 'string';
-    else if (key.toLowerCase().endswith('date')) return 'date';
-    else if (key.toLowerCase().endswith('dates')) return 'date';
     const bool = detectTypeBoolean(data, key, type);
     if (bool === 'boolean') return bool;
     const dec = detectTypeDecimal(data, key, type);
