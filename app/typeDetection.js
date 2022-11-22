@@ -7,6 +7,8 @@ const moment = require('moment');
 // This function is used to detect the type of content that is provided in a field by the user.
 // We can and should improve this (TODO: 12-08-2022)
 module.exports = { detectType: function(data, key) {
+    // TODO: revert this change
+    return 'string';
     let type = typeDetect(data);
     if (data === '') type = 'skip';
     else if (type === 'Object' || type === 'Array') return 'string';
