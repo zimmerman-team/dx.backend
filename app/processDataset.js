@@ -46,18 +46,13 @@ async function processCSV(filepath, name) {
     console.log("CSV::processing for", filepath)
     // process CSV files
     // If HXL is in the filename, the second row can contain HXL tags, these need to be removed
-    if (name.includes('HXL')) {
-        let csvContent = fs.readFileSync(filepath, DEFAULT_ENCODING);
-        csvContent = csvContent.split('\n'); // now an array of data rows
-        let headers = csvContent.shift().replace(',id', ',datasource_id').replace(' ', '');
-        let hxlTags = csvContent.shift();
-        if (hxlTags.match(/#.*,#.*,#.*/g)?.length > 0) {
-            // write the updated file
-            if (!fs.readFileSync(filepath, 'utf8').includes(csvContent)) {
-                csvContent = [headers, ...csvContent].join('\n');
-                fs.writeFileSync(filepath, csvContent);
-            }
-        }
+    let csvContent = fs.readFileSync(filepath, DEFAULT_ENCODING);
+    csvContent = csvContent.split('\n'); // now an array of data rows
+    let headers = csvContent.shift().replace(',id', ',datasource_id').replace(' ', '');
+    // write the updated file
+    if (!fs.readFileSync(filepath, 'utf8').includes(csvContent)) {
+        csvContent = [headers, ...csvContent].join('\n');
+        fs.writeFileSync(filepath, csvContent);
     }
 
     // Get the data into JSON format to pre-process for the OData model
