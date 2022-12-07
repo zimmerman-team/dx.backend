@@ -1,6 +1,5 @@
 // Project
-// import { detectType } from './typeDetection.js'
-const detectType = require('./typeDetection').detectType;
+const inferTypes = require("@rawgraphs/rawgraphs-core").inferTypes;
 // Constants
 const lookupType = {
     // more types can be found at
@@ -14,39 +13,26 @@ const lookupType = {
     'boolean': '  : Boolean;',
 };
 
-module.exports = {getMostCommonFieldTypes: function(data) {
+module.exports = {getFieldTypes: function(data) {
+    // DATA is a json object.
     let allFields = {};
-    // gather all the headers and the type of their content
-    data.forEach((item) => {
-        Object.keys(item).forEach((key) => {
-            if (!(Object.keys(allFields).includes(key))) allFields[key] = [];
-            const keyType = detectType(item[key], key);
-            keyType !== 'skip' && allFields[key].push(keyType);
-        })
-    })
-
-    Object.keys(allFields).forEach((key) => {
-        // replace the array at the key with the most common type
-        // compared to the lookup object keys.
-        allFields[key] = lookupType[mostOf(allFields[key])];
-    });
+    const inferredTypes = inferTypes(data);        
+    for (let item in inferredTypes) {
+        allFields[item] = inferredTypeToType(inferredTypes[item]);
+    };
     return allFields;
 }}
 
-function mostOf(fields) {
-    // This approach is O(n).
-    if (fields.length == 0) return 'string';
-    let mostOfMapping = {};
-    let maxEl = fields[0], maxCount = 1;
-
-    for (const element of fields) {
-        let el = element;
-        if (mostOfMapping[el] == null) mostOfMapping[el] = 1;
-        else mostOfMapping[el]++;
-        if (mostOfMapping[el] > maxCount) {
-            maxEl = el;
-            maxCount = mostOfMapping[el];
+const inferredTypeToType = (itemType) => {
+    // determine and return our SAP cloud model variant of the field type.
+    try {
+        if (typeof itemType === 'object') {
+            return lookupType[itemType['type']];
         }
+        const ret = lookupType[itemType];
+        return ret ? ret : lookupType['string'];
+    } catch(_) {
+        // default return a string, do not let this break the process.
+        return lookupType['string'];
     }
-    return maxEl;
 }

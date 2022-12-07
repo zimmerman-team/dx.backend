@@ -28,7 +28,7 @@ module.exports = async function cds_server (options) {
   const _in_prod = process.env.NODE_ENV === 'production'
   const o = { ...options, __proto__:defaults }
 
-  var app = cds.app = o.app || express()
+  let app = cds.app = o.app || express()
   app.serve = _app_serve                          //> app.serve allows delegating to sub modules
   cds.emit ('bootstrap',app)                      //> hook for project-local server.js
 
@@ -47,28 +47,7 @@ module.exports = async function cds_server (options) {
   if (cds.requires.db)    cds.db = await cds.connect.to ('db') .then (_init)
   if (cds.requires.messaging)      await cds.connect.to ('messaging')
   
-  // connect custom api
-  var _update = async function (request, response){
-    // prepare the staging folder with the latest schema and data-service files
-    console.debug("SERVER::copy cds files to staging")
-    fs.copySync('./srv/data-service.cds', '../staging/srv/data-service.cds', { overwrite: true });
-    fs.copySync('./db/schema.cds', '../staging/db/schema.cds', { overwrite: true });
-
-    // trigger onload on staging folder
-    console.debug("SERVER::onLoad")
-    const onLoad = require('../app/index').onLoad;
-    await onLoad();
-
-    // copy the new data files, schema and dataservice file from
-    console.debug("SERVER::copy staging files to data files")
-    fs.copy("../staging", ".", { overwrite: true }).then(() => {
-      fs.emptyDir("../staging/db/data", (error1) => {
-        console.debug("SERVER::return response");
-        return response.json({ data: "data updated" });
-      });
-    });
-  }
-  var customAPI = function (app) {
+  const customAPI = function (app) {
     const bodyParser = require('body-parser');
     
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -100,6 +79,28 @@ module.exports = async function cds_server (options) {
   }
 }
 
+// connect custom api
+const _update = async function (request, response){
+  // prepare the staging folder with the latest schema and data-service files
+  console.debug("SERVER::copy cds files to staging")
+  fs.copySync('./srv/data-service.cds', '../staging/srv/data-service.cds', { overwrite: true });
+  fs.copySync('./db/schema.cds', '../staging/db/schema.cds', { overwrite: true });
+
+  // trigger onload on staging folder
+  console.debug("SERVER::onLoad")
+  const onLoad = require('../app/index').onLoad;
+  await onLoad();
+
+  // copy the new data files, schema and dataservice file from
+  console.debug("SERVER::copy staging files to data files")
+  fs.copy("../staging", ".", { overwrite: true }).then(() => {
+    fs.emptyDir("../staging/db/data", (error1) => {
+      console.debug("SERVER::return response");
+      return response.json({ data: "data updated" });
+    });
+  });
+}
+
 // -------------------------------------------------------------------------
 // Default handlers, which can be overidden by options passed to the server
 //
@@ -122,7 +123,6 @@ const defaults = {
   }  
 }
 
-
 // Helpers to delegate to imported UIs
 const path = require('path')
 const _app_serve = function (endpoint) { return {
@@ -132,7 +132,6 @@ const _app_serve = function (endpoint) { return {
     if (!endpoint.endsWith('/webapp')) (this._app_links || (this._app_links = [])) .push (endpoint)
   }
 }}
-
 
 function cors (req, res, next) {
   const { origin } = req.headers

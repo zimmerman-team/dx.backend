@@ -1,14 +1,9 @@
 // Imports
-const path = require('path')
-const fs = require('fs')
-// import path from 'path';
-// import fs from 'fs';
-// import { fileURLToPath } from 'url';
+const path = require('path');
+const fs = require('fs');
 // Project
-// import { getMostCommonFieldTypes } from './dataFieldTypes.js';
-const getMostCommonFieldTypes = require('./dataFieldTypes').getMostCommonFieldTypes
+const getFieldTypes = require('./dataFieldTypes').getFieldTypes;
 // Constants
-// const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const serviceFile = path.join(__dirname, '../staging/srv/data-service.cds');
 const modelFile = path.join(__dirname, '../staging/db/schema.cds');
 
@@ -33,8 +28,9 @@ createServiceFile: function() {
 },
 
 // Create a model for the data source
-createModelFile: function(data, name) {
-    const allFields = getMostCommonFieldTypes(data);
+createModel: function(data, name) {
+    console.debug("MODELFILE::Preparing data models...");
+    const allFields = getFieldTypes(data);
     // create the entity header
     let res = `\nentity ${name} : managed {\n\t`;
     // check if an ID is present within the data source, if not, add a default ID field
