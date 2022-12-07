@@ -17,6 +17,7 @@ Install the local packages:
 ## Create a .env file containing
 ```
 DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed + /src/config>
+DATA_EXPLORER_SSR=<Where your "The Data Explorer SSR" is installed>
 ```
 
 ## Running
