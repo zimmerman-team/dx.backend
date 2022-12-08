@@ -10,6 +10,7 @@
     "@sap/cds": ">=5",
     "@sap/cds-dk": ">=6",
     "csvtojson": "^2.0.10",
+    "d3-color": "^3.1.0",
     "dotenv": "^16.0.1",
     "express": "^4",
     "fs-extra": "^10.1.0",
