@@ -20,13 +20,26 @@ module.exports = {processDataset: async function(filepath, name, source) {
     if (source.includes('.xml')) processXML(filepath, name);
     if (source.includes('.json')) processJSON(filepath, name);
     if (source.includes('.csv')) await processCSV(filepath, name);
-    if (source.includes('.xlsx')) await processXLSX(filepath, name)
+    if (source.includes('.xlsx')) await processXLSX(filepath, name);
 }}
 
 function processXML(filepath, name) {
     console.debug("XML::Processing XML file: " + filepath);
-    let data = xml2json.toJson(fs.readFileSync(filepath, DEFAULT_ENCODING));
-    const appendString = createModel(data, name);
+    let data = JSON.parse(xml2json.toJson(fs.readFileSync(filepath, DEFAULT_ENCODING)));
+    let appendString = "";
+    try {
+        const key = Object.keys(data)[0];
+        const subkey = Object.keys(data[key])[0];
+        appendString = createModel(data[key][subkey], name);
+        
+        // save the json converted content.
+        const filepathJSON = filepath.replace('.xml', '.json');
+        fs.writeFileSync(filepathJSON, JSON.stringify(data[key][subkey]));
+        fs.unlinkSync(filepath);
+    } catch (e) {
+        console.log("CATCH::", e)
+        appendString = createModel(data, name);
+    }
     updateModelFile(appendString)
 }
 
