@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "mkdir -p staging && mkdir -p staging/db && mkdir -p staging/srv && mkdir -p staging/db/data && cds watch api",
-    "reset": "bash .help_scripts/reset_model_file.sh && cds watch api"
+    "reset": "bash .help_scripts/reset_model_file.sh && npm start"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

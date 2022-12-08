@@ -1,4 +1,4 @@
 echo "using { managed } from '@sap/cds/common';
-namespace data;" > "./db/schema.cds"
+namespace data;" > "./api/db/schema.cds"
 
-echo "" > "./srv/data-service.cds"
+echo "" > "./api/srv/data-service.cds"
