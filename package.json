@@ -9,6 +9,7 @@
     "@rawgraphs/rawgraphs-core": "^1.0.0-beta.17",
     "@sap/cds": ">=5",
     "@sap/cds-dk": ">=6",
+    "csv-string": "^4.1.1",
     "csvtojson": "^2.0.10",
     "d3-color": "^3.1.0",
     "dotenv": "^16.0.1",

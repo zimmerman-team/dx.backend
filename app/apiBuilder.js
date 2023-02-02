@@ -29,7 +29,7 @@ createServiceFile: function() {
 
 // Create a model for the data source
 createModel: function(data, name) {
-    console.debug("MODELFILE::Preparing data models...");
+    console.debug("MODELFILE::Preparing data model...");
     const allFields = getFieldTypes(data);
     // create the entity header
     let res = `\nentity ${name} : managed {\n\t`;

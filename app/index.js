@@ -13,18 +13,20 @@ module.exports = {onLoad: async function() {
     let sources = [];
     fs.readdirSync(dataFolder).forEach(file => { sources.push(file) });
 
-    // create an empty string which will contain the models to be appended to the model file
+    // Process each datasource
     console.debug("ONLOAD::Preparing data model for new source...");
     for (let i in sources) {
+        // Get the path to the staging file
         const filepath = path.join(__dirname, `../staging/db/data/${sources[i]}`);
         // if the file is a directory, skip
         if (fs.statSync(filepath).isDirectory()) continue;
+        // update the filename to our custom standard, prefixed with data-
         const name = path.parse(sources[i]).name.replace('data-', '');
+        // ensure there is a datascraper entry in the SSR project
         addDataScraper(name);
         // if the name is already in the data-service file, skip.
-        if (fs.readFileSync(modelFile, 'utf8').includes(name)) {
-            continue;
-        };
+        if (fs.readFileSync(modelFile, 'utf8').includes(name)) continue;
+        // process the dataset
         await processDataset(filepath, name, sources[i]);
     }
     createServiceFile(); // make sure the service file is up to date with the latest models.
@@ -40,6 +42,7 @@ function addDataScraper(name) {
     for (const dataset of additionalDatasets) {
         if (dataset.id === name.substring(2)) return;
     }
+    // create a dataset object and write it to the additionalDatasets json file
     const dsObj = {
         "id": name.substring(2),
         "url": "http://localhost:4004/data/" + name + "?",
