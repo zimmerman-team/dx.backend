@@ -1,29 +1,34 @@
 # Getting Started
 File or Folder | Purpose
 ---------|----------
-`app/` | javascript to support data processing
-`api/db/` | domain models and data go here
-`api/srv/` | service models go here
-`api/server.js` | javascript to override default server behaviour
+`public/` | the loopback app frontend
+`src/` | the loopback app source
 `package.json` | project metadata and configuration
 `readme.md` | readme
-`staging/` | staging folder which is not included by default, but created in the running command.
+`staging/` | staging folder which is where uploaded files are staged
 
 ## Requirements
 Install the local packages:
-- `npm install`
-- install `dx.client`, `dx.server`, `dx.ssr`.
+- `yarn install`
+- install `dx.client`, `dx.server`, `dx.ssr`, `dx.rawgraphs-charts`.
 
 ## Create a .env file containing
 ```
-DATA_EXPLORER_SERVER=<Where your "The Data Explorer Server" is installed + /src/config>
-DATA_EXPLORER_SSR=<Where your "The Data Explorer SSR" is installed>
+PORT=<Your port, we prefer 4004>
+
+# The complete path to the solr post tool
+SOLR_POST_PATH='<Where your solr post tool is located, for example /solr-9.2.1/bin/post>'
+
+STAGING_DIR='<the path where you cloned this repo + staging/>'
+
+DATA_EXPLORER_SSR='<the path where you cloned the dx.ssr repo>'
+
 ```
 
 ## Running
-- run with: `npm start`
+- run with: `yarn start`
 - starting a clean run (removing existing API mapping) with: `npm run reset`
-- Note: if you want to manually control the running of the API, 
+- Note: if you want to manually control the running of the API,
     - install cds once with: `sudo npm i --global @sap/cds-dk`
     - ensure the required directory exists: `mkdir -p staging && mkdir -p staging/db && mkdir -p staging/srv && mkdir -p staging/db/data`
     - run with: `cds watch api`
