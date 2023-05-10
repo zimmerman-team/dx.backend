@@ -1,30 +1,24 @@
-# Check out https://hub.docker.com/_/node to select a new base image
-FROM node:16-slim
 
-# Set to a non-root built-in user `node`
-USER node
-RUN apt-get update && apt-get install -y --no-install-recommends openjdk-11-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+FROM node:16.19.1-alpine3.17
 
-# Create app directory (with user `node`)
-RUN mkdir -p /app
+# For development add /bin/bash
+RUN apk update && apk add bash
 
+# Add java jdk for solr post tool
+RUN apk update && apk add --no-cache openjdk11
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+
+# Set up the server directory
 WORKDIR /app
+COPY . /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY --chown=node package*.json ./
+# Install yarn dependencies
+RUN yarn global add pm2
+RUN yarn install
+RUN yarn build
 
-RUN npm install
+# APP LOG DIRECTORY FROM pm2.config.js
+RUN mkdir -p /home/zim/app-logs/dx-backend
 
-# Bundle app source code
-COPY --chown=node . .
-
-RUN npm run build
-
-# Bind to all network interfaces so that it can be mapped to the host OS
-ENV HOST=0.0.0.0 PORT=4004
-
-EXPOSE ${PORT}
-CMD [ "node", "." ]
+# Run `yarn docker` to build, migrate and run the server with pm2.
+CMD ["yarn", "docker"]
