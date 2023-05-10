@@ -50,11 +50,13 @@ export class FileController {
 };
 
 const _createSolrCore = async (name: string) => {
+  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
   const options = {
-    host: 'localhost',
+    host: host,
     port: '8983',
     path: `/solr/admin/cores?action=CREATE&name=${name}&configSet=_default`,
     method: 'GET',
+    auth: `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`,
   };
 
   return new Promise<string>((resolve) => {
@@ -79,7 +81,9 @@ const _createSolrCore = async (name: string) => {
 const _postDatasetToSolr = async (name: string, fileName: string) => {
   const solrPostBase = process.env.SOLR_POST_PATH;
   const filePath = process.env.STAGING_DIR + fileName;
-  const solrPostOptions = ` -c ${name} ${filePath}`;
+  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
+  const auth = process.env.SOLR_ADMIN_USERNAME + ':' + process.env.SOLR_ADMIN_PASSWORD;
+  const solrPostOptions = `-u ${auth} -c ${name} -host ${host} ${filePath}`;
 
   const postCommand = solrPostBase + solrPostOptions;
   const execPromise = promisify(exec);
@@ -100,11 +104,13 @@ const _postDatasetToSolr = async (name: string, fileName: string) => {
 };
 
 const _deleteSolrCore = async (name: string) => {
+  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
   const options = {
-    host: 'localhost',
+    host: host,
     port: '8983',
     path: `/solr/admin/cores?action=UNLOAD&core=${name}`,
     method: 'GET',
+    auth: `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`,
   };
 
   return new Promise<string>((resolve) => {
@@ -137,12 +143,13 @@ function _addSSRDataScraperEntry(name: any) {
       if (dataset.id === name.substring(2)) return;
   }
   // create a dataset object and write it to the additionalDatasets json file
-  // http://localhost:8983/solr/dx645a528dc96e68a62f4c5c09/select?indent=true&q.op=OR&q=*%3A*&useParams=
+  const auth = `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`;
+  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
   const dsObj = {
       "id": name.substring(2),
       "datasource": "solr",
-      "url": "http://localhost:8983/solr/" + name + "/select?indent=true&q.op=OR&q=*%3A*&useParams=",
-      "countUrl": "http://localhost:8983/solr/" + name + "/select?indent=true&q.op=OR&q=*%3A*&useParams=&rows=0",
+      "url": `http://${host}:8983/solr/` + name + "/select?indent=true&q.op=OR&q=*%3A*&useParams=",
+      "countUrl": `http://${host}:8983/solr/` + name + "/select?indent=true&q.op=OR&q=*%3A*&useParams=&rows=0",
   };
   additionalDatasets.push(dsObj);
   fs.writeFileSync(datascraperDatasetsLoc, JSON.stringify(additionalDatasets, null, 2));

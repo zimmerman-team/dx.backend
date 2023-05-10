@@ -3,11 +3,13 @@ FROM node:16-slim
 
 # Set to a non-root built-in user `node`
 USER node
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-11-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # Create app directory (with user `node`)
-RUN mkdir -p /home/node/app
+RUN mkdir -p /app
 
-WORKDIR /home/node/app
+WORKDIR /app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
