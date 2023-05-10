@@ -29,7 +29,3 @@ mta_archives/
 # .vscode
 # .idea
 .env
-
-# Additional local datasets
-api/db/data/data_backup/*
-staging/
