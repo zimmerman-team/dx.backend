@@ -9,7 +9,7 @@ async function setupApplication() {
     // Empty values (undefined, '') will be ignored by the helper.
     //
     // host: process.env.HOST,
-    // port: +process.env.PORT,
+    // port: +process.env.BACKEND_PORT,
     });
     const app = new __1.DxBackendSolrApplication({
         rest: restConfig,

@@ -14,7 +14,7 @@ Install the local packages:
 
 ## Create a .env file containing
 ```
-PORT=<Your port, we prefer 4004>
+BACKEND_PORT=<Your port, we prefer 4004>
 
 # The complete path to the solr post tool
 SOLR_POST_PATH='<Where your solr post tool is located, for example /solr-9.2.1/bin/post>'

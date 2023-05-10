@@ -11,7 +11,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     // Empty values (undefined, '') will be ignored by the helper.
     //
     // host: process.env.HOST,
-    // port: +process.env.PORT,
+    // port: +process.env.BACKEND_PORT,
   });
 
   const app = new DxBackendSolrApplication({
