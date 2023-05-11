@@ -50,7 +50,7 @@ export class FileController {
 };
 
 const _createSolrCore = async (name: string) => {
-  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
+  const host = process.env.SOLR_SUBDOMAIN ? `dx-solr` : 'localhost';
   const options = {
     host: host,
     port: '8983',
@@ -81,11 +81,9 @@ const _createSolrCore = async (name: string) => {
 const _postDatasetToSolr = async (name: string, fileName: string) => {
   const solrPostBase = process.env.SOLR_POST_PATH;
   const filePath = process.env.STAGING_DIR + fileName;
-  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
   const auth = process.env.SOLR_ADMIN_USERNAME + ':' + process.env.SOLR_ADMIN_PASSWORD;
-  const solrPostOptions = `-u ${auth} -c ${name} -host ${host} ${filePath}`;
-
-  const postCommand = solrPostBase + solrPostOptions;
+  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
+  const postCommand = solrPostBase + ` -url 'http://${host}:8983/solr/${name}/update' ${filePath}`;
   const execPromise = promisify(exec);
 
   try {
@@ -104,7 +102,7 @@ const _postDatasetToSolr = async (name: string, fileName: string) => {
 };
 
 const _deleteSolrCore = async (name: string) => {
-  const host = process.env.SOLR_SUBDOMAIN ? `${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
+  const host = process.env.SOLR_SUBDOMAIN ? 'dx-solr' : 'localhost';
   const options = {
     host: host,
     port: '8983',
@@ -112,7 +110,6 @@ const _deleteSolrCore = async (name: string) => {
     method: 'GET',
     auth: `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`,
   };
-
   return new Promise<string>((resolve) => {
     const req = http.request(options, (res) => {
       res.setEncoding('utf8');
@@ -144,7 +141,7 @@ function _addSSRDataScraperEntry(name: any) {
   }
   // create a dataset object and write it to the additionalDatasets json file
   const auth = `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`;
-  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@${process.env.SOLR_SUBDOMAIN}.${process.env.MAIN_DOMAIN}` : 'localhost';
+  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
   const dsObj = {
       "id": name.substring(2),
       "datasource": "solr",
