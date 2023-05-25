@@ -25,14 +25,13 @@
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
     "posttest": "yarn run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && yarn run posttest",
-    "docker:build": "docker build -t dx.backend-solr .",
-    "docker:run": "docker run -p 4004:4004 -d dx.backend-solr",
     "premigrate": "yarn run build",
     "migrate": "node ./dist/migrate",
     "prestart": "yarn run rebuild",
     "start": "node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
-    "rebuild": "yarn run clean && yarn run build"
+    "rebuild": "yarn run clean && yarn run build",
+    "docker": "pm2-runtime start pm2.config.js"
   },
   "repository": {
     "type": "git",
