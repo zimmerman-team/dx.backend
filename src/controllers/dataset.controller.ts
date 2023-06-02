@@ -82,7 +82,8 @@ const _postDatasetToSolr = async (name: string, fileName: string) => {
   const solrPostBase = process.env.SOLR_POST_PATH;
   const filePath = process.env.STAGING_DIR + fileName;
   const auth = process.env.SOLR_ADMIN_USERNAME + ':' + process.env.SOLR_ADMIN_PASSWORD;
-  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
+  let host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
+  if (auth !== ':' && host === 'localhost') host = `${auth}@localhost`
   const postCommand = solrPostBase + ` -url 'http://${host}:8983/solr/${name}/update' ${filePath}`;
   const execPromise = promisify(exec);
 
@@ -141,7 +142,8 @@ function _addSSRDataScraperEntry(name: any) {
   }
   // create a dataset object and write it to the additionalDatasets json file
   const auth = `${process.env.SOLR_ADMIN_USERNAME}:${process.env.SOLR_ADMIN_PASSWORD}`;
-  const host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
+  let host = process.env.SOLR_SUBDOMAIN ? `${auth}@dx-solr` : 'localhost';
+  if (auth !== ':' && host === 'localhost') host = `${auth}@localhost`
   const dsObj = {
       "id": name.substring(2),
       "datasource": "solr",
