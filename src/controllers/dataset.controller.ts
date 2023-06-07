@@ -28,6 +28,7 @@ export class FileController {
     }
 
     try {
+      fs.copyFileSync(process.env.STAGING_DIR + fileName, process.env.STAGING_DIR + 'AI_' + fileName);
       await fs.unlink(process.env.STAGING_DIR + fileName);
       console.debug(`File '${fileName}' removed`);
     } catch (error) {
