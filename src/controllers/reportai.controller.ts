@@ -5,7 +5,8 @@ import {
   post,
   param,
 } from '@loopback/rest';
-import { Configuration, OpenAIApi } from "openai";
+import axios from 'axios';
+import FormData from 'form-data';
 
 import { _searchKaggle, _getMetadata, _checkDatasetFiles, _downloadDataset, _createDatasets, _renameDatasets, _postFilesToSolr, _generateChartsAndReport } from '../utils/reportai/reportai';
 
@@ -19,23 +20,17 @@ export class ReportAIController {
   async searchKaggle(
     @param.path.string('topic') topic: string,
   ) {
-    const configuration = new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
-    
-    const topicDeterminer = "First, I will give you some context, then I will ask you a question about a given topic. The context: Your job is to convert the given topic with one search term which will lead to functional results on the Kaggle datasets page. Keep it as concise as possible. Do not include the word 'dataset' or 'report' in your answer. If the best answer has multiple words, append them together with a + symbol. The Topic is: '" + topic + "'. The search term is: ";
-    const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: topicDeterminer,
-        temperature: 0.08,
-        max_tokens: 256,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-    });
-    const searchTerm = response.data.choices[0].text?.replace(/\n/g, '').replace(/ /g, '').replace(/dataset/g, '').replace(/report/g, '') ?? '';
-
+    let searchTerm = "";
+    const url = 'http://localhost:5000/prompts/extract-search-term';
+    const formData = new FormData();
+    formData.append('prompt', topic);
+    await axios.post(url, formData, {headers: formData.getHeaders()})
+      .then((response: any) => {
+        if (response.data.code === 200) searchTerm = response.data.result;
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
     if (searchTerm === '') 
         return { 'result': 'Oops, we cannot find datasets for this search term, try a different one!' };
     const kaggleDatasets = await _searchKaggle(searchTerm); // refs of the datasets
