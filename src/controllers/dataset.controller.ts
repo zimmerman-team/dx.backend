@@ -184,7 +184,10 @@ const _preprocessCSV = async (fileName: string) => {
         }
         // first check if the value is a number
         else if (!isNaN(Number(value))) {
-          const newValue = value.includes('.') ? value : value + '.0';
+          let newValue;
+          if (value.includes('.')) newValue = value;
+          else if (value.endsWith('\r')) newValue = value.replace(/\r$/, '.0\r');
+          else newValue = value + '.0';
           newValues.push(newValue);
         } // else if the value is a string, check if it starts with an empty space and if so remove it.
         else if (value.startsWith(' ')) {
