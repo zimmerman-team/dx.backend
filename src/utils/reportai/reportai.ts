@@ -7,14 +7,14 @@ import fs from 'fs-extra';
 import axios from 'axios';
 import FormData from 'form-data';
 
-import { reportBase, rowItemChart, oneToFourBase, fourToOneBase, chartBaseBarChart, chartBaseLineChart, chartBaseGeoMap } from './consts';
+import { reportBase, rowItemChart, oneToFourBase, fourToOneBase, chartBaseBarChart, chartBaseLineChart, chartBaseGeoMap, chartBaseTreeMap, chartBaseSankey } from './consts';
 
 export const _searchKaggle = async (searchTerm: string) => {
   /**
    * Use the `kaggle` tool to search for datasets on Kaggle.
    * If datasets are found, store and return the refs for the datasets
    */
-  console.debug('DEBUG:: Searching Kaggle for datasets');
+  console.log('DEBUG:: Searching Kaggle for datasets');
   const kaggleSearch = `kaggle datasets list --file-type csv -s ${searchTerm} --csv --max-size 40000000`;
   const execPromise = promisify(exec);
   try {
@@ -42,7 +42,7 @@ export const _getMetadata = async (kaggleDatasets: string[]) => {
    * Use the `kaggle` tool to get the metadata for each dataset in kaggleDatasets
    * If metadata is found, store and return the metadata for each dataset
    */
-  console.debug('DEBUG:: Retrieving dataset metadata from Kaggle');
+  console.log('DEBUG:: Retrieving dataset metadata from Kaggle');
   const execPromise = promisify(exec);
   let metadata: any = {};
   for (const datasetRef of kaggleDatasets) {
@@ -70,7 +70,7 @@ export const _getMetadata = async (kaggleDatasets: string[]) => {
 };
 
 export const _checkDatasetFiles = async (datasetRef: string) => {
-  console.debug('DEBUG:: Retrieving dataset files from Kaggle');
+  console.log('DEBUG:: Retrieving dataset files from Kaggle');
   const execPromise = promisify(exec);
   const kaggleDownload = `kaggle datasets files -v ${datasetRef}`;
   try {
@@ -93,7 +93,7 @@ export const _checkDatasetFiles = async (datasetRef: string) => {
 };
 
 export const _downloadDataset = async (datasetRef: string, datasetFileNames: string[]) => {
-  console.debug('DEBUG:: Downloading datasets from Kaggle');
+  console.log('DEBUG:: Downloading datasets from Kaggle');
   const execPromise = promisify(exec);
   const kaggleDownload = `kaggle datasets download --path ./staging/ ${datasetRef} --unzip`;
   try {
@@ -116,7 +116,7 @@ export const _downloadDataset = async (datasetRef: string, datasetFileNames: str
 };
 
 export const _createDatasets = async (datasetFileNames: string[], datasetMetadata: any) => {
-  console.debug('DEBUG:: Creating datasets in DX Middleware');
+  console.log('DEBUG:: Creating datasets in DX Middleware');
   let datasetIds: any = {};
   for (const fileName of datasetFileNames) {
     const datasetInfo = {
@@ -155,7 +155,7 @@ export const _renameDatasets = async (datasetIds: any) => {
 };
 
 export const _postFilesToSolr = async (fileNames: string[]) => {
-  console.debug('DEBUG:: Posting files to Solr and updating DX SSR');
+  console.log('DEBUG:: Posting files to Solr and updating DX SSR');
   let results: boolean[] = [];
   for (const fileName of fileNames) {
     // create a copy of the file at ./staging/fileName
@@ -168,15 +168,15 @@ export const _postFilesToSolr = async (fileNames: string[]) => {
         results.push(false);
       });
   }
-  console.debug('DEBUG:: PostFilesToSolr:: Solr update complete');
+  console.log('DEBUG:: PostFilesToSolr:: Solr update complete');
   await axios.get(`http://localhost:4400/trigger-update`)
-    .then(_ => console.debug("DEBUG:: PostFilesToSolr:: SSR update complete"))
-    .catch(_ => {console.debug("DEBUG:: PostFilesToSolr:: SSR update failed")});
+    .then(_ => console.log("DEBUG:: PostFilesToSolr:: SSR update complete"))
+    .catch(_ => {console.log("DEBUG:: PostFilesToSolr:: SSR update failed")});
   return results;
 };
 
 export const _generateChartsAndReport = async (newFileNames: string[], datasetMetadata: any) => {
-  console.debug('DEBUG:: Start report generation');
+  console.log('DEBUG:: Start report generation');
   if (newFileNames.length === 0) return '';
   
   const fileNames = newFileNames.map(fileName => `AI_${fileName}`);
@@ -222,7 +222,7 @@ export const _AGIAPI = async (fileName: string) => {
 }
 
 export const _createChartWithUploadedData = async (fileName: string, data: any) => {
-  console.debug('DEBUG:: Report Generation:: Generating Charts');
+  console.log('DEBUG:: Report Generation:: Generating Charts');
   const start = data.indexOf('{');
   const end = data.lastIndexOf('}');
   const jsonString = data.substring(start, end + 1);
@@ -253,7 +253,7 @@ export const _createChartWithUploadedData = async (fileName: string, data: any) 
 };
 
 export const _createReport = async (charts: any, datasetMetadata: any) => {
-  console.debug('DEBUG:: Report Generation:: Creating Report');
+  console.log('DEBUG:: Report Generation:: Creating Report');
   let report = { ...reportBase };
   report.name = datasetMetadata.title;
   report.title = datasetMetadata.title;
@@ -294,7 +294,7 @@ export const _createReport = async (charts: any, datasetMetadata: any) => {
 }
 
 export const _createChart = (fileName: string, jsonObject: any, chartType: string) => {
-  console.debug('DEBUG:: Report Generation:: Creating Chart');
+  console.log('DEBUG:: Report Generation:: Creating Chart');
   let chartContent: any;
 
   // Create a base chart and set the chartType specific values
@@ -309,12 +309,20 @@ export const _createChart = (fileName: string, jsonObject: any, chartType: strin
       chartContent.mapping.y.value[0] = jsonObject['y'];
       chartContent.mapping.lines.value[0] = jsonObject['lines'];
       break;
-    // case 'sankey':
-    //   chartContent = { ...chartBaseSankey };
-    //   break;
     case 'geomap':
       chartContent = JSON.parse(JSON.stringify(chartBaseGeoMap));
       chartContent.mapping.country.value[0] = jsonObject['country'];
+      break;
+    case 'treemap':
+      chartContent = JSON.parse(JSON.stringify(chartBaseTreeMap));
+      chartContent.mapping.hierarchy.value = jsonObject['hierarchy'];
+      // generate an array with the length of jsonObject['hierarchy'].length, then add incremental numbers to it, starting with 2.
+      chartContent.mapping.hierarchy.ids = Array.from(Array(jsonObject['hierarchy'].length), (_, i) => (i + 2).toString());
+      break;
+    case 'sankey':
+      chartContent = JSON.parse(JSON.stringify(chartBaseSankey));
+      chartContent.mapping.steps.value = jsonObject['steps'];
+      chartContent.mapping.steps.ids = Array.from(Array(jsonObject['steps'].length), (_, i) => (i + 2).toString());
       break;
     default:
       // Handle unknown chart types
