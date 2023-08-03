@@ -8,6 +8,11 @@
 ## Create your env file
 - `cp .env.example .env`
 
+## Kaggle
+For kaggle, as mentioned we need to set up the kaggle token.
+Through docker, we copy it from the dx.backend root directory.
+Make sure to download it set up your token as [from your account](https://www.kaggle.com/settings/account), and place it in the dx.backend root folder.
+
 ## Running
 Local
 ```

@@ -2,11 +2,14 @@
 FROM python:3.11-bullseye
 COPY . /app
 
+# Set up the kaggle api token
+COPY ./kaggle.json /root/.kaggle/kaggle.json
+RUN chmod 600 /root/.kaggle/kaggle.json
+
 WORKDIR /app
 
 # Install java 11 and set JAVA_HOME and JRE_HOME to be able to use solr post tool
 RUN apt-get update && apt-get install -y openjdk-11-jdk
-
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # Pre-install python dependencies

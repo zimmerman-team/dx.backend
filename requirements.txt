@@ -7,11 +7,11 @@ flake8==6.0.0
 isort==5.12.0
 
 # Kaggle connection
-kaggle==1.5.13
+kaggle==1.5.15
 
 # Data processing
-pandas==2.0.2
-numpy==1.25.0
+pandas==2.0.3
+numpy==1.25.2
 pysolr==3.9.0
 
 # URL connection
