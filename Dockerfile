@@ -18,4 +18,4 @@ RUN pip install -r requirements.txt
 EXPOSE 4004
 
 # Run the app
-CMD ["gunicorn", "-w", "8", "app:app", "-b", "0.0.0.0:4004"]
+CMD ["gunicorn", "-w", "8", "app:app", "-b", "0.0.0.0:4004", "--timeout", "600"]
