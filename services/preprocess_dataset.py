@@ -27,19 +27,16 @@ DATE_FORMATS = [
 ]
 
 
-def has_date(string):
-    """
-    Check if a date can be converted to a string
-    :param string: string to check
-    :return: True if the string can be converted to a date, False otherwise
-    """
-    for date_format in DATE_FORMATS:
-        try:
-            datetime.datetime.strptime(str(string), date_format)
-            return True
-        except ValueError:
-            continue
-    return False
+def is_datetime_column(column):
+    try:
+        non_numeric_values = column.apply(lambda x: not isinstance(x, (int, float)) or isinstance(x, bool))
+        datetime_values = pd.to_datetime(column[non_numeric_values], errors='coerce')
+        valid_datetime_count = datetime_values.count()
+        total_values = len(column)
+        return valid_datetime_count / total_values > 0.75
+    except Exception as e:
+        logging.error(f"Error in is_datetime_column: {str(e)}")
+        return False
 
 
 def apply_date(string):
@@ -224,7 +221,7 @@ def preprocess_data_df(df):
     columns_with_strings_starting_with_numbers = []
     for header in df.columns.tolist():
         # if there are 75% or more dates in the column, convert the column to a date
-        has_datetime_values = df[header].apply(lambda x: has_date(x)).sum() > 0.75 * df[header].count()
+        has_datetime_values = is_datetime_column(df[header])
         if has_datetime_values:
             df.loc[:, header] = df[header].apply(lambda x: apply_date(x))
             continue
