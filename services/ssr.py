@@ -17,11 +17,6 @@ def add_ssr_data_scraper_entry(name):
     """
     logger.debug("Creating datascraper entry")
     try:
-        try:
-            DS_LOC = os.environ['DATA_EXPLORER_SSR'] + "additionalDatasets.json"
-        except Exception:
-            DS_LOC = "./additionalDatasets.json"
-            logger.info("DATA_EXPLORER_SSR not set, using default location for SSR json file")
         with open(DS_LOC, 'r') as file:
             additional_datasets = json.load(file)
 
