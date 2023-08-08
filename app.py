@@ -9,8 +9,7 @@ from services.kaggle import run_update
 from services.preprocess_dataset import preprocess_data
 from services.solr import (create_solr_core, delete_solr_core,
                            post_data_to_solr, remove_from_core)
-from services.ssr import (add_ssr_data_scraper_entry, remove_ssr_parsed_files,
-                          remove_ssr_ref)
+from services.ssr import remove_ssr_parsed_files, remove_ssr_ref
 from services.util import remove_files
 from util.configure_logging import confirm_logger
 
@@ -107,13 +106,13 @@ def process_dataset(ds_name):
     logging.debug(f"route: /upload-file/<string:ds_name> - Processing dataset {ds_name}")
     try:
         # Preprocess
-        preprocess_data(ds_name)
+        preprocess_data(ds_name, create_ssr=True)
         # Create a solr core and post the dataset
         res = post_data_to_solr(ds_name)
         # Remove the processed file
         remove_files([ds_name])
         # Add the dataset to SSR
-        add_ssr_data_scraper_entry(ds_name[:-4])  # strip .csv
+        # add_ssr_data_scraper_entry(ds_name[:-4])  # TODO: review obsolete
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."

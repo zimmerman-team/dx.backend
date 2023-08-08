@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pandas as pd
 
+from services.ssr import create_ssr_parsed_file
 from services.util import detect_encoding
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def is_datetime_column(column):
         total_values = len(column)
         return valid_datetime_count / total_values > 0.75
     except Exception as e:
-        logging.error(f"Error in is_datetime_column: {str(e)}")
+        logger.error(f"Error in is_datetime_column: {str(e)}")
         return False
 
 
@@ -223,7 +224,11 @@ def preprocess_data_df(df):
         # if there are 75% or more dates in the column, convert the column to a date
         has_datetime_values = is_datetime_column(df[header])
         if has_datetime_values:
-            df.loc[:, header] = df[header].apply(lambda x: apply_date(x))
+            # Apply the date functions to a new column, replace the old column with the
+            # converted, to update the dtype of the column
+            df[header + "_converted"] = df[header].apply(lambda x: apply_date(x))
+            df.drop(columns=[header], inplace=True)
+            df.rename(columns={header + "_converted": header}, inplace=True)
             continue
 
         has_string_values = df[header].apply(lambda x: has_string(x)).any()
@@ -248,7 +253,7 @@ def preprocess_data_df(df):
     return df, columns_with_strings_starting_with_numbers
 
 
-def preprocess_data(name):
+def preprocess_data(name, create_ssr=False):
     """
     Process trigger to preprocess a CSV dataset.
     The headers are updated to include the dataset name and only have a-zA-Z0-9 values.
@@ -256,6 +261,7 @@ def preprocess_data(name):
     Lastly we make sure the first row contains the correct dtype in each column, to enforce solr indexing.
     This process saves the preprocessed dataset by overwriting the provided file.
     :param name: name of the dataset to preprocess
+    :param create_ssr: boolean to indicate if we should create an SSR entry for the dataset
     """
     logger.debug(f"Preprocessing data for {name}")
     # Read the file
@@ -270,7 +276,8 @@ def preprocess_data(name):
         # Clean the headers to only a-z, A-Z, 0-9
         df.columns = df.columns.str.replace(r'[^a-zA-Z0-9]', '', regex=True, flags=re.IGNORECASE)
         # prefix the headers with the column name
-        df.columns = [name[:-4] + '__' + str(col) for col in df.columns]
+        df_prefix = name[:-4] + '__'
+        df.columns = [df_prefix + str(col) for col in df.columns]
         # for each column check: is it a date, is it a string, is it a number,
         # make sure we start our string columns with a string
         df, columns_with_strings_starting_with_numbers = preprocess_data_df(df)
@@ -283,5 +290,8 @@ def preprocess_data(name):
         df = fillna_on_dtype(df)
         # write the df to csv file at ./staging/test.csv, with no index
         df.to_csv(csv_file_path, index=False, encoding=encoding)
+        if create_ssr:
+            create_ssr_parsed_file(df, df_prefix, name[:-4])
+        logger.debug("Done...")
     except Exception as e:
         logger.error(f"Error in preprocess_data: {str(e)}")

@@ -1,6 +1,9 @@
 import json
 import logging
+import math
 import os
+
+import pandas as pd
 
 from services.util import setup_parsed_loc, setup_solr_url, setup_ssr_loc
 
@@ -8,6 +11,12 @@ logger = logging.getLogger(__name__)
 SOLR_URL = setup_solr_url()
 DS_LOC = setup_ssr_loc()
 DF_LOC = setup_parsed_loc()
+RAW_DATA_TYPES = {  # Rawgraphs has date, string or number, default to string when using
+    "object": "string",
+    "datetime64[ns]": {'type': 'date', 'dateFormat': 'YYYY-MM-DD'},
+    "int64": "number",
+    "float64": "number",
+}
 
 
 def add_ssr_data_scraper_entry(name):
@@ -86,3 +95,48 @@ def remove_ssr_parsed_files(ds_name):
     except Exception as e:
         logger.error(f"Error in remove_ssr_parsed_files: {str(e)}")
         return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
+
+
+def create_ssr_parsed_file(df, prefix="", filename=""):
+    """
+    We want to prepare the data as JSON with the following properties:
+    one object
+    {
+        "dataset": []
+        "dataTypes": {
+            "column1": "type",
+            "column2": "type",
+            ...
+        }
+        "errors": []
+    }
+    """
+    logger.debug("Creating SSR parsed file")
+    # if filename starts with dx, remove the dx
+    name = filename[2:] if filename.startswith('dx') else filename
+    loc = f"{DF_LOC}parsed-data-files/{name}.json"
+    copy_loc = f"{DF_LOC}data-files/{name}.json"
+    # Remove the prefix if present
+    df.columns = df.columns.str.replace(prefix, "")
+
+    # Get the dtypes of the data frame
+    data_types = {column: RAW_DATA_TYPES.get(df[column].dtype.name, "string") for column in df.columns}
+
+    # for each column if dtype is datetime64[ns], parse date to only YYYY-MM-DD
+    date_columns = df.select_dtypes(include=['datetime64']).columns
+    df[date_columns] = df[date_columns].applymap(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else x)
+
+    # Convert data to a dictionary
+    data = df.to_dict(orient="records")
+    cleaned_data = [{k: v for k, v in e.items() if not isinstance(v, float) or not math.isnan(v)} for e in data]
+    # save parsed at loc
+    with open(loc, 'w') as f:
+        json.dump({
+            "dataset": cleaned_data,
+            "dataTypes": data_types,
+            "errors": []
+        }, f, indent=4)
+
+    # save the raw data to the data files
+    with open(copy_loc, 'w') as f:
+        json.dump(cleaned_data, f, indent=4)
