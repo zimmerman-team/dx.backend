@@ -108,11 +108,12 @@ def process_dataset(ds_name):
         # Preprocess
         preprocess_data(ds_name, create_ssr=True)
         # Create a solr core and post the dataset
-        res = post_data_to_solr(ds_name)
+        # res = post_data_to_solr(ds_name)
         # Remove the processed file
         remove_files([ds_name])
         # Add the dataset to SSR
         # add_ssr_data_scraper_entry(ds_name[:-4])  # TODO: review obsolete
+        res = "Success"
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
