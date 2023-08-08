@@ -23,6 +23,7 @@ def create_solr_core(name):
             'configSet': '_default'
         }
         core_admin_url = f'{SOLR_URL}/admin/cores'
+        logger.info(f"Creating solr core: {name} at {core_admin_url}")
         requests.get(core_admin_url, params=params)
         return True
     except Exception as e:
@@ -59,6 +60,7 @@ def post_data_to_solr(name):
     try:
         # Strip .csv from the name
         if not create_solr_core(name[:-4]):
+            logger.error(f"Error in post_data_to_solr for {name}")
             return "error creating solr core"
         # post the file
         csv_file_path = f"./staging/{name}"
