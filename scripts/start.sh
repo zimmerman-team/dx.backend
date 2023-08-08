@@ -18,8 +18,6 @@ elif [ "$MODE" = "staging" ]; then
   gunicorn -w 8 app:app -b 0.0.0.0:4004 --daemon --access-logfile ./logging/access.txt --error-logfile ./logging/error.txt --timeout 600
 elif [ "$MODE" = "test" ]; then
   gunicorn -w 8 app:app -b 0.0.0.0:4004 --daemon --access-logfile ./logging/access.txt --error-logfile ./logging/error.txt --timeout 600
-if [ "$MODE" = "docker" ]; then
-  docker run . -p 4004:4004
 else
   echo "Invalid mode. Use 'dev', 'test', 'staging' or 'prod'."
   exit 1
