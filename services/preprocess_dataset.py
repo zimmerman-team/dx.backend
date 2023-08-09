@@ -268,8 +268,8 @@ def preprocess_data(name, create_ssr=False):
     csv_file_path = f"./staging/{name}"
     encoding = detect_encoding(csv_file_path)
     try:
+        logger.debug("-- Preprocessing content")
         df = pd.read_csv(csv_file_path, encoding=encoding, low_memory=False)
-
         # drop any row that is 90-100% empty
         df.dropna(thresh=df.shape[1] * 0.1, inplace=True)
 
@@ -290,8 +290,8 @@ def preprocess_data(name, create_ssr=False):
         df = fillna_on_dtype(df)
         # write the df to csv file at ./staging/test.csv, with no index
         df.to_csv(csv_file_path, index=False, encoding=encoding)
+        logger.debug(f"Done preprocessing data for {name}")
         if create_ssr:
             create_ssr_parsed_file(df, df_prefix, name[:-4])
-        logger.debug("Done...")
     except Exception as e:
         logger.error(f"Error in preprocess_data: {str(e)}")

@@ -7,9 +7,9 @@ from flask import Flask
 from services.datatok import retrieve_dataset_data
 from services.kaggle import run_update
 from services.preprocess_dataset import preprocess_data
-from services.solr import (create_solr_core, delete_solr_core,
-                           post_data_to_solr, remove_from_core)
-from services.ssr import remove_ssr_parsed_files, remove_ssr_ref
+from services.solr import create_solr_core, delete_solr_core, remove_from_core
+from services.ssr import (load_sample_data, remove_ssr_parsed_files,
+                          remove_ssr_ref)
 from services.util import remove_files
 from util.configure_logging import confirm_logger
 
@@ -138,6 +138,20 @@ def delete_dataset(ds_name):
     except Exception as e:
         logging.error(f"Error in route: /delete-dataset/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset deletion. Contact the admin for more information."
+    return res
+
+
+@app.route('/sample-data/<string:ds_name>', methods=['GET', 'POST'])
+def sample_data(ds_name):
+    """
+    Return sample data for a given dataset id
+    """
+    logging.debug(f"route: /sample-data/<string:ds_name> - Sampling dataset {ds_name}")
+    try:
+        res = load_sample_data(ds_name)
+    except Exception as e:
+        logging.error(f"Error in route: /sample-data/<string:ds_name> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset sampling. Contact the admin for more information."
     return res
 
 
