@@ -19,80 +19,24 @@ RAW_DATA_TYPES = {  # Rawgraphs has date, string or number, default to string wh
 }
 
 
-def add_ssr_data_scraper_entry(name):
-    """
-    Update SSR with an additional dataset for the SSR parser to process.
-    Load the additional datasets json list
-
-    :param name: The name of the dataset to be added (without extension)
-    """
-    logger.debug("Creating datascraper entry")
-    try:
-        with open(DS_LOC, 'r') as file:
-            additional_datasets = json.load(file)
-
-        # Check if the name is already in the ids of the loaded list
-        for dataset in additional_datasets:
-            # if the name starts with dx, remove the dx
-            sub = name
-            if name.startswith('dx'):
-                sub = name[2:]
-            if dataset['id'] == sub:
-                return
-
-        final_name = name
-        if name.startswith('dx'):
-            final_name = name[2:]
-        ds_obj = {
-            "id": final_name,
-            "datasource": "solr",
-            "url": f"{SOLR_URL}/{name}/select?indent=true&q.op=OR&q=*%3A*&useParams=",
-            "countUrl": f"{SOLR_URL}/{name}/select?indent=true&q.op=OR&q=*%3A*&useParams=&rows=0"
-        }
-        additional_datasets.append(ds_obj)
-
-        with open(DS_LOC, 'w') as file:
-            json.dump(additional_datasets, file, indent=4)
-    except Exception as e:
-        logger.error(f"Error in add_ssr_data_scraper_entry: {str(e)}")
-
-
-def remove_ssr_ref(dataset_id):
-    """
-    Removing the reference from SSR
-    """
-    logger.debug("Removing SSR ref")
-    try:
-        with open(DS_LOC, 'r') as file:
-            additional_datasets = json.load(file)
-
-        # Remove the dict with id == file from the list
-        for dataset in additional_datasets:
-            if dataset['id'] == dataset_id:
-                additional_datasets.remove(dataset)
-                break
-
-        with open(DS_LOC, 'w') as file:
-            json.dump(additional_datasets, file, indent=4)
-    except Exception as e:
-        logger.error(f"Error in remove_ssr_ref: {str(e)}")
-
-
 def remove_ssr_parsed_files(ds_name):
     """
     Removing parsed files from the SSR directory
+
+    :param ds_name: The name of the dataset
+    :return: Success or error message
     """
     logger.debug("Removing SSR parsed files")
     try:
         if ds_name.startswith('dx'):
             ds_name = ds_name[2:]
         parsed_df = f"{DF_LOC}parsed-data-files/{ds_name}.json"
-        unparsed_df = f"{DF_LOC}data-files/{ds_name}.json"
+        sample_df = f"{DF_LOC}sample-data-files/{ds_name}.json"
         # remove the parsed files if they exist
         if os.path.exists(parsed_df):
             os.remove(parsed_df)
-        if os.path.exists(unparsed_df):
-            os.remove(unparsed_df)
+        if os.path.exists(sample_df):
+            os.remove(sample_df)
         return "Success"
     except Exception as e:
         logger.error(f"Error in remove_ssr_parsed_files: {str(e)}")
@@ -108,6 +52,7 @@ def get_dataset_stats(df):
     common categories, 'bar' for moderate unique values, and 'unique' for columns with many unique values.
 
     :param df: The DataFrame to be processed
+    :return: A list of dictionaries containing the column name, type of statistics, and the data
     """
     try:
         stats = []
@@ -146,7 +91,6 @@ def get_dataset_stats(df):
 def create_ssr_parsed_file(df, prefix="", filename=""):
     """
     We want to prepare the data as JSON with the following properties:
-    one object
     {
         "dataset": []
         "dataTypes": {
@@ -155,6 +99,9 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
             ...
         }
         "errors": []
+        "count": N
+        "sample": []  # subset of the data
+        "stats": []  # descriptive statistics for each column
     }
     """
     logger.debug("Creating SSR parsed file")
@@ -201,7 +148,10 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
 
 def load_sample_data(dataset_id):
     """
-    Sample the data to a specified size
+    Read and return the sample data for a given dataset id in the form required by the frontend.
+
+    :param dataset_id: The id of the dataset
+    :return: A dictionary containing the sample data
     """
     try:
         logger.debug("Sampling data")

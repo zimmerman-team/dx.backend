@@ -7,9 +7,8 @@ from flask import Flask
 from services.datatok import retrieve_dataset_data
 from services.kaggle import run_update
 from services.preprocess_dataset import preprocess_data
-from services.solr import create_solr_core, delete_solr_core, remove_from_core
-from services.ssr import (load_sample_data, remove_ssr_parsed_files,
-                          remove_ssr_ref)
+from services.solr import create_solr_core, delete_solr_core
+from services.ssr import load_sample_data, remove_ssr_parsed_files
 from services.util import remove_files
 from util.configure_logging import confirm_logger
 
@@ -108,11 +107,9 @@ def process_dataset(ds_name):
         # Preprocess
         preprocess_data(ds_name, create_ssr=True)
         # Create a solr core and post the dataset
-        # res = post_data_to_solr(ds_name)
+        # res = post_data_to_solr(ds_name)  # TODO: Disabled solr until data processing required
         # Remove the processed file
         remove_files([ds_name])
-        # Add the dataset to SSR
-        # add_ssr_data_scraper_entry(ds_name[:-4])  # TODO: review obsolete
         res = "Success"
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name> - {str(e)}")
@@ -122,17 +119,22 @@ def process_dataset(ds_name):
 
 @app.route('/delete-dataset/<string:ds_name>', methods=['GET', 'POST'])
 def delete_dataset(ds_name):
+    """
+    Delete the dataset's content from the SSR data folders
+
+    :param ds_name: The name of the dataset to be deleted
+    :return: A string indicating the result of the deletion
+    """
     logging.debug(f"route: /delete-dataset/<string:ds_name> - Deleting dataset {ds_name}")
     try:
         # Remove the dataset from the datasets list in solr
         # this is in case the dataset was created through the update feature
-        remove_from_core('ref', ds_name, 'datasets')
+        # remove_from_core('ref', ds_name, 'datasets')  # TODO: Disabled solr until data processing required
 
         # Delete the solr core belonging to the dataset
-        delete_solr_core(ds_name)
+        # delete_solr_core(ds_name)  # TODO: Disabled solr until data processing required
 
         # Remove the dataset from SSR
-        remove_ssr_ref(ds_name)
         remove_ssr_parsed_files(ds_name)
         res = "Success"
     except Exception as e:

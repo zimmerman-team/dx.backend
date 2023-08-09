@@ -29,6 +29,13 @@ DATE_FORMATS = [
 
 
 def is_datetime_column(column):
+    """
+    Check whether or not a column is majority datetime objects.
+    Considering 75% to be majority
+
+    :param column: column to check
+    :return: True if the column is majority datetime objects, False otherwise
+    """
     try:
         non_numeric_values = column.apply(lambda x: not isinstance(x, (int, float)) or isinstance(x, bool))
         datetime_values = pd.to_datetime(column[non_numeric_values], errors='coerce')
@@ -43,6 +50,7 @@ def is_datetime_column(column):
 def apply_date(string):
     """
     Convert a string to a datetime object, return a pandas df na if not possible
+
     :param string: string to convert
     :return: datetime object if possible, pandas df na otherwise
     """
@@ -60,6 +68,7 @@ def apply_date(string):
 def has_string(string):
     """
     Check if a string can be converted to a float in any way, if not, it is a string
+
     :param string: string to check
     :return: True if the string cannot be converted to a float, False otherwise
     """
@@ -77,6 +86,7 @@ def has_string(string):
 def detect_first_row_is_number(df, header):
     """
     Check if the first row in a column is a number
+
     :param df: dataframe to check
     :param header: header to check
     :return: True if the first row is a number, False otherwise
@@ -92,6 +102,7 @@ def detect_first_row_is_number(df, header):
 def swap_first_row(df, headers):
     """
     Swap the first row with the first row that has a string in all of the given headers.
+
     :param df: dataframe to swap
     :param headers: headers to check
     :return: dataframe with the first row swapped with the first row that has a string in all of the given headers
@@ -119,6 +130,7 @@ def get_header_indices(df, headers):
     """
     identifying rows in the DataFrame where string values are present for each header,
     and then performing specific operations to clean and handle those string values.
+
     :param df: dataframe to check
     :param headers: headers to check
     :return: dataframe with the first row swapped with the first row that has a string in all of the given headers
@@ -148,6 +160,7 @@ def get_header_indices(df, headers):
 def has_comma_readable_number(x):
     """
     Check if a string can be converted to a float, also if there is a comma separating the thousands
+
     :param x: string to check
     :return: True if the string can be converted to a float, False otherwise
     """
@@ -165,6 +178,7 @@ def has_comma_readable_number(x):
 def replace_comma_readable_number(x):
     """
     Replace the comma in a string with nothing
+
     :param x: string to replace
     :return: string with comma replaced with nothing
     """
@@ -179,6 +193,7 @@ def replace_comma_readable_number(x):
 def numerify(x):
     """
     Replace anything other than 0-9 or . with '' in the column
+
     :param x: string to replace
     :return: string with anything other than 0-9 or . replaced with ''
     """
@@ -195,6 +210,9 @@ def numerify(x):
 def fillna_on_dtype(df):
     """
     Fill NaN values in a dataset based on the data type of the column.
+
+    :param df: dataframe to fill
+    :return: dataframe with NaN values filled
     """
     fill_values = {
         'object': '',
@@ -216,6 +234,7 @@ def preprocess_data_df(df):
     Subfunction to preprocess the data in a dataframe.
     Here we check if a column is a date, a string, or a number.
     We also confirm the type of the content of each column.
+
     :param df: dataframe to preprocess
     :return: dataframe with the data preprocessed
     """
@@ -260,6 +279,7 @@ def preprocess_data(name, create_ssr=False):
     We make sure each column is the correct dtype and has no NaN values.
     Lastly we make sure the first row contains the correct dtype in each column, to enforce solr indexing.
     This process saves the preprocessed dataset by overwriting the provided file.
+
     :param name: name of the dataset to preprocess
     :param create_ssr: boolean to indicate if we should create an SSR entry for the dataset
     """
