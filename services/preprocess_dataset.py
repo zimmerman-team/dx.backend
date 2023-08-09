@@ -38,7 +38,7 @@ def is_datetime_column(column):
     """
     try:
         non_numeric_values = column.apply(lambda x: not isinstance(x, (int, float)) or isinstance(x, bool))
-        datetime_values = pd.to_datetime(column[non_numeric_values], errors='coerce')
+        datetime_values = pd.to_datetime(column[non_numeric_values], errors='coerce', format=DATE_FORMATS[0])
         valid_datetime_count = datetime_values.count()
         total_values = len(column)
         return valid_datetime_count / total_values > 0.75
