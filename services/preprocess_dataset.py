@@ -2,11 +2,12 @@ import datetime
 import logging
 import re
 
+
 import numpy as np
 import pandas as pd
 
 from services.ssr import create_ssr_parsed_file
-from services.util import detect_encoding
+from services.read_data import read_data
 
 logger = logging.getLogger(__name__)
 DATE_FORMATS = [
@@ -272,9 +273,9 @@ def preprocess_data_df(df):
     return df, columns_with_strings_starting_with_numbers
 
 
-def preprocess_data(name, create_ssr=False):
+def preprocess_data(name, create_ssr=False, table=None, db=None):
     """
-    Process trigger to preprocess a CSV dataset.
+    Process trigger to preprocess a dataset.
     The headers are updated to include the dataset name and only have a-zA-Z0-9 values.
     We make sure each column is the correct dtype and has no NaN values.
     Lastly we make sure the first row contains the correct dtype in each column, to enforce solr indexing.
@@ -285,18 +286,33 @@ def preprocess_data(name, create_ssr=False):
     """
     logger.debug(f"Preprocessing data for {name}")
     # Read the file
-    csv_file_path = f"./staging/{name}"
-    encoding = detect_encoding(csv_file_path)
+    
+    file_path = f"./staging/{name}" if not db else name
+
+    try:
+        extension_length = len(name.split('.')[-1]) + 1  # including the .
+    except Exception:
+        extension_length = 0
+    logger.debug(f"---- Extension length: {extension_length}")
     try:
         logger.debug("-- Preprocessing content")
-        df = pd.read_csv(csv_file_path, encoding=encoding, low_memory=False)
+        df, message = _read_data(file_path, table, db)
+        logger.debug(f"---- Reading data result: {message}")
+            
         # drop any row that is 90-100% empty
         df.dropna(thresh=df.shape[1] * 0.1, inplace=True)
+        # drop any column that is 95-100% empty
+        df.dropna(axis=1, thresh=df.shape[0] * 0.05, inplace=True)
 
+        # make all column names in df a string and sort them alphabetically,
         # Clean the headers to only a-z, A-Z, 0-9
+        df.columns = df.columns.astype(str)
         df.columns = df.columns.str.replace(r'[^a-zA-Z0-9]', '', regex=True, flags=re.IGNORECASE)
+        logging.debug(f"SORTING:: \ndf.columns: {df.columns}\nsorted(df.columns): {sorted(df.columns)}")
+        df = df.reindex(sorted(df.columns), axis=1)
+        logging.debug(f"df columns after sorting: {df.columns}\n{df.head()}")
         # prefix the headers with the column name
-        df_prefix = name[:-4] + '__'
+        df_prefix = name[:-extension_length] + '__'
         df.columns = [df_prefix + str(col) for col in df.columns]
         # for each column check: is it a date, is it a string, is it a number,
         # make sure we start our string columns with a string
@@ -308,10 +324,29 @@ def preprocess_data(name, create_ssr=False):
 
         # prep by cleaning the dataframe from any NA values
         df = fillna_on_dtype(df)
-        # write the df to csv file at ./staging/test.csv, with no index
-        df.to_csv(csv_file_path, index=False, encoding=encoding)
+
+        logger.debug(f"Dataframe:\n{df.head()}")
         logger.debug(f"Done preprocessing data for {name}")
         if create_ssr:
-            create_ssr_parsed_file(df, df_prefix, name[:-4])
+            create_ssr_parsed_file(df, df_prefix, name[:-extension_length])
     except Exception as e:
         logger.error(f"Error in preprocess_data: {str(e)}")
+
+
+def _read_data(file_path, table, db):
+    if table:
+        res = read_data(file_path, {'table': table})
+    elif db:
+        res = read_data(file_path, db)
+    else:
+        res = read_data(file_path)
+
+    if type(res) == tuple:
+        df, message = res
+    else:
+        df = res
+        message = "Failure to read the file into a dataframe."
+
+    if type(df) is not pd.DataFrame:
+        logger.error(f"Error in preprocess_data: {message}")
+    return df, message

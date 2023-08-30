@@ -117,6 +117,41 @@ def process_dataset(ds_name):
     return res
 
 
+@app.route('/upload-file/<string:ds_name>/<string:table>', methods=['GET', 'POST'])
+def process_dataset_sqlite(ds_name, table):
+    logging.debug(f"route: /upload-file/<string:ds_name>/<string:table> - Processing dataset {ds_name} with table {table}")
+    try:
+        # Preprocess
+        preprocess_data(ds_name, create_ssr=True, table=table)
+        remove_files([ds_name])
+        res = "Success"
+    except Exception as e:
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+    return res
+
+
+@app.route('/upload-file/<string:ds_name>/<string:username>/<string:password>/<string:host>/<string:port>/<string:database>/<string:table>', methods=['GET', 'POST'])
+def process_dataset_sql(ds_name, username, password, host, port, database, table):
+    logging.debug(f"route: /upload-file/<string:ds_name>/<string:table> - Processing dataset {ds_name} with table {table} @ {host}:{port}/{database}")
+    try:
+        # Preprocess
+        db = {
+            'username': username,
+            'password': password,
+            'host': host,
+            'port': port,
+            'database': database,
+            'table': table
+        }
+        preprocess_data(ds_name, create_ssr=True, db=db)
+        res = "Success"
+    except Exception as e:
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+    return res
+
+
 @app.route('/delete-dataset/<string:ds_name>', methods=['GET', 'POST'])
 def delete_dataset(ds_name):
     """

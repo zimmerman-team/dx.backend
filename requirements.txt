@@ -14,6 +14,21 @@ pandas==2.0.3
 numpy==1.25.2
 pysolr==3.9.0
 
+# Dataset type processing
+python-magic==0.4.27  # File type detection
+lxml==4.9.3  # xml processing
+SQLAlchemy==2.0.20  # Database connection
+pyarrow==13.0.0  # alternative file extensions
+pyreadstat==1.2.3  # .sav files
+xlrd==2.0.1  # .xls files
+openpyxl==3.1.2  # .xlsx files
+pyxlsb==1.0.10  # .xlsb files
+odfpy==1.4.1  # .odf files
+pymysql==1.1.0  # MySQL connection
+psycopg==3.1.10  # PostgreSQL connection
+pymssql==2.2.8  # MSSQL connection
+oracledb==1.4.0  # Oracle connection
+
 # URL connection
 requests==2.31.0
 urllib3==2.0.3
