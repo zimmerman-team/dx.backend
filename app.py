@@ -152,6 +152,24 @@ def process_dataset_sql(ds_name, username, password, host, port, database, table
     return res
 
 
+@app.route('/upload-file/<string:ds_name>/<string:api_url>/<string:json_root>/<string:xml_root>', methods=['GET', 'POST'])
+def process_dataset_api(ds_name, api_url, json_root, xml_root):
+    logging.debug(f"route: /upload-file/<string:ds_name>/<string:api_url> - Processing dataset {ds_name} with api_url: {api_url}, json_root: {json_root}, xml_root: {xml_root}")
+    try:
+        # Preprocess
+        api = {
+            'api_url': api_url,
+            'json_root': json_root,
+            'xml_root': xml_root,
+        }
+        preprocess_data(ds_name, create_ssr=True, api=api)
+        res = "Success"
+    except Exception as e:
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+    return res
+
+
 @app.route('/delete-dataset/<string:ds_name>', methods=['GET', 'POST'])
 def delete_dataset(ds_name):
     """

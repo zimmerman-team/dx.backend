@@ -1,13 +1,13 @@
+import base64
 import datetime
 import logging
 import re
 
-
 import numpy as np
 import pandas as pd
 
+from services.read_data import read_data, read_data_from_api
 from services.ssr import create_ssr_parsed_file
-from services.read_data import read_data
 
 logger = logging.getLogger(__name__)
 DATE_FORMATS = [
@@ -76,11 +76,11 @@ def has_string(string):
     try:
         float(string)
         return False
-    except ValueError:
+    except Exception:
         try:
             float(string.replace(",", ""))
             return False
-        except ValueError:
+        except Exception:
             return True
 
 
@@ -168,11 +168,11 @@ def has_comma_readable_number(x):
     try:
         float(x)
         return False
-    except ValueError:
+    except Exception:
         try:
             float(x.replace(",", ""))
             return True
-        except ValueError:
+        except Exception:
             return False
 
 
@@ -273,7 +273,7 @@ def preprocess_data_df(df):
     return df, columns_with_strings_starting_with_numbers
 
 
-def preprocess_data(name, create_ssr=False, table=None, db=None):
+def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
     """
     Process trigger to preprocess a dataset.
     The headers are updated to include the dataset name and only have a-zA-Z0-9 values.
@@ -296,7 +296,7 @@ def preprocess_data(name, create_ssr=False, table=None, db=None):
     logger.debug(f"---- Extension length: {extension_length}")
     try:
         logger.debug("-- Preprocessing content")
-        df, message = _read_data(file_path, table, db)
+        df, message = _read_data(file_path, table, db, api)
         logger.debug(f"---- Reading data result: {message}")
             
         # drop any row that is 90-100% empty
@@ -333,11 +333,21 @@ def preprocess_data(name, create_ssr=False, table=None, db=None):
         logger.error(f"Error in preprocess_data: {str(e)}")
 
 
-def _read_data(file_path, table, db):
+def _read_data(file_path, table, db, api):
     if table:
         res = read_data(file_path, {'table': table})
     elif db:
         res = read_data(file_path, db)
+    elif api:
+        # replace _ with / in api_url
+        url = base64.b64decode(api['api_url'].replace("_", "/"))
+        additional_args = {}
+        if api.get('json_root', None) != "none":
+            additional_args['json_root'] = api['json_root']
+        if api.get('xml_root', None) != "none":
+            additional_args['xml_root'] = api['xml_root']
+
+        res = read_data_from_api(url, additional_args)
     else:
         res = read_data(file_path)
 

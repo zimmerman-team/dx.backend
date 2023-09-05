@@ -16,8 +16,10 @@ import sqlite3
 import xml.etree.ElementTree as ET
 
 import chardet
-import magic
 import pandas as pd
+import requests
+
+import magic
 from sqlalchemy import create_engine
 
 logger = logging.getLogger(__name__)
@@ -229,7 +231,7 @@ def _read_sql(file_path, **optional_args):
         database = optional_args["database"]
     except KeyError:
         return None, "Missing SQL credentials"
-    
+
     try:
         query = optional_args["query"]
     except KeyError:
@@ -252,3 +254,85 @@ def _read_sql(file_path, **optional_args):
     engine = f"{engine_type}://{username}:{password}@{host}:{port}/{database}"
     df = pd.read_sql(query, con=create_engine(engine))
     return df, "Successfully read SQL table."
+
+
+"""
+Description for the user:
+
+Please provide us with the URL which provides access to the data in your API.
+This can be in JSON, XML or CSV format.
+We assume you have provided us with CSV if you do not specify.
+We do not store the URL anywhere in our system, so any authentication credentials you may pass, will not be stored by us.
+
+If you provide us with an URL that provides the data in CSV, we assume the data is to be used as-is.
+
+If you chose to provide us with JSON or XML, please provide us with a "base field", which is the field that contains your data.
+For example if the flat data is in value or result.docs.
+If the data is in the root of the JSON or XML, please leave this field with exclusively a period(.) as specifier.
+
+Note with JSON and XML that the following still applies:
+Flattening nested XML structures into a 2D table (like a DataFrame) can lead to data loss and misinterpretation, especially when the XML structure is hierarchical and contains complex relationships between elements. XML is designed to represent hierarchical data, and attempting to flatten it into a tabular structure might not capture the full context and relationships present in the original XML.
+Flattening nested arrays in a JSON file into a 2D table, such as a DataFrame, can also pose similar challenges and risks as flattening nested XML structures.
+"""
+
+
+def read_data_from_api(url, additional_args={}):
+    """
+    Download data from an API
+    :param URL: The URL to download the data from
+    :param additional_args: Additional arguments relating to the API
+    :return: A pandas DataFrame with the data
+    """
+    logger.debug(f"download_api_data:: Starting download of API data with:\n{url}\n{additional_args}")
+    try:
+        # check if json_root is provided
+        json_root = additional_args.get('json_root', None)
+
+        xml_root = additional_args.get('xml_root', None)
+        if json_root:
+            logger.debug(f"json_root provided: {json_root}")
+            df = download_and_prep_json(url, json_root)
+        elif xml_root:
+            logger.debug(f"xml_root provided: {xml_root}")
+            df = download_and_prep_xml(url, xml_root)
+        else:
+            logger.debug("No json_root or xml_root provided, assuming csv data")
+            df = download_and_prep_csv(url)
+        return df, "success"
+    except Exception as e:
+        logger.error(f"Error in download_api_data: {str(e)}")
+        return "error", "error"
+
+
+def download_and_prep_json(url, json_root):
+    # Download the data
+    data = requests.get(url).json()
+    data = _recursive_dict_root(data, json_root)
+    df = pd.DataFrame(data)
+    logger.debug(f"\n{df.head()}")
+    return df
+
+
+def download_and_prep_xml(url, xml_root):
+    # convert xml_root to an XPATH
+    if xml_root == ".":
+        df = pd.read_xml(url)
+    else:
+        xpath = "/"+xml_root.replace(".", "/")
+        df = pd.read_xml(url, xpath=xpath)
+    logger.debug(f"\n{df.head()}")
+    return df
+
+
+def download_and_prep_csv(url):
+    df = pd.read_csv(url)
+    logger.debug(f"\n{df.head()}")
+    return df
+
+
+def _recursive_dict_root(data, roots):
+    if roots == "." or roots == "":
+        return data
+    else:
+        root = roots.split(".")[0]
+        return _recursive_dict_root(data[root], ".".join(roots.split(".")[1:]))
