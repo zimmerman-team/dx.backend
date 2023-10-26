@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from services.external_sources.kaggle import kaggle_download, kaggle_search
 from services.external_sources.util import ALL_SOURCES, list_shuffle_sorted
+from services.external_sources.who import who_download, who_search
 from services.external_sources.worldbank import (worldbank_download,
                                                  worldbank_search)
 
@@ -33,6 +34,8 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=10):
                 results_list.append(kaggle_search(query, owner))
             if source == "World Bank":
                 results_list.append(worldbank_search(query, owner))
+            if source == "WHO":
+                results_list.append(who_search(query, owner))
         result = list_shuffle_sorted(results_list, limit)
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
@@ -59,6 +62,8 @@ def download_external_source(external_dataset):
             kaggle_download(external_dataset)
         elif source == "World Bank":
             worldbank_download(external_dataset)
+        elif source == "WHO":
+            who_download(external_dataset)
         return "Success"
     except Exception as e:
         logger.error(f"Error in external source download: {str(e)}")
