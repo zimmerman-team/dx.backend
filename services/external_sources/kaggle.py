@@ -50,7 +50,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
         for i in range(len(df)):
             if i < prev:
                 continue
-            if i >= limit:
+            if i >= limit + prev:
                 break
             try:
                 res.append(_create_external_source_object(df.iloc[i], owner))

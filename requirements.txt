@@ -8,6 +8,8 @@ isort==5.12.0
 
 # Kaggle connection
 kaggle==1.5.15
+# Worldbank connection
+wbgapi==1.0.12
 
 # Data processing
 pandas==2.0.3

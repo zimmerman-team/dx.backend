@@ -1,5 +1,5 @@
 # A global that contains the names of all implemented external sources.
-ALL_SOURCES = ["Kaggle", "WHO"]
+ALL_SOURCES = ["Kaggle", "World Bank"]
 # A global representation of the format of any external dataset.
 EXTERNAL_DATASET_FORMAT = {
     "name": "",
