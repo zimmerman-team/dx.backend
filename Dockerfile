@@ -6,6 +6,8 @@ COPY . /app
 COPY ./kaggle.json /root/.kaggle/kaggle.json
 RUN chmod 600 /root/.kaggle/kaggle.json
 
+RUN apt-get update && apt-get install -y freetds-dev
+
 WORKDIR /app
 
 # Pre-install python dependencies
