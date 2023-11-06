@@ -29,7 +29,7 @@ DATE_FORMATS = [
 ]
 
 
-def is_datetime_column(column):
+def _is_datetime_column(column):
     """
     Check whether or not a column is majority datetime objects.
     Considering 75% to be majority
@@ -44,11 +44,11 @@ def is_datetime_column(column):
         total_values = len(column)
         return valid_datetime_count / total_values > 0.75
     except Exception as e:
-        logger.error(f"Error in is_datetime_column: {str(e)}")
+        logger.error(f"Error in _is_datetime_column: {str(e)}")
         return False
 
 
-def apply_date(string):
+def _apply_date(string):
     """
     Convert a string to a datetime object, return a pandas df na if not possible
 
@@ -66,7 +66,7 @@ def apply_date(string):
     return np.nan
 
 
-def has_string(string):
+def _has_string(string):
     """
     Check if a string can be converted to a float in any way, if not, it is a string
 
@@ -84,7 +84,7 @@ def has_string(string):
             return True
 
 
-def detect_first_row_is_number(df, header):
+def _detect_first_row_is_number(df, header):
     """
     Check if the first row in a column is a number
 
@@ -93,14 +93,14 @@ def detect_first_row_is_number(df, header):
     :return: True if the first row is a number, False otherwise
     """
     try:
-        first_string_index = df.loc[df[header].apply(lambda x: has_string(x))].index[0]
+        first_string_index = df.loc[df[header].apply(lambda x: _has_string(x))].index[0]
         return first_string_index == 0
     except Exception as e:
-        logger.error(f"Error in detect_first_row_is_number: {str(e)}")
+        logger.error(f"Error in _detect_first_row_is_number: {str(e)}")
         return False
 
 
-def swap_first_row(df, headers):
+def _swap_first_row(df, headers):
     """
     Swap the first row with the first row that has a string in all of the given headers.
 
@@ -109,7 +109,7 @@ def swap_first_row(df, headers):
     :return: dataframe with the first row swapped with the first row that has a string in all of the given headers
     """
     try:
-        df, header_indices = get_header_indices(df, headers)
+        df, header_indices = _get_header_indices(df, headers)
         # Find the first row that has strings in each of the given headers
         common_set = set(header_indices[next(iter(header_indices))])
         # Find the intersection with the remaining sets
@@ -123,11 +123,11 @@ def swap_first_row(df, headers):
         df.iloc[0], df.iloc[first_common_number] = df.iloc[first_common_number], df.iloc[0]
         return df
     except Exception as e:
-        logger.error(f"Error in swap_first_row: {str(e)}")
+        logger.error(f"Error in _swap_first_row: {str(e)}")
         return df
 
 
-def get_header_indices(df, headers):
+def _get_header_indices(df, headers):
     """
     identifying rows in the DataFrame where string values are present for each header,
     and then performing specific operations to clean and handle those string values.
@@ -139,7 +139,7 @@ def get_header_indices(df, headers):
     header_indices = {}
     try:
         for header in headers:
-            stringls = df.loc[df[header].apply(lambda x: has_string(x))].index.tolist()
+            stringls = df.loc[df[header].apply(lambda x: _has_string(x))].index.tolist()
             # if the length of stringls is less than 5% of the number of rows in the dataframe, skip
             if len(stringls) < (df.count()[header]) * 0.05:
                 for i in stringls:
@@ -158,7 +158,7 @@ def get_header_indices(df, headers):
     return df, header_indices
 
 
-def has_comma_readable_number(x):
+def _has_comma_readable_number(x):
     """
     Check if a string can be converted to a float, also if there is a comma separating the thousands
 
@@ -176,7 +176,7 @@ def has_comma_readable_number(x):
             return False
 
 
-def replace_comma_readable_number(x):
+def _replace_comma_readable_number(x):
     """
     Replace the comma in a string with nothing
 
@@ -191,7 +191,7 @@ def replace_comma_readable_number(x):
         return x
 
 
-def numerify(x):
+def _numerify(x):
     """
     Replace anything other than 0-9 or . with '' in the column
 
@@ -208,7 +208,7 @@ def numerify(x):
         return 0
 
 
-def fillna_on_dtype(df):
+def _fillna_on_dtype(df):
     """
     Fill NaN values in a dataset based on the data type of the column.
 
@@ -230,7 +230,7 @@ def fillna_on_dtype(df):
     return df
 
 
-def preprocess_data_df(df):
+def _preprocess_data_df(df):
     """
     Subfunction to preprocess the data in a dataframe.
     Here we check if a column is a date, a string, or a number.
@@ -242,30 +242,30 @@ def preprocess_data_df(df):
     columns_with_strings_starting_with_numbers = []
     for header in df.columns.tolist():
         # if there are 75% or more dates in the column, convert the column to a date
-        has_datetime_values = is_datetime_column(df[header])
+        has_datetime_values = _is_datetime_column(df[header])
         if has_datetime_values:
             # Apply the date functions to a new column, replace the old column with the
             # converted, to update the dtype of the column
-            df[header + "_converted"] = df[header].apply(lambda x: apply_date(x))
+            df[header + "_converted"] = df[header].apply(lambda x: _apply_date(x))
             df.drop(columns=[header], inplace=True)
             df.rename(columns={header + "_converted": header}, inplace=True)
             continue
 
-        has_string_values = df[header].apply(lambda x: has_string(x)).any()
+        has_string_values = df[header].apply(lambda x: _has_string(x)).any()
         if has_string_values:
-            if df[header].apply(lambda x: has_string(x)).sum() < df.count()[header] * 0.05:
+            if df[header].apply(lambda x: _has_string(x)).sum() < df.count()[header] * 0.05:
                 # replace anything other than 0-9 or . with np.nan in the column
-                df.loc[:, header] = df[header].apply(lambda x: numerify(x))
+                df.loc[:, header] = df[header].apply(lambda x: _numerify(x))
                 # check if df.loc[:, header] is empty
-            elif not detect_first_row_is_number(df, header):
+            elif not _detect_first_row_is_number(df, header):
                 columns_with_strings_starting_with_numbers.append(header)
                 continue
             else:
                 continue
 
-        has_comma_readable_numbers = df[header].apply(lambda x: has_comma_readable_number(x)).any()
+        has_comma_readable_numbers = df[header].apply(lambda x: _has_comma_readable_number(x)).any()
         if has_comma_readable_numbers:
-            df.loc[:, header] = df[header].apply(lambda x: replace_comma_readable_number(x))
+            df.loc[:, header] = df[header].apply(lambda x: _replace_comma_readable_number(x))
         # if there are 50% or more numbers in the column, convert the column to a number
         if df[header].apply(lambda x: pd.to_numeric(x, errors='ignore')).count() >= (df.count()[header]) * 0.5:
             df[header] = pd.to_numeric(df[header], errors='coerce')
@@ -316,14 +316,14 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         df.columns = [df_prefix + str(col) for col in df.columns]
         # for each column check: is it a date, is it a string, is it a number,
         # make sure we start our string columns with a string
-        df, columns_with_strings_starting_with_numbers = preprocess_data_df(df)
+        df, columns_with_strings_starting_with_numbers = _preprocess_data_df(df)
         # ensure the first row starts with strings for all columns that contain
         # strings but start with numbers
         if columns_with_strings_starting_with_numbers != []:
-            df = swap_first_row(df, columns_with_strings_starting_with_numbers)
+            df = _swap_first_row(df, columns_with_strings_starting_with_numbers)
 
         # prep by cleaning the dataframe from any NA values
-        df = fillna_on_dtype(df)
+        df = _fillna_on_dtype(df)
 
         logger.debug(f"Dataframe:\n{df.head()}")
         logger.debug(f"Done preprocessing data for {name}")
@@ -351,7 +351,7 @@ def _read_data(file_path, table, db, api):
     else:
         res = read_data(file_path)
 
-    if type(res) == tuple:
+    if isinstance(res, tuple):
         df, message = res
     else:
         df = res

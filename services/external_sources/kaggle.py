@@ -53,7 +53,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
             if i >= limit + prev:
                 break
             try:
-                res.append(_create_external_source_object(df.iloc[i], owner))
+                res.append(_kaggle_create_external_source_object(df.iloc[i], owner))
             except Exception:
                 pass
     except Exception as e:
@@ -62,7 +62,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
     return res
 
 
-def _create_external_source_object(row, owner):
+def _kaggle_create_external_source_object(row, owner):
     res = EXTERNAL_DATASET_FORMAT.copy()
     ref = row["ref"]
     command = f"kaggle datasets metadata {ref} --path ./services/external_sources/staging"

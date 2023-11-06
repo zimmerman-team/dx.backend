@@ -32,13 +32,13 @@ def read_data(file_path, optional_args={}):
             file_extension = file_path
             file_encoding = file_path
         else:
-            file_encoding = detect_file_encoding(file_path)
-            file_extension = detect_file_extension(file_path)
+            file_encoding = _detect_file_encoding(file_path)
+            file_extension = _detect_file_extension(file_path)
             if file_extension == "error":
                 return "error", "error"
 
-        res = read_path_as_df(file_path, file_encoding, file_extension, optional_args)
-        if type(res) == tuple:
+        res = _read_path_as_df(file_path, file_encoding, file_extension, optional_args)
+        if isinstance(res, tuple):
             df, message = res
         else:
             df = res
@@ -51,7 +51,7 @@ def read_data(file_path, optional_args={}):
         return "error", "error"
 
 
-def detect_file_encoding(file_path):
+def _detect_file_encoding(file_path):
     """
     Detect the encoding of a file
     """
@@ -67,7 +67,7 @@ def detect_file_encoding(file_path):
         return 'utf-8'
 
 
-def detect_file_extension(file_path):
+def _detect_file_extension(file_path):
     """
     Detect the file type of a file. First, on any extension in the filename (used primarily for .h5 or .spss etc)
     if that does not work, use the mimetypes library,
@@ -109,7 +109,7 @@ def _mimetype_to_extension(mimetype):
         return "error"
 
 
-def read_path_as_df(file_path, file_encoding, file_extension, optional_args={}):
+def _read_path_as_df(file_path, file_encoding, file_extension, optional_args={}):
     read_functions = {
         ".csv": lambda: pd.read_csv(file_path, encoding=file_encoding, low_memory=False, **optional_args),
         ".tsv": lambda: pd.read_csv(file_path, encoding=file_encoding, sep='\t', low_memory=False, **optional_args),
@@ -291,20 +291,20 @@ def read_data_from_api(url, additional_args={}):
         xml_root = additional_args.get('xml_root', None)
         if json_root:
             logger.debug(f"json_root provided: {json_root}")
-            df = download_and_prep_json(url, json_root)
+            df = _download_and_prep_json(url, json_root)
         elif xml_root:
             logger.debug(f"xml_root provided: {xml_root}")
-            df = download_and_prep_xml(url, xml_root)
+            df = _download_and_prep_xml(url, xml_root)
         else:
             logger.debug("No json_root or xml_root provided, assuming csv data")
-            df = download_and_prep_csv(url)
+            df = _download_and_prep_csv(url)
         return df, "success"
     except Exception as e:
         logger.error(f"Error in download_api_data: {str(e)}")
         return "error", "error"
 
 
-def download_and_prep_json(url, json_root):
+def _download_and_prep_json(url, json_root):
     # Download the data
     data = requests.get(url).json()
     data = _recursive_dict_root(data, json_root)
@@ -313,7 +313,7 @@ def download_and_prep_json(url, json_root):
     return df
 
 
-def download_and_prep_xml(url, xml_root):
+def _download_and_prep_xml(url, xml_root):
     # convert xml_root to an XPATH
     if xml_root == ".":
         df = pd.read_xml(url)
@@ -324,7 +324,7 @@ def download_and_prep_xml(url, xml_root):
     return df
 
 
-def download_and_prep_csv(url):
+def _download_and_prep_csv(url):
     df = pd.read_csv(url)
     logger.debug(f"\n{df.head()}")
     return df

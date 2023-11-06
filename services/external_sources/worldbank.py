@@ -38,7 +38,7 @@ def worldbank_search(query, owner, limit=5, prev=0):
             count += 1
 
             try:
-                res.append(_create_external_source_object(meta, owner))
+                res.append(_worldbank_create_external_source_object(meta, owner))
             except Exception:
                 pass
     except Exception as e:
@@ -47,7 +47,7 @@ def worldbank_search(query, owner, limit=5, prev=0):
     return res
 
 
-def _create_external_source_object(meta, owner):
+def _worldbank_create_external_source_object(meta, owner):
     """
     We fill the EXTERNAL_DATASET_FORMAT with the data from the meta object.
     The meta object is a wbgapi search result object.

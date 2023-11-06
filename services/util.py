@@ -61,17 +61,3 @@ def setup_parsed_loc():
         return os.environ['DATA_EXPLORER_SSR']
     except Exception:
         return "./"
-
-
-def detect_encoding(file_path):
-    """
-    Detect the encoding of a file
-    """
-    logger.debug(f"Detecting encoding of file: {file_path}")
-    try:
-        with open(file_path, 'rb') as f:
-            result = chardet.detect(f.read())
-        return result['encoding']
-    except Exception:
-        # Default to the most common file encoding
-        return 'utf-8'

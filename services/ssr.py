@@ -43,7 +43,7 @@ def remove_ssr_parsed_files(ds_name):
         return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
 
 
-def get_dataset_stats(df):
+def _get_dataset_stats(df):
     """
     Generate descriptive statistics for each column of the DataFrame.
 
@@ -122,7 +122,7 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
     # Convert data to a dictionary
     data = df.to_dict(orient="records")
     cleaned_data = [{k: v for k, v in e.items() if not isinstance(v, float) or not math.isnan(v)} for e in data]
-    stats = get_dataset_stats(df)
+    stats = _get_dataset_stats(df)
     # save parsed at loc
     with open(loc, 'w') as f:
         json.dump({
