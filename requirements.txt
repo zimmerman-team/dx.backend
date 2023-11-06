@@ -6,6 +6,11 @@ python-dotenv==1.0.0
 flake8==6.0.0
 isort==5.12.0
 
+# Testing
+pytest==7.4.3
+pytest-mock==3.12.0
+pytest-cov==4.1.0
+
 # Kaggle connection
 kaggle==1.5.15
 # Worldbank connection
