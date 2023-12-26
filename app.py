@@ -7,7 +7,7 @@ from flask import Flask, request
 from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
 from services.preprocess_dataset import preprocess_data
-from services.ssr import load_sample_data, remove_ssr_parsed_files
+from services.ssr import load_sample_data, remove_ssr_parsed_files, duplicate_ssr_parsed_files
 from services.util import remove_files
 from util.configure_logging import confirm_logger
 
@@ -39,6 +39,18 @@ def process_dataset(ds_name):
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+    return res
+
+@app.route('/duplicate-dataset/<string:ds_name>/<string:new_ds_name>', methods=['GET', 'POST'])
+def duplicate_dataset(ds_name, new_ds_name):
+    logging.debug(f"route: /duplicate-dataset/<string:ds_name> - Duplicating dataset {ds_name} to {new_ds_name}")
+    try:
+        # Preprocess
+        duplicate_ssr_parsed_files(ds_name, new_ds_name)
+        res = "Success"
+    except Exception as e:
+        logging.error(f"Error in route: /duplicate-dataset/<string:ds_name> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     return res
 
 

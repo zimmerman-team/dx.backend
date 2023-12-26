@@ -2,6 +2,7 @@ import json
 import logging
 import math
 import os
+import shutil
 
 import pandas as pd
 
@@ -41,6 +42,34 @@ def remove_ssr_parsed_files(ds_name):
     except Exception as e:
         logger.error(f"Error in remove_ssr_parsed_files: {str(e)}")
         return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
+
+def duplicate_ssr_parsed_files(ds_name, new_ds_name):
+    """
+    Duplicate parsed files from the SSR directory
+
+    :param ds_name: The name of the dataset
+    :param new_ds_name: The name of the new dataset
+    :return: Success or error message
+    """
+    logger.debug("Duplicating SSR parsed files")
+    try:
+        if ds_name.startswith('dx'):
+            ds_name = ds_name[2:]
+        if new_ds_name.startswith('dx'):
+            new_ds_name = new_ds_name[2:]
+        parsed_df = f"{DF_LOC}parsed-data-files/{ds_name}.json"
+        sample_df = f"{DF_LOC}sample-data-files/{ds_name}.json"
+        new_parsed_df = f"{DF_LOC}parsed-data-files/{new_ds_name}.json"
+        new_sample_df = f"{DF_LOC}sample-data-files/{new_ds_name}.json"
+        # duplicate the parsed files if they exist
+        if os.path.exists(parsed_df):
+            shutil.copy(parsed_df, new_parsed_df)
+        if os.path.exists(sample_df):
+            shutil.copy(sample_df, new_sample_df)
+        return "Success"
+    except Exception as e:
+        logger.error(f"Error in duplicate_ssr_parsed_files: {str(e)}")
+        return "Sorry, something went wrong in our SSR duplication. Contact the admin for more information."
 
 
 def get_dataset_stats(df):
