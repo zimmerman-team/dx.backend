@@ -43,6 +43,7 @@ def remove_ssr_parsed_files(ds_name):
         logger.error(f"Error in remove_ssr_parsed_files: {str(e)}")
         return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
 
+
 def duplicate_ssr_parsed_files(ds_name, new_ds_name):
     """
     Duplicate parsed files from the SSR directory
