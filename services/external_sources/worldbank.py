@@ -102,7 +102,7 @@ def worldbank_download(external_dataset):
     df["Year"] = df["Year"].str[2:]
 
     # save df as a csv file
-    dx_id = create_dataset(external_dataset)
+    dx_id = external_dataset['id']
     dx_name = f"dx{dx_id}.csv"
     dx_loc = f"./staging/{dx_name}"
     df.to_csv(dx_loc, index=False)
