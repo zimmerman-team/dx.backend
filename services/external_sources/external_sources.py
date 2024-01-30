@@ -30,8 +30,8 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=10):
     try:
         results_list = []
         for source in sources:
-            if source == "Kaggle":
-                results_list.append(kaggle_search(query, owner))
+            # if source == "Kaggle":
+            #     results_list.append(kaggle_search(query, owner))
             if source == "World Bank":
                 results_list.append(worldbank_search(query, owner))
             if source == "WHO":
@@ -58,9 +58,9 @@ def download_external_source(external_dataset):
     try:
         logger.info(f"Downloading external dataset {external_dataset['name']}.")
         source = external_dataset["source"]
-        if source == "Kaggle":
-            kaggle_download(external_dataset)
-        elif source == "World Bank":
+        # if source == "Kaggle":
+        #     kaggle_download(external_dataset)
+        if source == "World Bank":
             worldbank_download(external_dataset)
         elif source == "WHO":
             who_download(external_dataset)
