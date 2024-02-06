@@ -219,13 +219,13 @@ def fillna_on_dtype(df):
         'object': '',
         'int64': 0,
         'float64': 0.0,
-        'datetime64[ns]': datetime.datetime.now()
+        'datetime64[ns]': datetime.datetime(1970, 1, 1, 0, 0, 0),
     }
 
     # Iterate over each column and fill the NaN values based on the data type
     for column in df.columns:
         dtype = df[column].dtype
-        fill_value = fill_values.get(dtype, np.nan)
+        fill_value = fill_values.get(str(dtype), np.nan)
         df[column].fillna(fill_value, inplace=True)
     return df
 
@@ -298,7 +298,7 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         logger.debug("-- Preprocessing content")
         df, message = _read_data(file_path, table, db, api)
         logger.debug(f"---- Reading data result: {message}")
-            
+
         # drop any row that is 90-100% empty
         df.dropna(thresh=df.shape[1] * 0.1, inplace=True)
         # drop any column that is 95-100% empty
