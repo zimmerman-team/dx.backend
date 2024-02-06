@@ -23,7 +23,7 @@ pymongo==4.5.0
 python-magic==0.4.27  # File type detection
 lxml==4.9.3  # xml processing
 SQLAlchemy==2.0.20  # Database connection
-pyarrow==13.0.0  # alternative file extensions
+pyarrow==14.0.1  # alternative file extensions
 pyreadstat==1.2.3  # .sav files
 xlrd==2.0.1  # .xls files
 openpyxl==3.1.2  # .xlsx files
