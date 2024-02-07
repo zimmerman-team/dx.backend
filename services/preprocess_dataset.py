@@ -285,8 +285,6 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
     :param create_ssr: boolean to indicate if we should create an SSR entry for the dataset
     """
     logger.debug(f"Preprocessing data for {name}")
-    # Read the file
-    
     file_path = f"./staging/{name}" if not db else name
 
     try:

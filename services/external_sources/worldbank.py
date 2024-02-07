@@ -5,7 +5,7 @@ from datetime import datetime
 import wbgapi as wb
 
 from services.external_sources.util import EXTERNAL_DATASET_FORMAT
-from services.mongo import create_dataset
+# previously used from services.mongo import create_dataset
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
