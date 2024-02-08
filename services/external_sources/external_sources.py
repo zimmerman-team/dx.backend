@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-def search_external_sources(query, owner, sources=ALL_SOURCES, limit=10):
+def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
     """
     The search feature for external sources triggers the implementation for
     each of the external sources, and compiles a list of results from each
@@ -31,11 +31,15 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=10):
         results_list = []
         for source in sources:
             if source == "Kaggle":
-                results_list.append(kaggle_search(query, owner))
+                logger.info(f"Searching kaggle for query: {query}")
+                results_list.append(kaggle_search(query, owner, limit, prev))
             if source == "World Bank":
-                results_list.append(worldbank_search(query, owner))
+                logger.info(f"Searching worldbank for query: {query}")
+                results_list.append(worldbank_search(query, owner, limit, prev))
             if source == "WHO":
-                results_list.append(who_search(query, owner))
+                logger.info(f"Searching who for query: {query}")
+                results_list.append(who_search(query, owner, limit, prev))
+        logger.info("External source search results shuffled and sorted.")
         result = list_shuffle_sorted(results_list, limit)
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
