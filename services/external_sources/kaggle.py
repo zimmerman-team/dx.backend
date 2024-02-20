@@ -44,7 +44,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
         # if the first three letters are not 'ref' return an error
         if output[0:3] != "ref":
             logger.error(f"Error in kaggle_search - ref is not found, maybe there is a kaggle update: {output}")
-            return "error"
+            return []
 
         df = pd.read_csv(io.StringIO(output))
         # for row in df...
