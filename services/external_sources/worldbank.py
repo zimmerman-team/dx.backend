@@ -27,11 +27,15 @@ def worldbank_search(query, owner, limit=5, prev=0):
     logger.debug(f"Searching worldbank for query: {query}")
     res = []
     try:
-        search_meta = wb.search2(q=query)
+        if query == "":
+            search_meta = wb.search2(q="woman")
+        else:
+            search_meta = wb.search2(q=query)
         # print the number of results in search_meta
         count = 0
         for meta in search_meta:
             if count < prev:
+                count += 1
                 continue
             if count >= limit + prev:
                 break
@@ -39,7 +43,8 @@ def worldbank_search(query, owner, limit=5, prev=0):
 
             try:
                 res.append(_create_external_source_object(meta, owner))
-            except Exception:
+            except Exception as e:
+                logger.error(f"Error in external object creation worldbank: {str(e)}")
                 pass
     except Exception as e:
         logger.error(f"Error in worldbank_search: {str(e)}")

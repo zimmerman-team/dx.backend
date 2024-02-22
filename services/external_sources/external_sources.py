@@ -32,15 +32,14 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
         for source in sources:
             if source == "Kaggle":
                 logger.info(f"Searching kaggle for query: {query}")
-                results_list.append(kaggle_search(query, owner, limit, prev))
+                results_list.extend(kaggle_search(query, owner, limit, prev))
             if source == "World Bank":
                 logger.info(f"Searching worldbank for query: {query}")
-                results_list.append(worldbank_search(query, owner, limit, prev))
+                results_list.extend(worldbank_search(query, owner, limit, prev))
             if source == "WHO":
                 logger.info(f"Searching who for query: {query}")
-                results_list.append(who_search(query, owner, limit, prev))
-        logger.info("External source search results shuffled and sorted.")
-        result = list_shuffle_sorted(results_list, limit)
+                results_list.extend(who_search(query, owner, limit, prev))
+        result = results_list
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
         result = []

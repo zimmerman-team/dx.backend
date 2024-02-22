@@ -37,9 +37,12 @@ def kaggle_search(query, owner, limit=5, prev=0):
     logger.debug(f"Searching kaggle for query: {query}")
     res = []
     try:
-        command = f"kaggle datasets list --file-type csv -s {query} --csv --max-size 5000000"
-        if prev % 20 == 0:
-            command += f" --page {math.floor(prev/20)+1}"
+        if query == "":
+            command = f"kaggle datasets list --file-type csv --csv --max-size 5000000"
+        else:
+            command = f"kaggle datasets list --file-type csv -s {query} --csv --max-size 5000000"
+
+        command += f" --page {math.floor(prev/20)+1}"
         output = subprocess.check_output(command, shell=True, text=True)
         # if the first three letters are not 'ref' return an error
         if output[0:3] != "ref":
@@ -49,9 +52,10 @@ def kaggle_search(query, owner, limit=5, prev=0):
         df = pd.read_csv(io.StringIO(output))
         # for row in df...
         for i in range(len(df)):
-            if i < prev:
+            index = i + math.floor(prev/20) * 20
+            if index < prev:
                 continue
-            if i >= limit + prev:
+            if index >= limit + prev:
                 break
             try:
                 res += _create_external_source_object(df.iloc[i], owner)

@@ -30,16 +30,10 @@ def who_search(query, owner, limit=5, prev=0):
     logger.debug(f"Searching who for query: {query}")
     res = []
     try:
-        search_meta = _who_search_indicators(query)
+        search_meta = _who_search_indicators(query, skip=prev, top=limit)
         # print the number of results in search_meta
-        count = 0
-        for meta in search_meta:
-            if count < prev:
-                continue
-            if count >= limit + prev:
-                break
-            count += 1
 
+        for meta in search_meta:
             try:
                 res.append(_create_external_source_object(meta, owner))
             except Exception:
@@ -50,15 +44,17 @@ def who_search(query, owner, limit=5, prev=0):
     return res
 
 
-def _who_search_indicators(query):
+def _who_search_indicators(query, skip, top):
     """
     Query the indicators API searching for the query string.
     Search results include the IndicatorCode, IndicatorName, and Language.
     :param query: The query string
     :return: A list of dicts containing the search results
+    :skip: The number of results to skip
+    :param top: The number of results to return
     """
     # get all the indicators from the who api
-    who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)"
+    who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"
     res = requests.get(who_query_url).json()["value"]
     return res
 
