@@ -57,7 +57,7 @@ def _who_search_indicators(query, skip, top):
     to cater for the query being empty.
     """
     # get all the indicators from the who api
-    who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"
+    who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"  # NOQA: E501
     res = requests.get(who_query_url).json()["value"]
     return res
 

@@ -38,6 +38,7 @@ def handle_update_log(output: str):
         return '\n'.join(output.partition('\n')[1:]).strip()
     return output
 
+
 def kaggle_search(query, owner, limit=5, prev=0):
     """
     Search kaggle for the given query.
@@ -48,7 +49,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
     res = []
     try:
         if query == "":
-            command = f"kaggle datasets list --file-type csv --csv --max-size 5000000"
+            command = "kaggle datasets list --file-type csv --csv --max-size 5000000"
         else:
             command = f"kaggle datasets list --file-type csv -s {query} --csv --max-size 5000000"
 

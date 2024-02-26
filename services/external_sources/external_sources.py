@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 
 from services.external_sources.kaggle import kaggle_download, kaggle_search
-from services.external_sources.util import ALL_SOURCES, list_shuffle_sorted
+from services.external_sources.util import ALL_SOURCES
 from services.external_sources.who import who_download, who_search
 from services.external_sources.worldbank import (worldbank_download,
                                                  worldbank_search)
