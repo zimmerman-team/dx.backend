@@ -52,6 +52,9 @@ def _who_search_indicators(query, skip, top):
     :return: A list of dicts containing the search results
     :skip: The number of results to skip
     :param top: The number of results to return
+
+    Here, the WHO api accepts an empty string as a query, so there's no need
+    to cater for the query being empty.
     """
     # get all the indicators from the who api
     who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"

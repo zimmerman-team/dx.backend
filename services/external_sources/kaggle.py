@@ -27,6 +27,16 @@ SEARCH_TERMS = {
 }
 RE_SUB = r'[^a-zA-Z0-9]'
 
+# Items returned per page on kaggle is 20
+ITEMS_PER_PAGE = 20
+
+
+def handle_update_log(output: str):
+    # if there's an update remove the first line from output and log it
+    if "Looks like you're using an outdated API Version" in output:
+        logger.info(output.partition('\n')[0])
+        return '\n'.join(output.partition('\n')[1:]).strip()
+    return output
 
 def kaggle_search(query, owner, limit=5, prev=0):
     """
@@ -42,8 +52,12 @@ def kaggle_search(query, owner, limit=5, prev=0):
         else:
             command = f"kaggle datasets list --file-type csv -s {query} --csv --max-size 5000000"
 
-        command += f" --page {math.floor(prev/20)+1}"
+        command += f" --page {math.floor(prev/ITEMS_PER_PAGE)+1}"
         output = subprocess.check_output(command, shell=True, text=True)
+
+        # if there's an update remove the first line from output and log it
+        output = handle_update_log(output)
+
         # if the first three letters are not 'ref' return an error
         if output[0:3] != "ref":
             logger.error(f"Error in kaggle_search - ref is not found, maybe there is a kaggle update: {output}")
@@ -52,7 +66,11 @@ def kaggle_search(query, owner, limit=5, prev=0):
         df = pd.read_csv(io.StringIO(output))
         # for row in df...
         for i in range(len(df)):
-            index = i + math.floor(prev/20) * 20
+            """
+            This allows the pointer 'index' to continue to the next page
+            when prev gets higher than ITEMS_PER_PAGE
+            """
+            index = i + math.floor(prev/ITEMS_PER_PAGE) * ITEMS_PER_PAGE
             if index < prev:
                 continue
             if index >= limit + prev:
@@ -75,6 +93,8 @@ def _create_external_source_object(row, owner):
         output = subprocess.check_output(command, shell=True, text=True)
     except Exception as e:
         logger.error(f"Error in _get_metadata: {str(e)}")
+
+    output = handle_update_log(output)
     # if the output does not start with Downloaded metadata to ./staging/, return an error
     if "Downloaded metadata to ./services/external_sources/staging" not in output:
         logger.error(f"Error in _get_metadata - metadata is not found, maybe there is a kaggle update: {output}")
@@ -162,6 +182,9 @@ def _get_filenames(ref, pretty=False):
     # get the files for the dataset
     command = f"kaggle datasets files -v {ref}"
     output = subprocess.check_output(command, shell=True, text=True)
+
+    output = handle_update_log(output)
+
     # If the output does not start with name,size,creationDate,return an error
     if "name,size,creationDate" not in output:
         logger.error(f"Error in _get_filenames - files are not found, maybe there is a kaggle update: {output}")
