@@ -394,7 +394,7 @@ def _read_data(file_path, table, db, api):
     else:
         res = read_data(file_path)
 
-    if type(res) == tuple:
+    if isinstance(res, tuple):
         df, message = res
     else:
         df = res
