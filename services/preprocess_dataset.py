@@ -273,6 +273,49 @@ def preprocess_data_df(df):
     return df, columns_with_strings_starting_with_numbers
 
 
+def _find_almost_empty_row_index(df, threshold=0.9):
+    # Calculate the percentage of NaN values in each row
+    nan_percentage = df.isnull().mean(axis=1)
+    # Find rows where the percentage of NaN values exceeds the threshold
+    almost_empty_rows = df[nan_percentage >= threshold]
+    # If there are no almost empty rows, return NaN
+    if almost_empty_rows.empty:
+        return pd.NA
+    # Return the index of the first almost empty row
+    return almost_empty_rows.index.min()
+
+
+def _remove_rows_after_empty(df):
+    # Find the index of the first completely empty row
+    # empty_row_index = df[df.isnull().all(axis=1)].index.min()
+    empty_row_index = _find_almost_empty_row_index(df)
+    if not pd.isnull(empty_row_index):
+        # Drop rows after the empty row
+        df = df.iloc[:empty_row_index]
+    return df
+
+
+def strip_metadata(df):
+    try:
+        df = _remove_rows_after_empty(df)  # Drop bottom comments or metadata.
+        # Drop rows and columns with all NaN values
+        df = df.dropna(axis=0, how='all').dropna(axis=1, how='all')
+        # Find the indices of the first and last non-NaN values in each row
+        start_indices = df.apply(lambda x: x.first_valid_index(), axis=1)
+        end_indices = df.apply(lambda x: x.last_valid_index(), axis=1)
+        # Determine the minimum and maximum non-NaN indices across all rows
+        min_start_index = start_indices.min()
+        max_end_index = end_indices.max()
+        # Convert column names to numeric indices
+        min_start_index = df.columns.get_loc(min_start_index)
+        max_end_index = df.columns.get_loc(max_end_index)
+        # Slice the dataframe to keep only the table data
+        df = df.iloc[:, min_start_index:max_end_index + 1]
+    except Exception as e:
+        logger.error(f"Error in strip_metadata: {str(e)}")
+    return df
+
+
 def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
     """
     Process trigger to preprocess a dataset.
@@ -297,6 +340,8 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         df, message = _read_data(file_path, table, db, api)
         logger.debug(f"---- Reading data result: {message}")
 
+        # try to strip metadata from input files.
+        df = strip_metadata(df)
         # drop any row that is 90-100% empty
         df.dropna(thresh=df.shape[1] * 0.1, inplace=True)
         # drop any column that is 95-100% empty
@@ -349,7 +394,7 @@ def _read_data(file_path, table, db, api):
     else:
         res = read_data(file_path)
 
-    if type(res) == tuple:
+    if isinstance(res, tuple):
         df, message = res
     else:
         df = res

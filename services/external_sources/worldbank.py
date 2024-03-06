@@ -48,7 +48,6 @@ def worldbank_search(query, owner, limit=5, prev=0):
                 res.append(_create_external_source_object(meta, owner))
             except Exception as e:
                 logger.error(f"Error in external object creation worldbank: {str(e)}")
-                pass
     except Exception as e:
         logger.error(f"Error in worldbank_search: {str(e)}")
         res = []
