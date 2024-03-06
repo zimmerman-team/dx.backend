@@ -38,7 +38,7 @@ def read_data(file_path, optional_args={}):
                 return "error", "error"
 
         res = read_path_as_df(file_path, file_encoding, file_extension, optional_args)
-        if type(res) == tuple:
+        if isinstance(res, tuple):
             df, message = res
         else:
             df = res
