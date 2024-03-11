@@ -4,8 +4,8 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from services.external_sources.external_sources import (download_external_source,
-                                                        search_external_sources)
+from services.external_sources.external_sources import (
+    download_external_source, search_external_sources)
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
                           remove_ssr_parsed_files)
@@ -51,6 +51,19 @@ def duplicate_dataset(ds_name, new_ds_name):
         res = "Success"
     except Exception as e:
         logging.error(f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
+    return res
+
+@app.route('/duplicate-datasets', methods=['GET', 'POST'])
+def duplicate_datasets():
+    data = request.get_json()
+    logging.debug(f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets")  # noqa: E501
+    try:
+        for ds in data:
+            duplicate_ssr_parsed_files(ds['ds_name'], ds['new_ds_name'])
+        res = "Success"
+    except Exception as e:
+        logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     return res
 
