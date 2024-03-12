@@ -56,6 +56,21 @@ def duplicate_dataset(ds_name, new_ds_name):
 
 @app.route('/duplicate-datasets', methods=['GET', 'POST'])
 def duplicate_datasets():
+    """
+    Duplicate a list of datasets
+
+    body: A list of datasets to be duplicated in the format:
+    [
+        {
+            "ds_name": "dataset1",
+            "new_ds_name": "new_dataset1"
+        },
+        {
+            "ds_name": "dataset2",
+            "new_ds_name": "new_dataset2"
+        }
+    ]
+    """
     data = request.get_json()
     logging.debug(f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets")  # noqa: E501
     try:
