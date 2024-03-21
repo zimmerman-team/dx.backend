@@ -47,12 +47,12 @@ def process_dataset(ds_name):
 def duplicate_dataset(ds_name, new_ds_name):
     logging.debug(f"route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - Duplicating dataset {ds_name} to {new_ds_name}")  # noqa: E501
     try:
-        duplicate_ssr_parsed_files(ds_name, new_ds_name)
-        res = "Success"
+        res = duplicate_ssr_parsed_files(ds_name, new_ds_name)
     except Exception as e:
         logging.error(f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     return res
+
 
 @app.route('/duplicate-datasets', methods=['GET', 'POST'])
 def duplicate_datasets():
@@ -74,9 +74,14 @@ def duplicate_datasets():
     data = request.get_json()
     logging.debug(f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets")  # noqa: E501
     try:
+        errors = []
         for ds in data:
-            duplicate_ssr_parsed_files(ds['ds_name'], ds['new_ds_name'])
-        res = "Success"
+            res = duplicate_ssr_parsed_files(ds['ds_name'], ds['new_ds_name'])
+            if res != "Success":
+                errors.append(ds['ds_name'])
+
+        if len(errors) > 0:
+            res = f"Sorry, something went wrong in our dataset duplication for {len(errors)} dataset(s). Contact the admin for more information."
     except Exception as e:
         logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
