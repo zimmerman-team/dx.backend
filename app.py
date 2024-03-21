@@ -4,8 +4,8 @@ import logging
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from services.external_sources.external_sources import (download_external_source,
-                                                        search_external_sources)
+from services.external_sources.external_sources import (
+    download_external_source, search_external_sources)
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
                           remove_ssr_parsed_files)
@@ -47,10 +47,43 @@ def process_dataset(ds_name):
 def duplicate_dataset(ds_name, new_ds_name):
     logging.debug(f"route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - Duplicating dataset {ds_name} to {new_ds_name}")  # noqa: E501
     try:
-        duplicate_ssr_parsed_files(ds_name, new_ds_name)
-        res = "Success"
+        res = duplicate_ssr_parsed_files(ds_name, new_ds_name)
     except Exception as e:
         logging.error(f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
+    return res
+
+
+@app.route('/duplicate-datasets', methods=['GET', 'POST'])
+def duplicate_datasets():
+    """
+    Duplicate a list of datasets
+
+    body: A list of datasets to be duplicated in the format:
+    [
+        {
+            "ds_name": "dataset1",
+            "new_ds_name": "new_dataset1"
+        },
+        {
+            "ds_name": "dataset2",
+            "new_ds_name": "new_dataset2"
+        }
+    ]
+    """
+    data = request.get_json()
+    logging.debug(f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets")  # noqa: E501
+    try:
+        errors = []
+        for ds in data:
+            res = duplicate_ssr_parsed_files(ds['ds_name'], ds['new_ds_name'])
+            if res != "Success":
+                errors.append(ds['ds_name'])
+
+        if len(errors) > 0:
+            res = f"Sorry, something went wrong in our dataset duplication for {len(errors)} dataset(s). Contact the admin for more information."  # noqa: E501
+    except Exception as e:
+        logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     return res
 
@@ -179,7 +212,7 @@ def external_source_search_limited():
     source = data.get('source')
     logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner, [source], limit, prev = offset)
+        res = search_external_sources(query, owner, [source], limit, prev=offset)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
