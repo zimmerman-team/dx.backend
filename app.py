@@ -81,7 +81,7 @@ def duplicate_datasets():
                 errors.append(ds['ds_name'])
 
         if len(errors) > 0:
-            res = f"Sorry, something went wrong in our dataset duplication for {len(errors)} dataset(s). Contact the admin for more information."
+            res = f"Sorry, something went wrong in our dataset duplication for {len(errors)} dataset(s). Contact the admin for more information."  # noqa: E501
     except Exception as e:
         logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
@@ -212,7 +212,7 @@ def external_source_search_limited():
     source = data.get('source')
     logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner, [source], limit, prev = offset)
+        res = search_external_sources(query, owner, [source], limit, prev=offset)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
