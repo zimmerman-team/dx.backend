@@ -28,7 +28,6 @@ def who_search(query, owner, limit=5, prev=0):
     :param prev: The number of results to skip
     :return: A list of dicts in the form of EXTERNAL_DATASET_FORMAT
     """
-  
     logger.debug(f"Searching who for query: {query}")
     res = []
     try:
@@ -54,7 +53,6 @@ def _who_search_indicators(query, skip, top):
     :return: A list of dicts containing the search results
     :skip: The number of results to skip
     :param top: The number of results to return
-
     """
     # get all the indicators from the who api
     who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"  # NOQA: E501

@@ -49,7 +49,6 @@ def worldbank_search(query, owner, limit=5, prev=0):
         res = []
     return res
 
-
 def _create_external_source_object(meta, owner):
     """
     We fill the EXTERNAL_DATASET_FORMAT with the data from the meta object.
