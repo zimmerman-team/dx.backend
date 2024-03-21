@@ -10,8 +10,6 @@ from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
 
-# This is a default search term used if an empty query string is sent
-
 
 def worldbank_search(query, owner, limit=5, prev=0):
     """
@@ -48,6 +46,7 @@ def worldbank_search(query, owner, limit=5, prev=0):
         logger.error(f"Error in worldbank_search: {str(e)}")
         res = []
     return res
+
 
 def _create_external_source_object(meta, owner):
     """
