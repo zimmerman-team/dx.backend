@@ -11,6 +11,7 @@ from services.external_sources.worldbank import (worldbank_download,
 logger = logging.getLogger(__name__)
 load_dotenv()
 
+DEFAULT_SEARCH_TERM = "world population"
 
 def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
     """
@@ -27,6 +28,8 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
     :param limit: The number of results per source
     :return: A list of results in the form of an ExternalSource object
     """
+    if query == "":
+        query = DEFAULT_SEARCH_TERM
     try:
         results_list = []
         for source in sources:

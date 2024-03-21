@@ -11,7 +11,6 @@ from services.preprocess_dataset import preprocess_data
 logger = logging.getLogger(__name__)
 
 # This is a default search term used if an empty query string is sent
-DEFAULT_SEARCH_TERM = "youth"
 
 
 def worldbank_search(query, owner, limit=5, prev=0):
@@ -30,10 +29,7 @@ def worldbank_search(query, owner, limit=5, prev=0):
     logger.debug(f"Searching worldbank for query: {query}")
     res = []
     try:
-        if query == "":
-            search_meta = wb.search2(q=DEFAULT_SEARCH_TERM)
-        else:
-            search_meta = wb.search2(q=query)
+        search_meta = wb.search2(q=query)
         # print the number of results in search_meta
         count = 0
         for meta in search_meta:
