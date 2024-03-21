@@ -187,7 +187,7 @@ def _read_xml(file_path, encoding, **optional_args):
     """
     message = "Successfully read XML file."
     if not _is_shallow_xml(file_path):
-        message = "Nested XML data is not supported. Please create a shallow XML file of the nested data if you wish to use it."
+        message = "Nested XML data is not supported. Please create a shallow XML file of the nested data if you wish to use it."  # noqa: E501
     return pd.read_xml(file_path, encoding=encoding, **optional_args), message
 
 

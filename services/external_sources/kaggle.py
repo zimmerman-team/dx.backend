@@ -48,10 +48,7 @@ def kaggle_search(query, owner, limit=5, prev=0):
     logger.debug(f"Searching kaggle for query: {query}")
     res = []
     try:
-        if query == "":
-            command = "kaggle datasets list --file-type csv --csv --max-size 5000000"
-        else:
-            command = f"kaggle datasets list --file-type csv -s '{query}' --csv --max-size 5000000"
+        command = f'kaggle datasets list --file-type csv -s "{query}" --csv --max-size 5000000'
 
         command += f" --page {math.floor(prev/ITEMS_PER_PAGE)+1}"
         output = subprocess.check_output(command, shell=True, text=True)

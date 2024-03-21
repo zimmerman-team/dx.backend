@@ -10,6 +10,7 @@ from services.external_sources.util import EXTERNAL_DATASET_FORMAT
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
+DEFAULT_SEARCH_TERM = "world population"
 
 
 def who_search(query, owner, limit=5, prev=0):
@@ -52,9 +53,6 @@ def _who_search_indicators(query, skip, top):
     :return: A list of dicts containing the search results
     :skip: The number of results to skip
     :param top: The number of results to return
-
-    Here, the WHO api accepts an empty string as a query, so there's no need
-    to cater for the query being empty.
     """
     # get all the indicators from the who api
     who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"  # NOQA: E501
