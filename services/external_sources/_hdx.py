@@ -149,9 +149,3 @@ def download_file(url, dx_id, destination_folder="./staging"):
     except Exception as e:
         logger.error(f"Failed to download file from {url}: {e}")
         return False
-
-
-# res = hdx_search("Peace and Security Pillar", "")
-# # print("RES::", res)
-# print(res[0])
-# hdx_download(res[0])
