@@ -10,7 +10,6 @@ from services.external_sources.util import EXTERNAL_DATASET_FORMAT
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
-DEFAULT_SEARCH_TERM = "world population"
 
 
 def who_search(query, owner, limit=5, prev=0):

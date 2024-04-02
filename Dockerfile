@@ -5,6 +5,9 @@ COPY . /app
 # Set up the kaggle api token
 COPY ./kaggle.json /root/.kaggle/kaggle.json
 RUN chmod 600 /root/.kaggle/kaggle.json
+# Set up the hdx api token
+COPY ./.hdx_configuration.yaml /root/.hdx_configuration.yaml
+RUN chmod 600 /root/.hdx_configuration.yaml
 
 RUN apt-get update && apt-get install -y freetds-dev
 
