@@ -15,7 +15,7 @@ hdx-python-api==6.2.6
 # quantulum3[classifier], minus numpy and urllib
 beautifulsoup4==4.12.3
 certifi==2024.2.2
-charset==normalizer==2.0.12
+charset-normalizer==2.0.12
 docopt==0.6.2
 idna==3.6
 inflect==5.3.0
