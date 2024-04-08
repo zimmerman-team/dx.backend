@@ -16,10 +16,9 @@ import sqlite3
 import xml.etree.ElementTree as ET
 
 import chardet
+import magic
 import pandas as pd
 import requests
-
-import magic
 from sqlalchemy import create_engine
 
 logger = logging.getLogger(__name__)

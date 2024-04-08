@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 kaggle.json
+.hdx_configuration.yaml

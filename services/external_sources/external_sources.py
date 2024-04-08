@@ -2,6 +2,7 @@ import logging
 
 from dotenv import load_dotenv
 
+from services.external_sources._hdx import hdx_download, hdx_search
 from services.external_sources.kaggle import kaggle_download, kaggle_search
 from services.external_sources.util import ALL_SOURCES
 from services.external_sources.who import who_download, who_search
@@ -43,6 +44,9 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
             if source == "WHO":
                 logger.info(f"Searching who for query: {query}")
                 results_list.extend(who_search(query, owner, limit, prev))
+            if source == "HDX":
+                logger.info(f"Searching HDX for query: {query}")
+                results_list.extend(hdx_search(query, owner, limit, prev))
         result = results_list
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
@@ -71,6 +75,8 @@ def download_external_source(external_dataset):
             worldbank_download(external_dataset)
         elif source == "WHO":
             who_download(external_dataset)
+        elif source == "HDX":
+            hdx_download(external_dataset)
         return "Success"
     except Exception as e:
         logger.error(f"Error in external source download: {str(e)}")

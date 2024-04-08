@@ -10,6 +10,8 @@ isort==5.12.0
 kaggle==1.6.6
 # Worldbank connection
 wbgapi==1.0.12
+# HDX Connection
+hdx-python-api==6.2.6
 
 # Data processing
 pandas==2.0.3

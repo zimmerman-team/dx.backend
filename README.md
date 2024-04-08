@@ -13,6 +13,13 @@ For kaggle, as mentioned we need to set up the kaggle token.
 Through docker, we copy it from the dx.backend root directory.
 Make sure to download it set up your token as [from your account](https://www.kaggle.com/settings/account), and place it in the dx.backend root folder.
 
+## HDX
+For HDX, we need to have a HDX API Key, you can obtain one by signing in to https://data.humdata.org/user/<YOUR USER NAME>/api-tokens, and getting the API key.
+Through docker, we copy it from the dx.backend root directory.
+
+> Create a JSON or YAML file. The default path is .hdx_configuration.yaml in the current user's home directory. Then put in the YAML file:
+>     `hdx_key: "HDX API KEY"`
+
 ## Running
 Local
 ```
