@@ -83,32 +83,40 @@ def _create_external_source_object(meta, owner):
 
 
 def worldbank_download(external_dataset):
+    res = "Success"
     url = external_dataset["url"]
     logger.debug(f"Downloading worldbank dataset: {url}")
 
-    meta_id = url.split("https://www.worldbank.org/en/search?q=")[-1]
-    df = wb.data.DataFrame(meta_id, mrv=3)
-    df.reset_index()
-    # transpose, WB data is in form country,year1,year2,year3.
-    # transpose to year,country
-    df = df.T
-    # Reset the index to bring 'economy' back as a column
-    df.reset_index(inplace=True)
-    # Rename the column to 'Year'
-    df.rename(columns={'index': 'Year'}, inplace=True)
-    # Melt the dataframe to year,country,value format
-    df = df.melt(id_vars=['Year'], var_name='Country', value_name='Value')
-    # drop na in value
-    df = df.dropna()
-    df["Year"] = df["Year"].str[2:]
-
-    # save df as a csv file
-    dx_id = external_dataset['id']
-    dx_name = f"dx{dx_id}.csv"
-    dx_loc = f"./staging/{dx_name}"
-    df.to_csv(dx_loc, index=False)
     try:
-        preprocess_data(dx_name, create_ssr=True)
+        meta_id = url.split("https://www.worldbank.org/en/search?q=")[-1]
     except Exception:
-        pass
-    os.remove(dx_loc)
+        return "The dataset source was malformed, please try a different dataset."
+    try:
+        df = wb.data.DataFrame(meta_id, mrv=3)
+        df.reset_index()
+        # transpose, WB data is in form country,year1,year2,year3.
+        # transpose to year,country
+        df = df.T
+        # Reset the index to bring 'economy' back as a column
+        df.reset_index(inplace=True)
+        # Rename the column to 'Year'
+        df.rename(columns={'index': 'Year'}, inplace=True)
+        # Melt the dataframe to year,country,value format
+        df = df.melt(id_vars=['Year'], var_name='Country', value_name='Value')
+        # drop na in value
+        df = df.dropna()
+        df["Year"] = df["Year"].str[2:]
+
+        # save df as a csv file
+        dx_id = external_dataset['id']
+        dx_name = f"dx{dx_id}.csv"
+        dx_loc = f"./staging/{dx_name}"
+        df.to_csv(dx_loc, index=False)
+        try:
+            res = preprocess_data(dx_name, create_ssr=True)
+        except Exception:
+            return "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # noqa
+        os.remove(dx_loc)
+    except Exception:
+        res = "We were unable to download the dataset, please try again later."
+    return res

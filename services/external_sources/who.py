@@ -111,27 +111,36 @@ def _create_external_source_object(meta, owner):
 
 
 def who_download(external_dataset):
+    res = "Success"
     # Download data
     url = f"https://ghoapi.azureedge.net/api/{external_dataset['name']}"
-    logger.debug(f"Downloading who dataset: {url}")
-    data = requests.get(url).json()["value"]
-    df = pd.DataFrame(data)
-
-    # Drop column if empty
-    df = df.dropna(axis=1, how='all')
-    # Drop excess columns
-    if "Id" in df.columns:
-        df = df.drop(columns=["Id"])
-    if "IndicatorCode" in df.columns:
-        df = df.drop(columns=["IndicatorCode"])
-
-    # save df as a csv file
-    dx_id = external_dataset['id']
-    dx_name = f"dx{dx_id}.csv"
-    dx_loc = f"./staging/{dx_name}"
-    df.to_csv(dx_loc, index=False)
     try:
-        preprocess_data(dx_name, create_ssr=True)
+        logger.debug(f"Downloading who dataset: {url}")
+        data = requests.get(url).json()["value"]
     except Exception:
-        pass
-    os.remove(dx_loc)
+        return "Sorry, we were unable to download the WHO Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
+
+    try:
+        df = pd.DataFrame(data)
+
+        # Drop column if empty
+        df = df.dropna(axis=1, how='all')
+        # Drop excess columns
+        if "Id" in df.columns:
+            df = df.drop(columns=["Id"])
+        if "IndicatorCode" in df.columns:
+            df = df.drop(columns=["IndicatorCode"])
+
+        # save df as a csv file
+        dx_id = external_dataset['id']
+        dx_name = f"dx{dx_id}.csv"
+        dx_loc = f"./staging/{dx_name}"
+        df.to_csv(dx_loc, index=False)
+        try:
+            res = preprocess_data(dx_name, create_ssr=True)
+        except Exception:
+            res = "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501
+        os.remove(dx_loc)
+    except Exception:
+        res = "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."# NOQA: 501
+    return res

@@ -50,7 +50,7 @@ def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
         result = results_list
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
-        result = []
+        result = "Sorry, we were unable to search the external sources, please try again with a different search term, or contact the admin for more information."  # noqa
     return result
 
 
@@ -66,19 +66,19 @@ def download_external_source(external_dataset):
     :param external_dataset: An external dataset object
     :return: A string indicating the result of the download
     """
+    result = "Sorry, we could not find the data source, please contact the admin for more information."
     try:
         logger.info(f"Downloading external dataset {external_dataset['name']}.")
         source = external_dataset["source"]
         if source == "Kaggle":
-            kaggle_download(external_dataset)
+            result = kaggle_download(external_dataset)
         if source == "World Bank":
-            worldbank_download(external_dataset)
+            result = worldbank_download(external_dataset)
         elif source == "WHO":
-            who_download(external_dataset)
+            result = who_download(external_dataset)
         elif source == "HDX":
-            hdx_download(external_dataset)
-        return "Success"
+            result = hdx_download(external_dataset)
     except Exception as e:
         logger.error(f"Error in external source download: {str(e)}")
-        result = "Sorry, something went wrong in our dataset download. Contact the admin for more information."
+        result = "Sorry, we were unable to download your selected file. Contact the admin for more information."
     return result

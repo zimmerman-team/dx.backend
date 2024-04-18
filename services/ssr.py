@@ -186,9 +186,11 @@ def load_sample_data(dataset_id):
     try:
         logger.debug("Sampling data")
         loc = f"{DF_LOC}sample-data-files/{dataset_id}.json"
-        with open(loc, 'r') as f:
-            data = json.load(f)
-
+        try:
+            with open(loc, 'r') as f:
+                data = json.load(f)
+        except Exception:
+            return "Sorry, this dataset is not available. Please contact the admin for more information."
         res = {
             "count": data["count"],
             "dataTypes": data["dataTypes"],
@@ -200,4 +202,4 @@ def load_sample_data(dataset_id):
         return res
     except Exception as e:
         logger.error(f"Error in load_sample_data: {str(e)}")
-        return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
+        return "Sorry, we could not read the data from the provided dataset. Contact the admin for more information."

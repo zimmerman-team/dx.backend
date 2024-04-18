@@ -326,10 +326,11 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
 
     :param name: name of the dataset to preprocess
     :param create_ssr: boolean to indicate if we should create an SSR entry for the dataset
+    :return: success message if the dataset was preprocessed successfully, error message otherwise
     """
     logger.debug(f"Preprocessing data for {name}")
     file_path = f"./staging/{name}" if not db else name
-
+    res = "Success"
     try:
         extension_length = len(name.split('.')[-1]) + 1  # including the .
     except Exception:
@@ -339,7 +340,8 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         logger.debug("-- Preprocessing content")
         df, message = _read_data(file_path, table, db, api)
         logger.debug(f"---- Reading data result: {message}")
-
+        if "Success" not in message:
+            return message
         # try to strip metadata from input files.
         df = strip_metadata(df)
         # drop any row that is 90-100% empty
@@ -350,7 +352,7 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         # make all column names in df a string and sort them alphabetically,
         # Clean the headers to only a-z, A-Z, 0-9
         df.columns = df.columns.astype(str)
-        df.columns = df.columns.str.replace(r'[^a-zA-Z0-9]', '', regex=True, flags=re.IGNORECASE)
+        df.columns = df.columns.str.replace(r'[^a-zA-Z0-9%]', '', regex=True, flags=re.IGNORECASE)
         logging.debug(f"SORTING:: \ndf.columns: {df.columns}\nsorted(df.columns): {sorted(df.columns)}")
         df = df.reindex(sorted(df.columns), axis=1)
         logging.debug(f"df columns after sorting: {df.columns}\n{df.head()}")
@@ -374,6 +376,8 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
             create_ssr_parsed_file(df, df_prefix, name[:-extension_length])
     except Exception as e:
         logger.error(f"Error in preprocess_data: {str(e)}")
+        res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+    return res
 
 
 def _read_data(file_path, table, db, api):
@@ -398,7 +402,7 @@ def _read_data(file_path, table, db, api):
         df, message = res
     else:
         df = res
-        message = "Failure to read the file into a dataframe."
+        message = "Sorry, we were unable to parse your data into a dataframe. Contact the admin for more information."
 
     if type(df) is not pd.DataFrame:
         logger.error(f"Error in preprocess_data: {message}")

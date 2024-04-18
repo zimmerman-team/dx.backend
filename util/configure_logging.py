@@ -1,7 +1,6 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-
 log_file_path = "./logging/dx_backend.log"
 max_log_size_bytes = 1 * 1024 * 1024 * 1024  # 1GB in bytes
 backup_count = 5  # Number of backup log files to keep
