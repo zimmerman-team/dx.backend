@@ -1,113 +1,118 @@
+import copy
 import logging
 import os
+import xml.etree.ElementTree as ET
 from datetime import datetime
 
 import pandas as pd
 import requests
 
-from services.external_sources.util import EXTERNAL_DATASET_FORMAT
-# previously used from services.mongo import create_dataset
+from services.external_sources.util import (EXTERNAL_DATASET_FORMAT,
+                                            EXTERNAL_DATASET_RESOURCE_FORMAT)
+from services.mongo import (mongo_create_external_source,
+                            mongo_get_all_external_sources,
+                            mongo_remove_data_for_external_sources)
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
+WB_SOURCE_NOTICE = "  - This Datasource was retrieved from https://apps.who.int/gho/athena/api/GHO."
 
 
-def who_search(query, owner, limit=5, prev=0):
+def who_index(delete=False):
     """
-    Searching the who.
-    They have an odata api spec'd here:
-    https://www.who.int/data/gho/info/gho-odata-api
+    Trigger the indexing of the WHO data.
+    If delete is True, remove all WHO data before indexing.
+    We do this, because there is no way to track updated datasets with the WHO API.
 
-    We return n results, where n is the limit.
-    prev can be used to skip, for example for pagination.
-
-    :param query: The query to search for
-    :param owner: The owner of the dataset
-    :param limit: The number of results to return
-    :param prev: The number of results to skip
-    :return: A list of dicts in the form of EXTERNAL_DATASET_FORMAT
+    :param delete: A boolean indicating if the WHO data should be removed before indexing.
     """
-    logger.debug(f"Searching who for query: {query}")
-    res = []
+    logger.info("WHO:: Indexing WHO data...")
+    if delete:
+        logger.info("WHO:: - Removing old WHO data")
+        mongo_remove_data_for_external_sources("WHO")
+    existing_external_sources = mongo_get_all_external_sources()
+    existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
+
+    # Get WHO data
+    gho_xml_url = "https://apps.who.int/gho/athena/api/GHO"
+    response = requests.get(gho_xml_url)
+    xml_data = response.content
+
+    # Parse the XML data into an ElementTree
+    root = ET.fromstring(xml_data)
+    code_elements = root.findall('.//Metadata/Dimension/Code')
+    # Iterate over the code elements and create sources
+    n_ds = 0
+    n_success = 0
+    for code in code_elements:
+        n_ds += 1
+        if code.get('Label') is None:
+            continue
+        if code.get('Label') in existing_external_sources:
+            continue
+        try:
+            res = _create_external_source_object(code)
+            if res == "Success":
+                n_success += 1
+        except Exception as e:
+            logger.error(f"WHO:: Failed to index dataset {code.get('Label')} due to: {e}")
+    return f"WHO - Successfully indexed {n_success} out of {n_ds} datasets."
+
+
+def _create_external_source_object(code):
+    """
+    Core subroutine to create an external source object from a WHO code element.
+
+    :param code: The code element from the WHO API.
+    """
     try:
-        search_meta = _who_search_indicators(query, skip=prev, top=limit)
-        # print the number of results in search_meta
+        internal_ref = code.get('Label')
+        try:
+            category = code.find('.//Attr[@Category="CATEGORY"]/Value/Display').text
+        except Exception:
+            category = "Miscellaneous"
+        try:
+            title = code.find('./Display').text
+        except Exception:
+            title = "No title available."
+        try:
+            description = code.find('.//Display').text + WB_SOURCE_NOTICE
+        except Exception:
+            description = "No description available." + WB_SOURCE_NOTICE
+        url = code.get('URL', f"https://ghoapi.azureedge.net/api/{internal_ref}")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        for meta in search_meta:
-            try:
-                res.append(_create_external_source_object(meta, owner))
-            except Exception:
-                pass
+        external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
+        external_dataset["title"] = title
+        external_dataset["description"] = description
+        external_dataset["source"] = "WHO"
+        external_dataset["URI"] = url
+        external_dataset["internalRef"] = internal_ref
+        external_dataset["mainCategory"] = category
+        external_dataset["subCategories"] = []
+        external_dataset["datePublished"] = now
+        external_dataset["dateLastUpdated"] = now
+        external_dataset["dateSourceLastUpdated"] = now
+
+        external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
+        external_resource["title"] = title
+        external_resource["description"] = description
+        external_resource["URI"] = f"https://ghoapi.azureedge.net/api/{internal_ref}"
+        external_resource["internalRef"] = internal_ref
+        external_resource["format"] = "csv"
+        external_resource["datePublished"] = now
+        external_resource["dateLastUpdated"] = now
+        external_resource["dateResourceLastUpdated"] = now
+        external_dataset["resources"].append(external_resource)
+        if len(external_dataset["resources"]) == 0:
+            return "No resources attached to this dataset."
+        mongo_res = mongo_create_external_source(external_dataset, update=False)
+        if mongo_res is not None:
+            return "Success"
+        return "MongoDB Error"
     except Exception as e:
-        logger.error(f"Error in who_search: {str(e)}")
-        res = []
-    return res
-
-
-def _who_search_indicators(query, skip, top):
-    """
-    Query the indicators API searching for the query string.
-    Search results include the IndicatorCode, IndicatorName, and Language.
-    :param query: The query string
-    :return: A list of dicts containing the search results
-    :skip: The number of results to skip
-    :param top: The number of results to return
-    """
-    # get all the indicators from the who api
-    who_query_url = f"https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,%20%27{query}%27)&$skip={skip}&$top={top}"  # NOQA: E501
-    res = requests.get(who_query_url).json()["value"]
-    return res
-
-
-def _get_additional_metadata():
-    # get all indicators:
-    all_indicators_url = "https://apps.who.int/gho/athena/api/GHO/?format=json"
-    all_indicators = requests.get(all_indicators_url).json()["dimension"][0]["code"]
-    # Iterate through the list of objects
-    for obj in all_indicators:
-        if isinstance(obj["attr"], list):
-            # Check if there is a dictionary with "category" equal to TARGET_CATEGORY
-            category_found = False
-            for item in obj["attr"]:
-                if isinstance(item, dict) and item.get("category") == "CATEGORY":
-                    obj["category"] = item.get("value")
-                    category_found = True
-                    break
-            if not category_found:
-                obj["category"] = "miscellaneous"
-        else:
-            obj["category"] = "miscellaneous"
-    all_indicators = {i["label"]: i for i in all_indicators}
-    return all_indicators
-
-
-def _create_external_source_object(meta, owner):
-    """
-    We fill the EXTERNAL_DATASET_FORMAT with the data from the meta object.
-    The meta object is a wbgapi search result object.
-
-    :param meta: A wbgapi search result object
-    :param owner: The owner of the dataset
-    :return: A dict in the form of EXTERNAL_DATASET_FORMAT
-    """
-    # id should always be present
-    code = meta["IndicatorCode"]
-    additional_metadata = _get_additional_metadata()
-    source_url = additional_metadata[code]["url"]
-    if source_url == "":
-        source_url = f"https://ghoapi.azureedge.net/api/{code}"
-
-    res = EXTERNAL_DATASET_FORMAT.copy()
-    res["name"] = code
-    res["description"] = meta["IndicatorName"]
-    res["source"] = "WHO"
-    res["url"] = source_url
-    res["category"] = additional_metadata[code]["category"]
-    res["datePublished"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    res["owner"] = owner
-    res["authId"] = owner
-    res["public"] = False
-    return res
+        logger.error(f"WHO:: Error creating external source object: {str(e)}")
+        return "Error"
 
 
 def who_download(external_dataset):
@@ -115,7 +120,7 @@ def who_download(external_dataset):
     # Download data
     url = f"https://ghoapi.azureedge.net/api/{external_dataset['name']}"
     try:
-        logger.debug(f"Downloading who dataset: {url}")
+        logger.debug(f"WHO:: Downloading who dataset: {url}")
         data = requests.get(url).json()["value"]
     except Exception:
         return "Sorry, we were unable to download the WHO Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501

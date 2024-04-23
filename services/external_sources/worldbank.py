@@ -1,91 +1,103 @@
+import copy
 import logging
 import os
 from datetime import datetime
 
 import wbgapi as wb
 
-from services.external_sources.util import EXTERNAL_DATASET_FORMAT
-# previously used from services.mongo import create_dataset
+from services.external_sources.util import (EXTERNAL_DATASET_FORMAT,
+                                            EXTERNAL_DATASET_RESOURCE_FORMAT)
+from services.mongo import (mongo_create_external_source,
+                            mongo_get_all_external_sources,
+                            mongo_remove_data_for_external_sources)
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
+WB_SOURCE_NOTICE = "  - This Datasource was retrieved from https://data.worldbank.org/."
 
 
-def worldbank_search(query, owner, limit=5, prev=0):
+def worldbank_index(delete=False):
     """
-    Searching the worldbank.
-    We use the wbgapi library to search for the query.
-    We return n results, where n is the limit.
-    prev can be used to skip, for example for pagination.
+    Indexing function for World Bank data.
+    Using the World Bank API, we search for datasets.
+    There is no real way to track updated datasets, so we just index all datasets.
 
-    :param query: The query to search for
-    :param owner: The owner of the dataset
-    :param limit: The number of results to return
-    :param prev: The number of results to skip
-    :return: A list of dicts in the form of EXTERNAL_DATASET_FORMAT
+    :param delete: A boolean indicating if the World Bank data should be removed before indexing.
+    :return: A string indicating the result of the indexing.
     """
-    logger.debug(f"Searching worldbank for query: {query}")
-    res = []
-    try:
-        search_meta = wb.search2(q=query)
-        # print the number of results in search_meta
-        count = 0
-        for meta in search_meta:
-            if count < prev:
-                count += 1
-                continue
-            if count >= limit + prev:
-                break
-            count += 1
+    logger.info("WB:: Indexing World Bank data...")
+    # Get existing sources
+    if delete:
+        logger.info("WB:: - Removing old World Bank data")
+        mongo_remove_data_for_external_sources("World Bank")
+    existing_external_sources = mongo_get_all_external_sources()
+    existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
+    # Get all datasets and process
+    search_meta = wb.series.list()
+    n_ds = 0
+    n_success = 0
+    for meta in search_meta:
+        n_ds += 1
+        meta_id = meta.get("id", None)
+        if meta_id is None:
+            continue
+        if meta_id in existing_external_sources:
+            # We do not update existing sources, as there is no date provided.
+            continue
+        try:
+            res = _create_external_source_object(meta_id)
+            if res == "Success":
+                n_success += 1
+        except Exception as e:
+            logger.error(f"WB:: Failed to index dataset {meta_id} due to: {e}")
+    return f"World Bank - Successfully indexed {n_success} out of {n_ds} datasets."
 
-            try:
-                res.append(_create_external_source_object(meta, owner))
-            except Exception as e:
-                logger.error(f"Error in external object creation worldbank: {str(e)}")
-    except Exception as e:
-        logger.error(f"Error in worldbank_search: {str(e)}")
-        res = []
-    return res
 
-
-def _create_external_source_object(meta, owner):
+def _create_external_source_object(meta_id):
     """
-    We fill the EXTERNAL_DATASET_FORMAT with the data from the meta object.
-    The meta object is a wbgapi search result object.
+    Core subroutine to create an external source object from a World Bank metadata id.
 
-    :param meta: A wbgapi search result object
-    :param owner: The owner of the dataset
-    :return: A dict in the form of EXTERNAL_DATASET_FORMAT
+    :param meta_id: The metadata id from the World Bank API.
+    :return: A string indicating the result of the creation.
     """
-    # id should always be present
-    res = EXTERNAL_DATASET_FORMAT.copy()
-    meta_id = meta.__dict__["id"]
-    # get the value from the first key value pair in meta.__dict__
-    meta_description = list(meta.__dict__["metadata"].values())[0]
-    if "~" in meta_id:
-        # Get the string after the last ~
-        meta_id = meta_id.split("~")[-1]
-    metadata = wb.series.metadata.get(meta_id).__dict__
+    dataset = wb.series.metadata.get(meta_id).__dict__["metadata"]
 
-    # Create the metadata dict
-    res["name"] = metadata["metadata"]["IndicatorName"]
-    res["description"] = f'{meta_description} - Dataset description: {metadata["metadata"]["Longdefinition"]}'
-    res["source"] = "World Bank"
-    # the url is a search url, not a direct url to the dataset, as it is too
-    # complex to construct from the metadata.
-    res["url"] = f"https://www.worldbank.org/en/search?q={metadata['id']}"
-    res["category"] = metadata["metadata"]["Topic"]
-    res["datePublished"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    res["owner"] = owner
-    res["authId"] = owner
-    res["public"] = False
-    return res
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Build the external dataset
+    external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
+    external_dataset["title"] = dataset.get("IndicatorName", "")
+    external_dataset["description"] = dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
+    external_dataset["source"] = "World Bank"
+    external_dataset["URI"] = f"https://data.worldbank.org/indicator/{meta_id}"
+    external_dataset["internalRef"] = meta_id
+    external_dataset["mainCategory"] = dataset.get("Topic", "")
+    external_dataset["subCategories"] = []
+    external_dataset["datePublished"] = now
+    external_dataset["dateLastUpdated"] = now
+    external_dataset["dateSourceLastUpdated"] = now
+
+    external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
+    external_resource["title"] = dataset.get("IndicatorName", "")
+    external_resource["description"] = dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
+    external_resource["URI"] = f"https://api.worldbank.org/v2/en/indicator/{meta_id}?downloadformat=csv"
+    external_resource["internalRef"] = meta_id
+    external_resource["format"] = "csv"
+    external_resource["datePublished"] = now
+    external_resource["dateLastUpdated"] = now
+    external_resource["dateResourceLastUpdated"] = now
+    external_dataset["resources"].append(external_resource)
+    if len(external_dataset["resources"]) == 0:
+        return "No resources attached to this dataset."
+    mongo_res = mongo_create_external_source(external_dataset, update=False)
+    if mongo_res is not None:
+        return "Success"
+    return "MongoDB Error"
 
 
 def worldbank_download(external_dataset):
     res = "Success"
     url = external_dataset["url"]
-    logger.debug(f"Downloading worldbank dataset: {url}")
+    logger.debug(f"WB:: Downloading worldbank dataset: {url}")
 
     try:
         meta_id = url.split("https://www.worldbank.org/en/search?q=")[-1]

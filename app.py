@@ -6,6 +6,7 @@ from flask import Flask, request
 
 from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
+from services.external_sources.index import external_search_index
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
                           remove_ssr_parsed_files)
@@ -199,15 +200,27 @@ External data sources
 """
 
 
+# Index
+@app.route('/external-sources/index', methods=['GET'])
+def external_sources_index():
+    logging.debug("route: /external-sources/index - Indexing external sources")
+    try:
+        res = external_search_index()
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/index - {str(e)}")
+        res = "Sorry, something went wrong in our external source indexing. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
 # Search
 @app.route('/external-sources/search', methods=['POST'])
 def external_source_search():
     data = request.get_json()
-    owner = data.get('owner')
     query = data.get('query')
     logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner)
+        res = search_external_sources(query, legacy=True)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
@@ -219,14 +232,11 @@ def external_source_search():
 @app.route('/external-sources/search-limited', methods=['POST'])
 def external_source_search_limited():
     data = request.get_json()
-    owner = data.get('owner')
     query = data.get('query')
-    offset = data.get('offset')
-    limit = data.get('limit')
     source = data.get('source')
     logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner, [source], limit, prev=offset)
+        res = search_external_sources(query, [source], legacy=True)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
