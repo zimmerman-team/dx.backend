@@ -203,3 +203,29 @@ def load_sample_data(dataset_id):
     except Exception as e:
         logger.error(f"Error in load_sample_data: {str(e)}")
         return "Sorry, we could not read the data from the provided dataset. Contact the admin for more information."
+
+
+def load_parsed_data(dataset_id, page: int = 1, page_size: int = 10):
+    """
+    Read and return the parsed data for a given dataset id in the form required by the frontend.
+
+    :param dataset_id: The id of the dataset
+    :return: A dictionary containing the parsed data
+    """
+    try:
+        logger.debug("Loading parsed data")
+        loc = f"{DF_LOC}parsed-data-files/{dataset_id}.json"
+        with open(loc, 'r') as f:
+            data = json.load(f)
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        res = {
+            "count": data["count"],
+            "data": data["dataset"][start:end]
+        }
+
+        return res
+    except Exception as e:
+        logger.error(f"Error in load_parsed_data: {str(e)}")
+        return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
