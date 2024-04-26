@@ -15,6 +15,7 @@ MONGO_AUTH_SOURCE = os.getenv('MONGO_AUTH_SOURCE')
 DATABASE_NAME = 'the-data-explorer-db'
 LOCAL_DEV = "localhost:27017"
 DEV = False  # Flag for dev testing with local MongoDB, should be False when committed.
+FS_INDEX_DB = "FederatedSearchIndex"
 
 
 def mongo_client(dev=False):
@@ -40,7 +41,7 @@ def mongo_create_external_source(external_source, update=False):
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
-        external_source_collection = db['ExternalSourceIndex']
+        external_source_collection = db[FS_INDEX_DB]
         if update:
             inserted_data = external_source_collection.update_one(
                 {"_id": external_source["_id"]},
@@ -66,7 +67,7 @@ def mongo_get_all_external_sources():
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
-        external_source_collection = db['ExternalSourceIndex']
+        external_source_collection = db[FS_INDEX_DB]
         external_sources = list(external_source_collection.find())
         client.close()
         return external_sources
@@ -85,7 +86,7 @@ def mongo_find_external_sources_by_text(query):
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
-        external_source_collection = db['ExternalSourceIndex']
+        external_source_collection = db[FS_INDEX_DB]
         external_sources = list(
             external_source_collection.find(
                 {"$text": {"$search": query}},
@@ -108,9 +109,10 @@ def mongo_create_text_index_for_external_sources():
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
-        external_source_collection = db['ExternalSourceIndex']
+        external_source_collection = db[FS_INDEX_DB]
         external_source_collection.create_index([("title", pymongo.TEXT), ("description", pymongo.TEXT)])
         client.close()
+        logger.info("Created text index for federated search results.")
         return True
     except Exception as e:
         logger.error("Error in create_text_index_for_external_sources: " + str(e))
@@ -128,12 +130,13 @@ def mongo_remove_data_for_external_sources(source=None):
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
-        external_source_collection = db['ExternalSourceIndex']
+        external_source_collection = db[FS_INDEX_DB]
         if source is None:
             external_source_collection.drop()
         else:
             external_source_collection.delete_many({"source": source})
         client.close()
+        logger.info("Removed data for external sources.")
         return True
     except Exception as e:
         logger.error("Error in remove_data_for_external_sources: " + str(e))

@@ -58,7 +58,7 @@ def external_search_index():
 
 def external_search(query, sources=ALL_SOURCES, legacy=False):
     """
-    Given a query, find all results in mongoDB from externalSourceIndex.
+    Given a query, find all results in mongoDB from FederatedSearchIndex.
 
     :param query: The provided query text.
     :param sources: A list of sources to search through, defaults to all available sources.

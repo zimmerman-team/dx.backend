@@ -13,7 +13,7 @@ from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
 from services.util import remove_files
 from util.api import json_return
 from util.configure_logging import confirm_logger
-
+from services.mongo import mongo_create_text_index_for_external_sources
 # Load the environment variables
 load_dotenv()
 # Set up the flask app
@@ -21,6 +21,8 @@ app = Flask(__name__)
 
 # Setup and confirm the logger
 confirm_logger()
+# Ensure we always have a text index for FederatedSearchIndex
+mongo_create_text_index_for_external_sources()
 
 
 """
