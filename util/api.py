@@ -7,9 +7,7 @@ def json_return(code, data=None, error=None, error_message=None):
     """
     if error:
         return {'code': code, 'error': error, 'error_message': error_message}, code
-    if data:
+    if data or data == []:
         return {'code': code, 'result': data}, code
-    if data == []:
-        return {'code': code, 'result': 'No data found.'}, code,
     else:
         return {'code': 204, 'result': 'We were unable to process, please contact your system administrator.'}, 204
