@@ -56,16 +56,18 @@ def external_search_index():
         return "Indexing failed"
 
 
-def external_search(query, sources=ALL_SOURCES, legacy=False):
+def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
     """
     Given a query, find all results in mongoDB from FederatedSearchIndex.
 
     :param query: The provided query text.
     :param sources: A list of sources to search through, defaults to all available sources.
     :param legacy: A boolean flag for converting to legacy search results (deprecated).
+    :param limit: The maximum number of results to return.
+    :param offset: The offset to start the search from.
     :return: A list of external source objects.
     """
-    res = mongo_find_external_sources_by_text(query)
+    res = mongo_find_external_sources_by_text(query, limit=limit, offset=offset, sources=sources)
     # Remove the 'score' and '_id' from every item in res and filter by source
     res = [
         {k: v for k, v in item.items() if k not in ('score', '_id')}

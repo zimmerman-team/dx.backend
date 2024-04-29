@@ -15,19 +15,21 @@ load_dotenv()
 DEFAULT_SEARCH_TERM = "world population"
 
 
-def search_external_sources(query, sources=ALL_SOURCES, legacy=False):
+def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
     """
     The search feature triggers the search in MongoDB, and returns the appropriate results.
 
     :param query: The query to search for.
     :param sources: A list of sources to search through.
     :param legacy: A boolean indicating if the search should be returned in the legacy format (deprecated).
+    :param limit: The maximum number of results to return.
+    :param offset: The offset to start the search from.
     :return: A list of results in the form of an ExternalSource object.
     """
     if query == "":
         query = DEFAULT_SEARCH_TERM
     try:
-        result = external_search(query, sources, legacy=legacy)
+        result = external_search(query, sources, legacy=legacy, limit=limit, offset=offset)
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
         result = "Sorry, we were unable to search the external sources, please try again with a different search term, or contact the admin for more information."  # noqa

@@ -234,13 +234,15 @@ def external_source_search():
 @app.route('/external-sources/search-limited', methods=['POST'])
 def external_source_search_limited():
     data = request.get_json()
-    query = data.get('query')
-    source = data.get('source')
-    logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
+    query = data.get('query', '')
+    source = data.get('source', '')
+    limit = data.get('limit', 10)
+    offset = data.get('offset', 0)
+    logging.debug(f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, [source], legacy=True)
+        res = search_external_sources(query, source.split(','), legacy=True, limit=limit, offset=offset)
     except Exception as e:
-        logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
+        logging.error(f"Error in route: /external-sources/search-limited/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
     code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)

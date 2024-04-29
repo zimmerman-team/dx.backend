@@ -76,22 +76,34 @@ def mongo_get_all_external_sources():
         return []
 
 
-def mongo_find_external_sources_by_text(query):
+def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=None):
     """
     Connect to the MongoDB and find external source objects by title or description.
 
     :param query: The query to search for.
+    :param limit: The maximum number of results to return.
+    :param offset: The offset to start the search from.
+    :param sources: A list of sources to filter by.
     :return: A list of external source objects.
     """
     try:
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
         external_source_collection = db[FS_INDEX_DB]
+
+        # Construct query to include text search and source filtering if sources are provided
+        mongo_query = {"$text": {"$search": query}}
+        if sources:
+            mongo_query["source"] = {"$in": sources}
+
         external_sources = list(
             external_source_collection.find(
-                {"$text": {"$search": query}},
+                mongo_query,
                 {"score": {"$meta": "textScore"}}
-            ).sort([("score", {"$meta": "textScore"})])
+            )
+            .sort([("score", {"$meta": "textScore"})])
+            .skip(offset)
+            .limit(limit)
         )
         client.close()
         return external_sources
