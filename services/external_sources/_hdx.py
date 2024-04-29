@@ -86,26 +86,31 @@ def _create_external_source_object(meta, resource, owner):
 
 
 def hdx_download(external_dataset):
+    res = "Sorry, we were unable to download the HDX Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
     logger.debug("Downloading hdx dataset")
-    dx_id = external_dataset.get("id", "")
-    if dx_id == "":
-        dx_id = "0tmp0"
+    try:
+        dx_id = external_dataset.get("id", "")
+        if dx_id == "":
+            dx_id = "0tmp0"
 
-    dataset_title, file_information = external_dataset["name"].split(" - Data file: ")
-    desc, filename = file_information.split(" - filename: ")
+        dataset_title, file_information = external_dataset["name"].split(" - Data file: ")
+        desc, filename = file_information.split(" - filename: ")
 
-    # Get the first result where the title is an exact match
-    dataset = Dataset.search_in_hdx(query=f'title:"{dataset_title}"', rows=1)[0]
-    resources = dataset.get_resources()
-    for resource in resources:
-        if resource.get("format", "") not in ["csv", "CSV"]:
-            continue
-        res_name = re.sub(RE_SUB, '', resource.get("name", "")[:-4])
-        if res_name == filename and resource.get("description", "") == desc:
-            dl_url = resource.get("download_url", "")
-            # Download the file
-            download_file(dl_url, dx_id)
-            break
+        # Get the first result where the title is an exact match
+        dataset = Dataset.search_in_hdx(query=f'title:"{dataset_title}"', rows=1)[0]
+        resources = dataset.get_resources()
+        for resource in resources:
+            if resource.get("format", "") not in ["csv", "CSV"]:
+                continue
+            res_name = re.sub(RE_SUB, '', resource.get("name", "")[:-4])
+            if res_name == filename and resource.get("description", "") == desc:
+                dl_url = resource.get("download_url", "")
+                # Download the file
+                res = download_file(dl_url, dx_id)
+                break
+        return res
+    except Exception:
+        return "Sorry, we were unable to download the HDX Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
 
 
 def download_file(url, dx_id, destination_folder="./staging"):
@@ -123,7 +128,7 @@ def download_file(url, dx_id, destination_folder="./staging"):
         response = requests.get(url)
         if response.status_code != 200:
             logger.info(f"Failed to download file from {url}")
-            return False
+            return "Sorry, we were unable to download the file. Please try again later. Contact the admin if the problem persists."  # NOQA: 501
         # Save the file to the destination folder
         with open(filepath, 'wb') as f:
             f.write(response.content)
@@ -141,11 +146,11 @@ def download_file(url, dx_id, destination_folder="./staging"):
         dx_name = f"dx{dx_id}.csv"
         os.rename(filepath, f"./staging/{dx_name}")
         try:
-            preprocess_data(dx_name, create_ssr=True)
+            res = preprocess_data(dx_name, create_ssr=True)
         except Exception as e:
+            res = "Sorry, we were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501
             logger.error(f"Failed to preprocess data for {dx_name} due to: {e}")
-
-        return True
+        return res
     except Exception as e:
         logger.error(f"Failed to download file from {url}: {e}")
-        return False
+        return "Sorry, we were unable to download or process the file. Please try again later. Contact the admin if the problem persists."  # NOQA: 501

@@ -19,7 +19,7 @@ numpy==1.25.2
 pysolr==3.9.0
 
 # database connection
-pymongo==4.5.0
+pymongo==4.6.3
 
 # Dataset type processing
 python-magic==0.4.27  # File type detection
@@ -41,7 +41,7 @@ requests==2.31.0
 urllib3==2.0.7
 
 # Server hosting
-gunicorn==20.1.0
+gunicorn==22.0.0
 
 # Type detection
 chardet==5.1.0

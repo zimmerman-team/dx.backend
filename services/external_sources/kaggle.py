@@ -135,8 +135,12 @@ def kaggle_download(external_dataset):
     file_choice = re.sub(RE_SUB, '', external_dataset["name"].split(" - Data file: ")[1])
     logger.debug(f"File choice: {file_choice}")
     filenames = _get_filenames(ref)
+    if filenames == "Error":
+        return "Sorry, we were unable to find matching files for the selected Kaggle dataset, please try a different dataset, or contact the administrator."  # NOQA: 501
     logger.debug(f"File names: {filenames}")
-    _download_files(ref)
+    download_res = _download_files(ref)
+    if download_res == "Error":
+        return "Sorry, we were unable to download the selected Kaggle dataset, please try a different dataset, or contact the administrator."  # NOQA: 501
     logger.debug("files downloaded")
     for name in filenames:
         logger.debug(f"Checking file: {name}")
@@ -168,11 +172,14 @@ def kaggle_download(external_dataset):
             pass
         try:
             logger.debug(f"start preprocessing for {dx_name}")
-            preprocess_data(dx_name, create_ssr=True)
+            preprocess_res = preprocess_data(dx_name, create_ssr=True)
+            if preprocess_res != "Success":
+                return "Sorry, we were unable to preprocess the selected Kaggle dataset, please try a different dataset, or contact the administrator."  # NOQA: 501
         except Exception:
             continue
         # remove ./staging/{dx.name}
         os.remove(f"./staging/{dx_name}")
+        return "Success"
 
 
 def _get_filenames(ref, pretty=False):
@@ -186,7 +193,7 @@ def _get_filenames(ref, pretty=False):
     # If the output does not start with name,size,creationDate,return an error
     if "name,size,creationDate" not in output:
         logger.error(f"Error in _get_filenames - files are not found, maybe there is a kaggle update: {output}")
-        return "error"
+        return "Error"
     df = pd.read_csv(io.StringIO(output))
     # make a list of all the items in the first column
     file_names = df["name"].tolist()
@@ -204,8 +211,8 @@ def _download_files(ref):
         output = subprocess.check_output(command, shell=True, text=True)
         # if the output does not start with Downloading, return an error
         if "Downloading" not in output:
-            return "error"
+            return "Error"
         return "Success"
     except Exception as e:
         logger.error(f"Error in _download_files: {str(e)}")
-        return "error"
+        return "Error"

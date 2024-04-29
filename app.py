@@ -10,6 +10,7 @@ from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
                           remove_ssr_parsed_files)
 from services.util import remove_files
+from util.api import json_return
 from util.configure_logging import confirm_logger
 
 # Load the environment variables
@@ -26,20 +27,28 @@ DX Processing
 """
 
 
+@app.route('/health-check', methods=['GET'])
+def health_check():
+    return json_return(500, 'OK')
+
+
 @app.route('/upload-file/<string:ds_name>', methods=['GET', 'POST'])
 def process_dataset(ds_name):
     logging.debug(f"route: /upload-file/<string:ds_name> - Processing dataset {ds_name}")
     try:
         # Preprocess
-        preprocess_data(ds_name, create_ssr=True)
+        preprocess_res = preprocess_data(ds_name, create_ssr=True)
+        if preprocess_res != "Success":
+            return json_return(500, preprocess_res)
         # Create a solr core and post the dataset
         # res = post_data_to_solr(ds_name)  # TODO: Disabled solr until data processing required
         # Remove the processed file
-        remove_files([ds_name])
-        res = "Success"
+        remove_res = remove_files([ds_name])
+        code = 200 if remove_res == "Success" else 500
+        res = json_return(code, remove_res)
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name> - {str(e)}")
-        res = "Sorry, something went wrong in our dataset processing. Contact the admin for more information."
+        res = json_return(500, "Sorry, something went wrong in our dataset processing. Contact the admin for more information.")  # noqa: E501
     return res
 
 
@@ -51,7 +60,8 @@ def duplicate_dataset(ds_name, new_ds_name):
     except Exception as e:
         logging.error(f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
-    return res
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 @app.route('/duplicate-datasets', methods=['GET', 'POST'])
@@ -85,7 +95,8 @@ def duplicate_datasets():
     except Exception as e:
         logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
-    return res
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 @app.route('/upload-file/<string:ds_name>/<string:table>', methods=['GET', 'POST'])
@@ -99,7 +110,8 @@ def process_dataset_sqlite(ds_name, table):
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
         res = "Sorry, something went wrong in our sqlite dataset processing. Contact the admin for more information."
-    return res
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 @app.route('/upload-file/<string:ds_name>/<string:username>/<string:password>/<string:host>/<string:port>/<string:database>/<string:table>', methods=['GET', 'POST'])  # noqa: E501
@@ -115,12 +127,12 @@ def process_dataset_sql(ds_name, username, password, host, port, database, table
             'database': database,
             'table': table
         }
-        preprocess_data(ds_name, create_ssr=True, db=db)
-        res = "Success"
+        res = preprocess_data(ds_name, create_ssr=True, db=db)
     except Exception as e:
         logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
         res = "Sorry, something went wrong in our sql dataset processing. Contact the admin for more information."
-    return res
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 @app.route('/upload-file/<string:ds_name>/<string:api_url>/<string:json_root>/<string:xml_root>', methods=['GET', 'POST'])  # noqa: E501
@@ -159,12 +171,12 @@ def delete_dataset(ds_name):
         # delete_solr_core(ds_name)  # TODO: Disabled solr until data processing required
 
         # Remove the dataset from SSR
-        remove_ssr_parsed_files(ds_name)
-        res = "Success"
+        res = remove_ssr_parsed_files(ds_name)
     except Exception as e:
         logging.error(f"Error in route: /delete-dataset/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset deletion. Contact the admin for more information."
-    return res
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 @app.route('/sample-data/<string:ds_name>', methods=['GET', 'POST'])
@@ -178,7 +190,8 @@ def sample_data(ds_name):
     except Exception as e:
         logging.error(f"Error in route: /sample-data/<string:ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset sampling. Contact the admin for more information."
-    return res
+    code = 200 if not isinstance(res, str) else 500
+    return json_return(code, res)
 
 
 """
@@ -198,7 +211,8 @@ def external_source_search():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
-    return res
+    code = 200 if not isinstance(res, str) else 500
+    return json_return(code, res)
 
 
 # Search for a limited number of results.
@@ -216,7 +230,8 @@ def external_source_search_limited():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
-    return res
+    code = 200 if not isinstance(res, str) else 500
+    return json_return(code, res)
 
 
 # Download and process
@@ -229,8 +244,9 @@ def external_source_download():
         res = download_external_source(external_source)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
-        res = "Sorry, something went wrong in our external source download. Contact the admin for more information."
-    return res
+        res = "Sorry, we were unable to download your selected file. Contact the admin for more information."
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
 
 
 if __name__ == '__main__':
