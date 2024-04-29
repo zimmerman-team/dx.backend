@@ -8,8 +8,8 @@ from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
 from services.external_sources.index import external_search_index
 from services.preprocess_dataset import preprocess_data
-from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
-                          remove_ssr_parsed_files)
+from services.ssr import (duplicate_ssr_parsed_files, load_parsed_data,
+                          load_sample_data, remove_ssr_parsed_files)
 from services.util import remove_files
 from util.api import json_return
 from util.configure_logging import confirm_logger
@@ -195,6 +195,23 @@ def sample_data(ds_name):
         res = "Sorry, something went wrong in our dataset sampling. Contact the admin for more information."
     code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)
+
+
+@app.route('/dataset/<string:ds_name>', methods=['GET', 'POST'])
+def get_dataset(ds_name):
+    """
+    Return the dataset for a given dataset id
+    """
+    page = int(request.args.get('page', 1))
+    page_size = int(request.args.get('page_size', 10))
+
+    logging.debug(f"route: /dataset/<string:ds_name> - Getting dataset {ds_name}")
+    try:
+        res = load_parsed_data(ds_name, page, page_size)
+    except Exception as e:
+        logging.error(f"Error in route: /dataset/<string:ds_name> - {str(e)}")
+        res = "Sorry, something went wrong in our dataset retrieval. Contact the admin for more information."
+    return res
 
 
 """
