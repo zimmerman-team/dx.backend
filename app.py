@@ -6,13 +6,14 @@ from flask import Flask, request
 
 from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
+from services.external_sources.index import external_search_index
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_sample_data,
                           remove_ssr_parsed_files)
 from services.util import remove_files
 from util.api import json_return
 from util.configure_logging import confirm_logger
-
+from services.mongo import mongo_create_text_index_for_external_sources
 # Load the environment variables
 load_dotenv()
 # Set up the flask app
@@ -20,6 +21,8 @@ app = Flask(__name__)
 
 # Setup and confirm the logger
 confirm_logger()
+# Ensure we always have a text index for FederatedSearchIndex
+mongo_create_text_index_for_external_sources()
 
 
 """
@@ -199,15 +202,27 @@ External data sources
 """
 
 
+# Index
+@app.route('/external-sources/index', methods=['GET'])
+def external_sources_index():
+    logging.debug("route: /external-sources/index - Indexing external sources")
+    try:
+        res = external_search_index()
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/index - {str(e)}")
+        res = "Sorry, something went wrong in our external source indexing. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
 # Search
 @app.route('/external-sources/search', methods=['POST'])
 def external_source_search():
     data = request.get_json()
-    owner = data.get('owner')
     query = data.get('query')
     logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner)
+        res = search_external_sources(query, legacy=True)
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
@@ -219,16 +234,15 @@ def external_source_search():
 @app.route('/external-sources/search-limited', methods=['POST'])
 def external_source_search_limited():
     data = request.get_json()
-    owner = data.get('owner')
-    query = data.get('query')
-    offset = data.get('offset')
-    limit = data.get('limit')
-    source = data.get('source')
-    logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
+    query = data.get('query', '')
+    source = data.get('source', '')
+    limit = data.get('limit', 10)
+    offset = data.get('offset', 0)
+    logging.debug(f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, owner, [source], limit, prev=offset)
+        res = search_external_sources(query, source.split(','), legacy=True, limit=limit, offset=offset)
     except Exception as e:
-        logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
+        logging.error(f"Error in route: /external-sources/search-limited/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
     code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)

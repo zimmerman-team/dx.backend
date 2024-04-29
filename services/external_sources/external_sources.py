@@ -2,12 +2,12 @@ import logging
 
 from dotenv import load_dotenv
 
-from services.external_sources._hdx import hdx_download, hdx_search
-from services.external_sources.kaggle import kaggle_download, kaggle_search
+from services.external_sources._hdx import hdx_download
+from services.external_sources.index import external_search
+from services.external_sources.kaggle import kaggle_download
 from services.external_sources.util import ALL_SOURCES
-from services.external_sources.who import who_download, who_search
-from services.external_sources.worldbank import (worldbank_download,
-                                                 worldbank_search)
+from services.external_sources.who import who_download
+from services.external_sources.worldbank import worldbank_download
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -15,39 +15,21 @@ load_dotenv()
 DEFAULT_SEARCH_TERM = "world population"
 
 
-def search_external_sources(query, owner, sources=ALL_SOURCES, limit=5, prev=0):
+def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
     """
-    The search feature for external sources triggers the implementation for
-    each of the external sources, and compiles a list of results from each
-    of them.
+    The search feature triggers the search in MongoDB, and returns the appropriate results.
 
-    A query can be provided, as well as a list of sources to search through,
-    for example, only kaggle, or only data.gov and WHO. We can also limit
-    the number of results per source.
-
-    :param query: The query to search for
-    :param sources: A list of sources to search through
-    :param limit: The number of results per source
-    :return: A list of results in the form of an ExternalSource object
+    :param query: The query to search for.
+    :param sources: A list of sources to search through.
+    :param legacy: A boolean indicating if the search should be returned in the legacy format (deprecated).
+    :param limit: The maximum number of results to return.
+    :param offset: The offset to start the search from.
+    :return: A list of results in the form of an ExternalSource object.
     """
     if query == "":
         query = DEFAULT_SEARCH_TERM
     try:
-        results_list = []
-        for source in sources:
-            if source == "Kaggle":
-                logger.info(f"Searching kaggle for query: {query}")
-                results_list.extend(kaggle_search(query, owner, limit, prev))
-            if source == "World Bank":
-                logger.info(f"Searching worldbank for query: {query}")
-                results_list.extend(worldbank_search(query, owner, limit, prev))
-            if source == "WHO":
-                logger.info(f"Searching who for query: {query}")
-                results_list.extend(who_search(query, owner, limit, prev))
-            if source == "HDX":
-                logger.info(f"Searching HDX for query: {query}")
-                results_list.extend(hdx_search(query, owner, limit, prev))
-        result = results_list
+        result = external_search(query, sources, legacy=legacy, limit=limit, offset=offset)
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
         result = "Sorry, we were unable to search the external sources, please try again with a different search term, or contact the admin for more information."  # noqa
