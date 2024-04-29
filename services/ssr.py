@@ -208,12 +208,15 @@ def load_sample_data(dataset_id):
 def load_parsed_data(dataset_id, page: int = 1, page_size: int = 10):
     """
     Read and return the parsed data for a given dataset id in the form required by the frontend.
+    Paginated with page and page_size.
 
     :param dataset_id: The id of the dataset
+    :param page: The page number
+    :param page_size: The number of items per page
     :return: A dictionary containing the parsed data
     """
     try:
-        logger.debug("Loading parsed data")
+        logger.debug("Loading parsed data, paginated")
         loc = f"{DF_LOC}parsed-data-files/{dataset_id}.json"
         with open(loc, 'r') as f:
             data = json.load(f)
@@ -228,4 +231,4 @@ def load_parsed_data(dataset_id, page: int = 1, page_size: int = 10):
         return res
     except Exception as e:
         logger.error(f"Error in load_parsed_data: {str(e)}")
-        return "Sorry, something went wrong in our SSR update. Contact the admin for more information."
+        return "Sorry, we were unable to retrieve the data for this dataset. Contact the admin for more information."
