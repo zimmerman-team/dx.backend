@@ -100,7 +100,7 @@ def worldbank_download(external_dataset):
     logger.debug(f"WB:: Downloading worldbank dataset: {url}")
 
     try:
-        meta_id = url.split("https://www.worldbank.org/en/search?q=")[-1]
+        meta_id = url.split("https://data.worldbank.org/indicator/")[-1]
     except Exception:
         return "The dataset source was malformed, please try a different dataset."
     try:

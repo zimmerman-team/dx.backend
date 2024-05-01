@@ -1,6 +1,7 @@
 import copy
 import logging
 import os
+import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
@@ -83,7 +84,7 @@ def _create_external_source_object(code):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
-        external_dataset["title"] = title
+        external_dataset["title"] = title + " - WHO Code: " + internal_ref
         external_dataset["description"] = description
         external_dataset["source"] = "WHO"
         external_dataset["URI"] = url
@@ -118,7 +119,7 @@ def _create_external_source_object(code):
 def who_download(external_dataset):
     res = "Success"
     # Download data
-    url = f"https://ghoapi.azureedge.net/api/{external_dataset['name']}"
+    url = f"https://ghoapi.azureedge.net/api/{_extract_who_code(external_dataset['name'])}"
     try:
         logger.debug(f"WHO:: Downloading who dataset: {url}")
         data = requests.get(url).json()["value"]
@@ -149,3 +150,12 @@ def who_download(external_dataset):
     except Exception:
         res = "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."# NOQA: 501
     return res
+
+
+def _extract_who_code(input_string):
+    pattern = r'WHO Code:\s*([A-Z]+)'
+    match = re.search(pattern, input_string)
+    if match:
+        return match.group(1)
+    else:
+        return None

@@ -12,7 +12,8 @@ from hdx.data.dataset import Dataset
 from services.external_sources.util import (EXTERNAL_DATASET_FORMAT,
                                             EXTERNAL_DATASET_RESOURCE_FORMAT)
 from services.mongo import (mongo_create_external_source,
-                            mongo_get_all_external_sources)
+                            mongo_get_all_external_sources,
+                            mongo_remove_data_for_external_sources)
 from services.preprocess_dataset import preprocess_data
 
 Configuration.create(hdx_site="prod", user_agent="Zimmerman_DX", hdx_read_only=True)
@@ -22,7 +23,7 @@ RE_SUB = r'[^a-zA-Z0-9]'
 HDX_SOURCE_NOTICE = "  - This Datasource was retrieved from https://data.humdata.org/."
 
 
-def hdx_index():
+def hdx_index(delete=False):
     """
     Indexing function for HDX data.
     Using the HDX API, we search for datasets.
@@ -30,6 +31,9 @@ def hdx_index():
 
     :return: A string indicating the result of the indexing.
     """
+    if delete:
+        logger.info("HDX:: - Removing old HDX data")
+        mongo_remove_data_for_external_sources("HDX")
     logger.info("HDX:: Indexing HDX data...")
     # Get existing sources
     existing_external_sources = mongo_get_all_external_sources()
@@ -112,7 +116,7 @@ def _create_external_source_object(dataset: Dataset, update=False, update_item=N
         if resource.get("format", "") not in ["csv", "CSV"]:
             continue
         external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
-        external_resource["title"] = re.sub(RE_SUB, '', resource.get("name", "")[:-4])
+        external_resource["title"] = re.sub(RE_SUB, '', resource.get("name", "")[:-4]) + f" - Dataset file name: {resource.get('name', '')}"  # NOQA: 501
         try:
             external_resource["description"] = resource.get("description", "") + HDX_SOURCE_NOTICE
         except Exception:
@@ -142,26 +146,26 @@ def hdx_download(external_dataset):
             dx_id = "0tmp0"
 
         dataset_title, file_information = external_dataset["name"].split(" - Data file: ")
-        desc, filename = file_information.split(" - filename: ")
-
+        filename = file_information.split(" - Dataset file name: ")[-1]
         # Get the first result where the title is an exact match
         dataset = Dataset.search_in_hdx(query=f'title:"{dataset_title}"', rows=1)[0]
         resources = dataset.get_resources()
         for resource in resources:
             if resource.get("format", "") not in ["csv", "CSV"]:
                 continue
-            res_name = re.sub(RE_SUB, '', resource.get("name", "")[:-4])
-            if res_name == filename and resource.get("description", "") == desc:
+            res_name = resource.get("name", "")
+            if res_name == filename:
                 dl_url = resource.get("download_url", "")
                 # Download the file
-                res = download_file(dl_url, dx_id)
+                res = download_file(dl_url, dx_id, filename)
                 break
         return res
-    except Exception:
+    except Exception as e:
+        logger.error(f"HDX:: Failed to download file: {str(e)}")
         return "Sorry, we were unable to download the HDX Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
 
 
-def download_file(url, dx_id, destination_folder="./staging"):
+def download_file(url, dx_id, found_filename, destination_folder="./staging"):
     # Ensure the destination folder exists
     os.makedirs(destination_folder, exist_ok=True)
 
@@ -190,9 +194,24 @@ def download_file(url, dx_id, destination_folder="./staging"):
             # Delete the zip file
             os.remove(filepath)
             filepath = filepath[:-4]  # Remove the .zip extension
+        if filepath.endswith("_csv"):
+            # replace _csv with .csv
+            os.rename(filepath, filepath.replace("_csv", ".csv"))
         # rename ./staging/filepath to ./staging/dx{dx_id}.csv
         dx_name = f"dx{dx_id}.csv"
-        os.rename(filepath, f"./staging/{dx_name}")
+        try:
+            os.rename(filepath, f"./staging/{dx_name}")
+        except Exception:
+            logger.info("HDX:: Failed to rename file")
+            if found_filename.endswith(".zip"):
+                found_filename = found_filename[:-4]
+            if found_filename.endswith("_csv"):
+                found_filename = found_filename.replace("_csv", ".csv")
+            try:
+                os.rename(found_filename, f"./staging/{dx_name}")
+            except Exception:
+                logger.error("HDX:: Failed to rename original file name as well")
+                return "Sorry, the HDX source file does not match the expected format, please try a different dataset."  # NOQA: 501
         try:
             res = preprocess_data(dx_name, create_ssr=True)
         except Exception as e:

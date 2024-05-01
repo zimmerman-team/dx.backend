@@ -12,7 +12,8 @@ import pandas as pd
 from services.external_sources.util import (EXTERNAL_DATASET_FORMAT,
                                             EXTERNAL_DATASET_RESOURCE_FORMAT)
 from services.mongo import (mongo_create_external_source,
-                            mongo_get_all_external_sources)
+                            mongo_get_all_external_sources,
+                            mongo_remove_data_for_external_sources)
 from services.preprocess_dataset import preprocess_data
 
 logger = logging.getLogger(__name__)
@@ -40,11 +41,14 @@ def handle_update_log(output: str):
     return output
 
 
-def kaggle_index():
+def kaggle_index(delete=False):
     """
     Triggering the Kaggle index function, which will index all Kaggle datasets.
     """
     logger.info("KAGGLE INDEX:: Indexing Kaggle data...")
+    if delete:
+        logger.info("KAGGLE:: - Removing old Kaggle data")
+        mongo_remove_data_for_external_sources("Kaggle")
     existing_external_sources = mongo_get_all_external_sources()
     existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
 
