@@ -6,14 +6,16 @@ from flask import Flask, request
 
 from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
-from services.external_sources.index import external_search_index
+from services.external_sources.index import (external_search_force_reindex,
+                                             external_search_index)
+from services.mongo import mongo_create_text_index_for_external_sources
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, load_parsed_data,
                           load_sample_data, remove_ssr_parsed_files)
 from services.util import remove_files
 from util.api import json_return
 from util.configure_logging import confirm_logger
-from services.mongo import mongo_create_text_index_for_external_sources
+
 # Load the environment variables
 load_dotenv()
 # Set up the flask app
@@ -277,6 +279,58 @@ def external_source_download():
         logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, we were unable to download your selected file. Contact the admin for more information."
     code = 200 if res == "Success" else 500
+    return json_return(code, res)
+
+
+# Force updates
+@app.route('/external-sources/force-update-who', methods=['GET'])
+def force_update_who():
+    logging.debug("route: /external-sources/force-update-who - Forcing WHO update")
+    try:
+        res = external_search_force_reindex("WHO")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-who - {str(e)}")
+        res = "Sorry, something went wrong in our WHO update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
+# Force updates
+@app.route('/external-sources/force-update-kaggle', methods=['GET'])
+def force_update_kaggle():
+    logging.debug("route: /external-sources/force-update-kaggle - Forcing kaggle update")
+    try:
+        res = external_search_force_reindex("Kaggle")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-kaggle - {str(e)}")
+        res = "Sorry, something went wrong in our kaggle update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
+# Force updates
+@app.route('/external-sources/force-update-wb', methods=['GET'])
+def force_update_wb():
+    logging.debug("route: /external-sources/force-update-wb - Forcing wb update")
+    try:
+        res = external_search_force_reindex("WB")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-wb - {str(e)}")
+        res = "Sorry, something went wrong in our wb update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
+# Force updates
+@app.route('/external-sources/force-update-hdx', methods=['GET'])
+def force_update_hdx():
+    logging.debug("route: /external-sources/force-update-hdx - Forcing hdx update")
+    try:
+        res = external_search_force_reindex("HDX")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-hdx - {str(e)}")
+        res = "Sorry, something went wrong in our hdx update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
     return json_return(code, res)
 
 

@@ -56,6 +56,28 @@ def external_search_index():
         return "Indexing failed"
 
 
+def external_search_force_reindex(source):
+    """
+    Shorthand function to force reindex a source.
+
+    :param source: The datasource (Kaggle, WHO, WB, HDX)
+    :return: A string indicating success
+    """
+    if source == "Kaggle":
+        kaggle_index(delete=True)
+    if source == "WHO":
+        who_index(delete=True)
+    if source == "WB":
+        worldbank_index(delete=True)
+    if source == "HDX":
+        hdx_index(delete=True)
+    success = mongo_create_text_index_for_external_sources()
+    if success:
+        return "Indexing successful"
+    else:
+        return "Indexing failed"
+
+
 def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
     """
     Given a query, find all results in mongoDB from FederatedSearchIndex.
