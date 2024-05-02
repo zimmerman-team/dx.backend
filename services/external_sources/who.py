@@ -125,8 +125,9 @@ def who_download(external_dataset):
         data = requests.get(url).json()["value"]
     except Exception:
         return "Sorry, we were unable to download the WHO Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
-
     try:
+        if data == []:
+            return "The dataset is empty, please try a different dataset."
         df = pd.DataFrame(data)
 
         # Drop column if empty
