@@ -153,7 +153,7 @@ def who_download(external_dataset):
 
 
 def _extract_who_code(input_string):
-    pattern = r'WHO Code:\s*([A-Z]+)'
+    pattern = r'WHO Code:\s*([A-Z0-9_]+)'
     match = re.search(pattern, input_string)
     if match:
         return match.group(1)
