@@ -240,11 +240,13 @@ def is_number(s: str):
 
 def is_percentage_column(column: pd.Series):
     """
-    Check whether or not a column is majority percentage numbers.
+    Check whether or not a column is majority percentage strings.
     Considering 75% to be majority
 
     :param column: column to check
-    :return: True if the column is majority percentage strings objects, False otherwise
+    :return: True if the column is majority percentage strings, False otherwise
+
+    This check is done to prevent percentage columns from being parsed as strings.
     """
     try:
         percentage_strings = column.apply(lambda x: isinstance(x, str) and x.endswith('%') and is_number(x[:-1]))
@@ -253,11 +255,14 @@ def is_percentage_column(column: pd.Series):
         total_values = len(column)
         return valid_items_count / total_values > 0.75
     except Exception as e:
-        print(f"Error in is_percentage_column: {str(e)}")
+        logger.error(f"Error in preprocessing data - <is_percentage_column()>: {str(e)}")
         return False
 
 
 def convert_percentage_value(x: str):
+    """
+    Convert a percentage string to a float value
+    """
     try:
         return float(x[:-1])
     except ValueError:
