@@ -240,13 +240,12 @@ def is_number(s: str):
 
 def is_percentage_column(column: pd.Series):
     """
+    This check is done to prevent percentage columns from being parsed as strings.
     Check whether or not a column is majority percentage strings.
     Considering 75% to be majority
 
     :param column: column to check
     :return: True if the column is majority percentage strings, False otherwise
-
-    This check is done to prevent percentage columns from being parsed as strings.
     """
     try:
         percentage_strings = column.apply(lambda x: isinstance(x, str) and x.endswith('%') and is_number(x[:-1]))
@@ -262,6 +261,9 @@ def is_percentage_column(column: pd.Series):
 def convert_percentage_value(x: str):
     """
     Convert a percentage string to a float value
+
+    :param x: percentage string to convert
+    :return: float value of the percentage string or NAN
     """
     try:
         return float(x[:-1])
