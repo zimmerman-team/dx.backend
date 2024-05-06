@@ -230,6 +230,47 @@ def fillna_on_dtype(df):
     return df
 
 
+def is_number(s: str):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def is_percentage_column(column: pd.Series):
+    """
+    This check is done to prevent percentage columns from being parsed as strings.
+    Check whether or not a column is majority percentage strings.
+    Considering 75% to be majority
+
+    :param column: column to check
+    :return: True if the column is majority percentage strings, False otherwise
+    """
+    try:
+        percentage_strings = column.apply(lambda x: isinstance(x, str) and x.endswith('%') and is_number(x[:-1]))
+        valid_items = column[percentage_strings]
+        valid_items_count = valid_items.count()
+        total_values = len(column)
+        return valid_items_count / total_values > 0.75
+    except Exception as e:
+        logger.error(f"Error in preprocessing data - <is_percentage_column()>: {str(e)}")
+        return False
+
+
+def convert_percentage_value(x: str):
+    """
+    Convert a percentage string to a float value
+
+    :param x: percentage string to convert
+    :return: float value of the percentage string or NAN
+    """
+    try:
+        return float(x[:-1])
+    except ValueError:
+        return pd.NA
+
+
 def preprocess_data_df(df):
     """
     Subfunction to preprocess the data in a dataframe.
@@ -249,6 +290,12 @@ def preprocess_data_df(df):
             df[header + "_converted"] = df[header].apply(lambda x: apply_date(x))
             df.drop(columns=[header], inplace=True)
             df.rename(columns={header + "_converted": header}, inplace=True)
+            continue
+
+        has_percentage_values = is_percentage_column(df[header])
+        if has_percentage_values:
+            df[header + ",%"] = df[header].apply(lambda x: convert_percentage_value(x))
+            df.drop(columns=[header], inplace=True)
             continue
 
         has_string_values = df[header].apply(lambda x: has_string(x)).any()
