@@ -92,7 +92,7 @@ def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=Non
         external_source_collection = db[FS_INDEX_DB]
 
         # Construct query to include text search and source filtering if sources are provided
-        mongo_query = {"$text": {"$search": query}}
+        mongo_query = {"$text": {"$search": f"{query}"}}
         if sources:
             mongo_query["source"] = {"$in": sources}
 
@@ -122,7 +122,12 @@ def mongo_create_text_index_for_external_sources():
         client = mongo_client(dev=DEV)
         db = client[DATABASE_NAME]
         external_source_collection = db[FS_INDEX_DB]
-        external_source_collection.create_index([("title", pymongo.TEXT), ("description", pymongo.TEXT)])
+        external_source_collection.create_index([
+            ("title", pymongo.TEXT),
+            ("description", pymongo.TEXT),
+            ("resources.title", pymongo.TEXT),
+            ("resources.description", pymongo.TEXT)
+        ])
         client.close()
         logger.info("Created text index for federated search results.")
         return True
