@@ -1,0 +1,25 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+      with:
+        ref: ${{ github.head_ref }}
+    - name: python
+      uses: actions/setup-python@main
+      with:
+        python-version: 3.11
+    - name: install
+      run: |
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        flake8 services app.py util
