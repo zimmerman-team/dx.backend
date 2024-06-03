@@ -334,5 +334,18 @@ def force_update_hdx():
     return json_return(code, res)
 
 
+# Force updates tgf
+@app.route('/external-sources/force-update-tgf', methods=['GET'])
+def force_update_tgf():
+    logging.debug("route: /external-sources/force-update-tgf - Forcing tgf update")
+    try:
+        res = external_search_force_reindex("TGF")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-tgf - {str(e)}")
+        res = "Sorry, something went wrong in our tgf update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=105, debug=True)
