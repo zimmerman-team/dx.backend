@@ -396,13 +396,10 @@ def preprocess_data(name, create_ssr=False, table=None, db=None, api=None):
         # drop any column that is 95-100% empty
         df.dropna(axis=1, thresh=df.shape[0] * 0.05, inplace=True)
 
-        # make all column names in df a string and sort them alphabetically,
+        # make all column names in df a string.
         # Clean the headers to only a-z, A-Z, 0-9
         df.columns = df.columns.astype(str)
         df.columns = df.columns.str.replace(r'[^a-zA-Z0-9%]', '', regex=True, flags=re.IGNORECASE)
-        logging.debug(f"SORTING:: \ndf.columns: {df.columns}\nsorted(df.columns): {sorted(df.columns)}")
-        df = df.reindex(sorted(df.columns), axis=1)
-        logging.debug(f"df columns after sorting: {df.columns}\n{df.head()}")
         # prefix the headers with the column name
         df_prefix = name[:-extension_length] + '__'
         df.columns = [df_prefix + str(col) for col in df.columns]
