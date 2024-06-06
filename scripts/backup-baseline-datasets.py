@@ -47,7 +47,7 @@ def backup():
 
         # Datasets
         dataset_collection = db["Dataset"]
-        datasets = dataset_collection.find({"public": True})
+        datasets = dataset_collection.find({"baseline": True})
 
         # Making sure the directory exists
         os.makedirs(
