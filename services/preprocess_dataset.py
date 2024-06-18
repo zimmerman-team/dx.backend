@@ -185,7 +185,10 @@ def replace_comma_readable_number(x):
     """
     try:
         if ',' in x:
-            return x.replace(",", "")
+            if '.' in x:
+                return x.replace(",", "")
+            else:
+                return x.replace(",", ".")
         return x
     except Exception:
         return x
