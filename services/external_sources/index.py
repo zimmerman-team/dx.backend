@@ -136,6 +136,8 @@ def _convert_legacy_search_results(all_res):
             if not one_file:
                 new_res["name"] += DATA_FILE + resource.get("title")
                 new_res["description"] += DATA_FILE + resource.get("title")
+            if "QuickCharts" in new_res["name"]:
+                continue
             new_res["source"] = res.get("source")
             new_res["url"] = res.get("URI")
             new_res["category"] = res.get("mainCategory")

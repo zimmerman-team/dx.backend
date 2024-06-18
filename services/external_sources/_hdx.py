@@ -117,6 +117,8 @@ def _create_external_source_object(dataset: Dataset, update=False, update_item=N
             continue
         external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
         external_resource["title"] = re.sub(RE_SUB, '', resource.get("name", "")[:-4]) + f" - Dataset file name: {resource.get('name', '')}"  # NOQA: 501
+        if "QuickCharts" in external_resource["title"]:
+            continue
         try:
             external_resource["description"] = resource.get("description", "") + HDX_SOURCE_NOTICE
         except Exception:
