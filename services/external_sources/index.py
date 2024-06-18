@@ -13,13 +13,14 @@ from dotenv import load_dotenv
 
 from services.external_sources._hdx import hdx_index
 from services.external_sources.kaggle import kaggle_index
+from services.external_sources.tgf import tgf_index
 from services.external_sources.util import (ALL_SOURCES,
                                             LEGACY_EXTERNAL_DATASET_FORMAT)
 from services.external_sources.who import who_index
-from services.external_sources.tgf import tgf_index
 from services.external_sources.worldbank import worldbank_index
 from services.mongo import (mongo_create_text_index_for_external_sources,
-                            mongo_find_external_sources_by_text)
+                            mongo_find_external_sources_by_text,
+                            mongo_get_external_source_by_source)
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -94,7 +95,10 @@ def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset
     :param offset: The offset to start the search from.
     :return: A list of external source objects.
     """
-    res = mongo_find_external_sources_by_text(query, limit=limit, offset=offset, sources=sources)
+    if query == "":
+        res = mongo_get_external_source_by_source(sources, limit=limit, offset=offset)
+    else:
+        res = mongo_find_external_sources_by_text(query, limit=limit, offset=offset, sources=sources)
     # Remove the 'score' and '_id' from every item in res and filter by source
     res = [
         {k: v for k, v in item.items() if k not in ('score', '_id')}

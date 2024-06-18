@@ -112,6 +112,36 @@ def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=Non
         return None
 
 
+def mongo_get_external_source_by_source(sources, limit=None, offset=0):
+    """
+    Connect to the MongoDB and get external source objects by source.
+
+    :param limit: The maximum number of results to return.
+    :param offset: The offset to start the search from.
+    :param sources: A list of sources to filter by.
+    :return: A list of external source objects.
+    """
+    try:
+        client = mongo_client(dev=DEV)
+        db = client[DATABASE_NAME]
+        external_source_collection = db[FS_INDEX_DB]
+
+        external_sources = list(
+            external_source_collection.find(
+                {"source": {"$in": sources}}
+            )
+            # sort on alphabetical order
+            .sort([("title", 1)])
+            .skip(offset)
+            .limit(limit)
+        )
+        client.close()
+        return external_sources
+    except Exception as e:
+        logger.error("Error in get_external_source_by_source: " + str(e))
+        return None
+
+
 def mongo_create_text_index_for_external_sources():
     """
     Connect to the MongoDB and create a text index for the external source objects.

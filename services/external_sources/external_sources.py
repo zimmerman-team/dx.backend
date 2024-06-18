@@ -13,8 +13,6 @@ from services.external_sources.worldbank import worldbank_download
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-DEFAULT_SEARCH_TERM = "world population"
-
 
 def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
     """
@@ -27,8 +25,6 @@ def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None
     :param offset: The offset to start the search from.
     :return: A list of results in the form of an ExternalSource object.
     """
-    if query == "":
-        query = DEFAULT_SEARCH_TERM
     try:
         result = external_search(query, sources, legacy=legacy, limit=limit, offset=offset)
     except Exception as e:
