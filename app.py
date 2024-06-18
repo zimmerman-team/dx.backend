@@ -34,7 +34,7 @@ DX Processing
 
 @app.route('/health-check', methods=['GET'])
 def health_check():
-    return json_return(500, 'OK')
+    return json_return(200, 'OK')
 
 
 @app.route('/upload-file/<string:ds_name>', methods=['GET', 'POST'])
