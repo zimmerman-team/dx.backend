@@ -8,6 +8,9 @@
 ## Create your env file
 - `cp .env.example .env`
 
+## Install Pre-Commit
+- After cloning for the first time, run `pre-commit install` in your environment
+
 ## Kaggle
 For kaggle, as mentioned we need to set up the kaggle token.
 Through docker, we copy it from the dx.backend root directory.
