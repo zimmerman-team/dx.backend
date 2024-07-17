@@ -257,9 +257,17 @@ def external_source_search_limited():
     source = data.get('source', '')
     limit = data.get('limit', 10)
     offset = data.get('offset', 0)
+    sort_by = data.get('sort_by', 'searchScore')
     logging.debug(f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}")
     try:
-        res = search_external_sources(query, source.split(','), legacy=True, limit=limit, offset=offset)
+        res = search_external_sources(
+            query,
+            source.split(','),
+            legacy=True,
+            limit=limit,
+            offset=offset,
+            sort_by=sort_by
+        )
     except Exception as e:
         logging.error(f"Error in route: /external-sources/search-limited/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."

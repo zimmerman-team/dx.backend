@@ -84,7 +84,7 @@ def external_search_force_reindex(source):
         return "Indexing failed"
 
 
-def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
+def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0, sort_by=None):
     """
     Given a query, find all results in mongoDB from FederatedSearchIndex.
 
@@ -96,9 +96,9 @@ def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset
     :return: A list of external source objects.
     """
     if query == "":
-        res = mongo_get_external_source_by_source(sources, limit=limit, offset=offset)
+        res = mongo_get_external_source_by_source(sources, limit=limit, offset=offset, sort_by=sort_by)
     else:
-        res = mongo_find_external_sources_by_text(query, limit=limit, offset=offset, sources=sources)
+        res = mongo_find_external_sources_by_text(query, limit=limit, offset=offset, sources=sources, sort_by=sort_by)
     # Remove the 'score' and '_id' from every item in res and filter by source
     res = [
         {k: v for k, v in item.items() if k not in ('score', '_id')}

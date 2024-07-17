@@ -76,7 +76,7 @@ def mongo_get_all_external_sources():
         return []
 
 
-def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=None):
+def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=None, sort_by=None):
     """
     Connect to the MongoDB and find external source objects by title or description.
 
@@ -96,12 +96,20 @@ def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=Non
         if sources:
             mongo_query["source"] = {"$in": sources}
 
+        sort_style = [("score", {"$meta": "textScore"})]
+        if sort_by == "updatedDate":
+            sort_style = [("dateLastUpdated", -1)]
+        if sort_by == "createdDate":
+            sort_style = [("datePublished", -1)]
+        if sort_by == "name":
+            sort_style = [("title", 1)]
+
         external_sources = list(
             external_source_collection.find(
                 mongo_query,
                 {"score": {"$meta": "textScore"}}
             )
-            .sort([("score", {"$meta": "textScore"})])
+            .sort(sort_style)
             .skip(offset)
             .limit(limit)
         )
@@ -112,7 +120,7 @@ def mongo_find_external_sources_by_text(query, limit=None, offset=0, sources=Non
         return None
 
 
-def mongo_get_external_source_by_source(sources, limit=None, offset=0):
+def mongo_get_external_source_by_source(sources, limit=None, offset=0, sort_by=None):
     """
     Connect to the MongoDB and get external source objects by source.
 
@@ -126,12 +134,20 @@ def mongo_get_external_source_by_source(sources, limit=None, offset=0):
         db = client[DATABASE_NAME]
         external_source_collection = db[FS_INDEX_DB]
 
+        sort_style = [("title", 1)]
+        if sort_by == "name":
+            sort_style = [("title", 1)]
+        if sort_by == "updatedDate":
+            sort_style = [("dateLastUpdated", -1)]
+        if sort_by == "createdDate":
+            sort_style = [("datePublished", -1)]
+
         external_sources = list(
             external_source_collection.find(
                 {"source": {"$in": sources}}
             )
             # sort on alphabetical order
-            .sort([("title", 1)])
+            .sort(sort_style)
             .skip(offset)
             .limit(limit)
         )

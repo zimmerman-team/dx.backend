@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0):
+def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None, offset=0, sort_by=None):
     """
     The search feature triggers the search in MongoDB, and returns the appropriate results.
 
@@ -26,7 +26,7 @@ def search_external_sources(query, sources=ALL_SOURCES, legacy=False, limit=None
     :return: A list of results in the form of an ExternalSource object.
     """
     try:
-        result = external_search(query, sources, legacy=legacy, limit=limit, offset=offset)
+        result = external_search(query, sources, legacy=legacy, limit=limit, offset=offset, sort_by=sort_by)
     except Exception as e:
         logger.error(f"Error in external source search: {str(e)}")
         result = "Sorry, we were unable to search the external sources, please try again with a different search term, or contact the admin for more information."  # noqa
