@@ -10,8 +10,9 @@ from services.external_sources.index import (external_search_force_reindex,
                                              external_search_index)
 from services.mongo import mongo_create_text_index_for_external_sources
 from services.preprocess_dataset import preprocess_data
-from services.ssr import (duplicate_ssr_parsed_files, load_parsed_data,
-                          load_sample_data, remove_ssr_parsed_files)
+from services.ssr import (duplicate_ssr_parsed_files, get_dataset_size,
+                          load_parsed_data, load_sample_data,
+                          remove_ssr_parsed_files)
 from services.util import remove_files
 from util.api import json_return
 from util.configure_logging import confirm_logger
@@ -101,6 +102,27 @@ def duplicate_datasets():
         logging.error(f"Error in route: /duplicate-datasets - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     code = 200 if res == "Success" else 500
+    return json_return(code, res)
+
+
+@app.route('/dataset-size', methods=['POST'])
+def dataset_size():
+    """
+    Get the entire size of datasets in MB
+
+    body: A list of datasetIds to be computed for:
+    [
+        "64f9e7c41ecd970069309b0a", "64f9e7c41ecd970069309b0a"
+    ]
+    """
+    data = request.get_json()
+    logging.debug(f"route: /dataset-size - Getting total size of {len(data)} datasets")  # noqa: E501
+    try:
+        res = get_dataset_size(dataset_ids=data)
+    except Exception as e:
+        logging.error(f"Error in route: /dataset-size - {str(e)}")
+        res = "Sorry, something went wrong in our dataset size computation. Contact the admin for more information."
+    code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)
 
 
