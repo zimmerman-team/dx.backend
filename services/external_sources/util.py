@@ -1,12 +1,12 @@
 # A global that contains the names of all implemented external sources.
-ALL_SOURCES = ["Kaggle", "World Bank", "WHO", "HDX", "TGF"]
+ALL_SOURCES = ["Kaggle", "World Bank", "WHO", "HDX", "TGF", "OECD"]
 # A global representation of the format of any external dataset.
 
 # Definition of the external dataset
 EXTERNAL_DATASET_FORMAT = {
    "title": "",  # External source dataset name
    "description": "",  # External source dataset description
-   "source": "",  # External source name (WB, WHO, Kaggle, HDX, TGF)
+   "source": "",  # External source name (WB, WHO, Kaggle, HDX, TGF, OECD)
    "URI": "",  # URL to read more about the dataset
    "internalRef": "",  # Internal reference to the dataset from the datasource
    "mainCategory": "",  # Category in which to place the dataset

@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 from services.external_sources._hdx import hdx_index
 from services.external_sources.kaggle import kaggle_index
+from services.external_sources.oecd import oecd_index
 from services.external_sources.tgf import tgf_index
 from services.external_sources.util import (ALL_SOURCES,
                                             LEGACY_EXTERNAL_DATASET_FORMAT)
@@ -43,14 +44,16 @@ def external_search_index():
         worldbank_res = executor.submit(worldbank_index)
         who_res = executor.submit(who_index)
         tgf_res = executor.submit(tgf_index)
+        oecd_res = executor.submit(oecd_index)
 
         # Wait for all the index functions to finish
-        concurrent.futures.wait([kaggle_res, hdx_res, worldbank_res, who_res])
+        concurrent.futures.wait([kaggle_res, hdx_res, worldbank_res, who_res, tgf_res, oecd_res])
         logger.info(f"Kaggle index result: {kaggle_res.result()}")
         logger.info(f"HDX index result: {hdx_res.result()}")
         logger.info(f"World Bank index result: {worldbank_res.result()}")
         logger.info(f"WHO index result: {who_res.result()}")
         logger.info(f"TGF index result: {tgf_res.result()}")
+        logger.info(f"OECD index result: {oecd_res.result()}")
 
     success = mongo_create_text_index_for_external_sources()
     logger.info("Done indexing external sources...")
@@ -64,7 +67,7 @@ def external_search_force_reindex(source):
     """
     Shorthand function to force reindex a source.
 
-    :param source: The datasource (Kaggle, WHO, WB, HDX, TGF)
+    :param source: The datasource (Kaggle, WHO, WB, HDX, TGF, OECD)
     :return: A string indicating success
     """
     if source == "Kaggle":
@@ -77,6 +80,8 @@ def external_search_force_reindex(source):
         hdx_index(delete=True)
     if source == "TGF":
         tgf_index(delete=True)
+    if source == "OECD":
+        oecd_index(delete=True)
     success = mongo_create_text_index_for_external_sources()
     if success:
         return "Indexing successful"
