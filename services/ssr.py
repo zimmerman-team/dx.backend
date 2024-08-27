@@ -232,3 +232,26 @@ def load_parsed_data(dataset_id, page: int = 1, page_size: int = 10):
     except Exception as e:
         logger.error(f"Error in load_parsed_data: {str(e)}")
         return "Sorry, we were unable to retrieve the data for this dataset. Contact the admin for more information."
+
+
+def get_dataset_size(dataset_ids):
+    """
+    Compute the size in MB for datasets
+
+    :param dataset_ids: The ids of the datasets
+    """
+    try:
+        total_size_in_mb = 0
+        logger.debug("Computing dataset sizes")
+
+        for dataset_id in dataset_ids:
+            loc = f"{DF_LOC}parsed-data-files/{dataset_id}.json"
+            try:
+                file_stats = os.stat(loc)
+                total_size_in_mb += file_stats.st_size / (1024 * 1024)
+            except FileNotFoundError:
+                continue
+        return total_size_in_mb
+    except Exception as e:
+        logger.error(f"Error in get_dataset_size: {str(e)}")
+        return "Sorry, we were unable to compute the sizes for the dataset(s). Contact the admin for more information."
