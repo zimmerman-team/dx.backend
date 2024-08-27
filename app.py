@@ -184,6 +184,36 @@ def delete_dataset(ds_name):
     return json_return(code, res)
 
 
+@app.route('/delete-datasets', methods=['GET', 'POST'])
+def delete_datasets():
+    """
+    Delete datasets content from the SSR data folders
+
+    :body: A list of datasetIds to be deleted in the format:
+    [
+        "dataset1",
+        "dataset2"
+    ]
+    :return: A string indicating the result of the deletion
+    """
+    data = request.get_json()
+    logging.debug(f"route: /delete-datasets - Deleting {len(data)} datasets")
+    try:
+        errors = []
+        for ds_name in data:
+            res = remove_ssr_parsed_files(ds_name)
+            if res != "Success":
+                errors.append(ds_name)
+        # Remove the dataset from SSR
+        if len(errors) > 0:
+            res = f"Sorry, something went wrong in our dataset deletion for {len(errors)} dataset(s). Contact the admin for more information."  # noqa: E501
+    except Exception as e:
+        logging.error(f"Error in route: /delete-datasets - {str(e)}")
+        res = "Sorry, something went wrong in our dataset deletion. Contact the admin for more information."
+    code = 200 if res == "Success" else 500
+    return json_return(code, res)
+
+
 @app.route('/sample-data/<string:ds_name>', methods=['GET', 'POST'])
 def sample_data(ds_name):
     """
