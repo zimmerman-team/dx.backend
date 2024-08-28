@@ -137,7 +137,7 @@ DATE_FORMATS = [
     "%Y-%m-%d%z",  # yyyy-MM-ddXXX
     "%Y'W'%W%w",  # YYYY'W'wc
     "%Y/%m/%d",  # yyyy/M/d
-    "%Y%m%d",  # yyyyMMdd
+    # "%Y%m%d",  # yyyyMMdd This is disabled, because it leads to false positives on numbers
     "%Y%m%d%z",  # yyyyMMddZ
     "%Y-W%V",  # Week: 2024-W34
     "%G-W%V-%u",  # Week with weekday: 2024-W34-5
@@ -158,8 +158,10 @@ def check_and_convert_dates(df):
     """
     for header in df.columns.tolist():
         # get the first non na value in the column, alphabetically sorted in reverse (for american dates).
-        first_value = df[header].dropna().sort_values(ascending=False).iloc[0]
-
+        try:
+            first_value = df[header].dropna().sort_values(ascending=False).iloc[0]
+        except IndexError:
+            continue
         # get the presumed date format
         presumed_dateformat = None
         has_time = False
@@ -178,11 +180,14 @@ def check_and_convert_dates(df):
         if presumed_dateformat is None:
             continue
         if has_time:
-            df[header] = df[header].apply(
-                lambda x, fmt=presumed_dateformat: datetime.datetime.strptime(str(x), fmt).isoformat())
-            # if all the time values end up as 00:00:00, remove the time
-            if df[header].apply(lambda x: x.endswith("00:00:00")).all():
-                df[header] = df[header].apply(lambda x: x[:10])
+            try:
+                df[header] = df[header].apply(
+                    lambda x, fmt=presumed_dateformat: datetime.datetime.strptime(str(x), fmt).isoformat())
+                # if all the time values end up as 00:00:00, remove the time
+                if df[header].apply(lambda x: x.endswith("00:00:00")).all():
+                    df[header] = df[header].apply(lambda x: x[:10])
+            except ValueError:
+                continue
         else:
             df[header] = df[header].apply(
                 lambda x, fmt=presumed_dateformat: datetime.datetime.strptime(str(x), fmt).strftime("%Y-%m-%d"))
