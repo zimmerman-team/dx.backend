@@ -3,6 +3,7 @@ import logging
 from dotenv import load_dotenv
 
 from services.external_sources._hdx import hdx_download
+from services.external_sources.dw import dw_download
 from services.external_sources.index import external_search
 from services.external_sources.kaggle import kaggle_download
 from services.external_sources.oecd import oecd_download
@@ -62,6 +63,8 @@ def download_external_source(external_dataset):
             result = tgf_download(external_dataset)
         elif source == "OECD":
             result = oecd_download(external_dataset)
+        elif source == "DW":
+            result = dw_download(external_dataset)
     except Exception as e:
         logger.error(f"Error in external source download: {str(e)}")
         result = "Sorry, we were unable to download your selected file. Contact the admin for more information."
