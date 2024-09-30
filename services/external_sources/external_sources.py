@@ -3,6 +3,8 @@ import logging
 from dotenv import load_dotenv
 
 from services.external_sources._hdx import hdx_download
+from services.external_sources.iati import (external_iati_search,
+                                            iati_direct_data)
 from services.external_sources.index import external_search
 from services.external_sources.kaggle import kaggle_download
 from services.external_sources.tgf import tgf_download
@@ -63,3 +65,35 @@ def download_external_source(external_dataset):
         logger.error(f"Error in external source download: {str(e)}")
         result = "Sorry, we were unable to download your selected file. Contact the admin for more information."
     return result
+
+
+def iati_external_source_search(query, selected_fields):
+    """
+    This is a separate function to support searching for IATI data, using IATI.cloud.
+
+    :param query: The query to search for.
+    """
+    try:
+        logger.debug(f"Searching for IATI data with query: {query}, and selected fields: {selected_fields}")
+        code, status = external_iati_search(query, selected_fields)
+        return code, status
+    except Exception as e:
+        logger.error(f"Error in IATI external source search: {str(e)}")
+        return 500, "Sorry, we were unable to process the IATI Query, please try again later. Contact the admin for more information."  # NOQA: 501
+
+
+def iati_external_source_direct(url):
+    """
+    This allows us to search up IATI data provided with an URL, previously saved in a dataset.
+    Then, live data is retrieved and returned.
+
+    :param url: the IATI.cloud url to retrieve the data from
+    :return: A string indicating the result of the download, and the dataset as an object
+    """
+    try:
+        logger.debug(f"Direct connection to IATI through provided URL: {url}")
+        code, status = iati_direct_data(url)
+        return code, status
+    except Exception as e:
+        logger.error(f"Error in IATI external source search: {str(e)}")
+        return 500, "Sorry, we were unable to retrieve live data from our IATI source, please try again later, or use the stored data. Contact the admin for more information."  # NOQA: 501

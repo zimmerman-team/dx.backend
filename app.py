@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, request
 
 from services.external_sources.external_sources import (
-    download_external_source, search_external_sources)
+    download_external_source, iati_external_source_direct,
+    iati_external_source_search, search_external_sources)
 from services.external_sources.index import (external_search_force_reindex,
                                              external_search_index)
 from services.mongo import mongo_create_text_index_for_external_sources
@@ -27,6 +28,7 @@ confirm_logger()
 # Ensure we always have a text index for FederatedSearchIndex
 mongo_create_text_index_for_external_sources()
 
+INDEXING_SUCCESS = "Indexing successful"
 
 """
 DX Processing
@@ -282,7 +284,7 @@ def external_sources_index():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/index - {str(e)}")
         res = "Sorry, something went wrong in our external source indexing. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
 
 
@@ -351,7 +353,7 @@ def force_update_who():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-who - {str(e)}")
         res = "Sorry, something went wrong in our WHO update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
 
 
@@ -364,7 +366,7 @@ def force_update_kaggle():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-kaggle - {str(e)}")
         res = "Sorry, something went wrong in our kaggle update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
 
 
@@ -377,7 +379,7 @@ def force_update_wb():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-wb - {str(e)}")
         res = "Sorry, something went wrong in our wb update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
 
 
@@ -390,7 +392,7 @@ def force_update_hdx():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-hdx - {str(e)}")
         res = "Sorry, something went wrong in our hdx update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
 
 
@@ -403,8 +405,39 @@ def force_update_tgf():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-tgf - {str(e)}")
         res = "Sorry, something went wrong in our tgf update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESS else 500
     return json_return(code, res)
+
+
+# IATI Query
+@app.route('/external-sources/iati', methods=['POST'])
+def iati_query():
+    try:
+        data = request.get_json()
+        query = data.get('query', '')
+        selected_fields = data.get('fl', '').split(',')
+        code, res = iati_external_source_search(query, selected_fields)
+        logging.debug(f"route: /external-sources/iati - IATI query: {query} - {res} - {code}")
+        return json_return(code, res)
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/iati - {str(e)}")
+        res = "Sorry, something went wrong in our IATI query. Contact the admin for more information."
+        return json_return(500, res)
+
+
+# IATI Direct data retrieval through URL
+@app.route('/external-sources/iati-live', methods=['POST'])
+def iati_live():
+    try:
+        data = request.get_json()
+        url = data.get('url', '')
+        code, res = iati_external_source_direct(url)
+        logging.debug(f"route: /external-sources/iati - IATI url: {url} - {res} - {code}")
+        return json_return(code, res)
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/iati - {str(e)}")
+        res = "Sorry, something went wrong in our IATI query. Contact the admin for more information."
+        return json_return(500, res)
 
 
 if __name__ == '__main__':

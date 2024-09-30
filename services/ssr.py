@@ -118,7 +118,7 @@ def get_dataset_stats(df):
         return "Error"
 
 
-def create_ssr_parsed_file(df, prefix="", filename=""):
+def create_ssr_parsed_file(df, prefix="", filename="", save=True):
     """
     We want to prepare the data as JSON with the following properties:
     {
@@ -154,8 +154,29 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
     cleaned_data = [{k: v for k, v in e.items() if not isinstance(v, float) or not math.isnan(v)} for e in data]
     stats = get_dataset_stats(df)
     # save parsed at loc
-    with open(loc, 'w') as f:
-        json.dump({
+    if save:
+        with open(loc, 'w') as f:
+            json.dump({
+                "dataset": cleaned_data,
+                "dataTypes": data_types,
+                "errors": [],
+                # Also include the sample data in the parsed file in case it is useful
+                "count": len(cleaned_data),
+                "sample": cleaned_data[:10],
+                "stats": stats
+            }, f, indent=4)
+
+        # save the first 10 items to the sample data file
+        with open(sample_loc, 'w') as f:
+            json.dump({
+                "dataset": cleaned_data[:10],
+                "dataTypes": data_types,
+                "errors": [],
+                "count": len(cleaned_data),
+                "stats": stats
+            }, f, indent=4)
+    else:
+        return {
             "dataset": cleaned_data,
             "dataTypes": data_types,
             "errors": [],
@@ -163,17 +184,7 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
             "count": len(cleaned_data),
             "sample": cleaned_data[:10],
             "stats": stats
-        }, f, indent=4)
-
-    # save the first 10 items to the sample data file
-    with open(sample_loc, 'w') as f:
-        json.dump({
-            "dataset": cleaned_data[:10],
-            "dataTypes": data_types,
-            "errors": [],
-            "count": len(cleaned_data),
-            "stats": stats
-        }, f, indent=4)
+        }
 
 
 def load_sample_data(dataset_id):
