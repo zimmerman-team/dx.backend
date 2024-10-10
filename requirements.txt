@@ -45,3 +45,6 @@ gunicorn==22.0.0
 
 # Type detection
 chardet==5.1.0
+
+# Data world
+datadotworld==2.0.0
