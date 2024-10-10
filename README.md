@@ -20,6 +20,15 @@ Through docker, we copy it from the dx.backend root directory.
 > Create a JSON or YAML file. The default path is .hdx_configuration.yaml in the current user's home directory. Then put in the YAML file:
 >     `hdx_key: "HDX API KEY"`
 
+## Data.World
+We use `datadotworld`. For this, we retrieve the API key at https://data.world/settings/advanced. 
+Use the following export to locally enable the data.world integration.
+```
+export DW_AUTH_TOKEN=<YOUR_TOKEN>
+```
+
+Use the read/write token.
+
 ## Running
 Local
 ```

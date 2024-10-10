@@ -407,5 +407,31 @@ def force_update_tgf():
     return json_return(code, res)
 
 
+# Force updates oecd
+@app.route('/external-sources/force-update-oecd', methods=['GET'])
+def force_update_oecd():
+    logging.debug("route: /external-sources/force-update-oecd - Forcing oecd update")
+    try:
+        res = external_search_force_reindex("OECD")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-oecd - {str(e)}")
+        res = "Sorry, something went wrong in our oecd update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
+# Force updates dw
+@app.route('/external-sources/force-update-dw', methods=['GET'])
+def force_update_dw():
+    logging.debug("route: /external-sources/force-update-dw - Forcing dw update")
+    try:
+        res = external_search_force_reindex("DW")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-dw - {str(e)}")
+        res = "Sorry, something went wrong in our dw update. Contact the admin for more information."
+    code = 200 if res == "Indexing successful" else 500
+    return json_return(code, res)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=105, debug=True)
