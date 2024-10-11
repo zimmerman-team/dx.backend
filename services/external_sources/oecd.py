@@ -68,7 +68,7 @@ def _create_external_source_object(dataset):
     external_dataset["title"] = _title
     external_dataset["description"] = _desc
     external_dataset["source"] = "OECD"
-    external_dataset["URI"] = OECD_COLS[6]
+    external_dataset["URI"] = dataset[OECD_COLS[6]]
     external_dataset["internalRef"] = dataset[OECD_COLS[0]]
     external_dataset["mainCategory"] = "OECD"
     external_dataset["subCategories"] = []
@@ -77,7 +77,9 @@ def _create_external_source_object(dataset):
     external_dataset["dateSourceLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Build and attach the resources if they are CSV
-    _input = OECD_COLS[6]
+    _input = dataset[OECD_COLS[6]]
+    if "df[ag]=" not in _input or "df[id]=" not in _input:
+        return "Invalid link"
     _end = _input.split("df[ag]=")[1]
     _id = _input.split("df[id]=")[1].split("&")[0]
     resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id},/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
