@@ -33,9 +33,10 @@ def handle_update_log(output: str):
     :return: The output without the first line if the warning is present.
     """
     try:
-        if "Looks like you're using an outdated API Version" in output:
-            logger.info(output.partition('\n')[0])
-            return '\n'.join(output.partition('\n')[1:]).strip()
+        if "Looks like you're using an outdated API Version" in output or "Next Page Token = " in output:
+            parts = output.partition('\n')
+            logger.info(f"KAGGLE:: handle_update_log:: detected malformed output: {parts[0]}")
+            return '\n'.join(parts[1:]).strip()
     except Exception as e:
         logger.error(f"KAGGLE:: Error in handle_update_log: {str(e)}")
     return output
@@ -134,6 +135,13 @@ def _create_external_source_object(row, update=False, update_item=None):
     # read dataset-metadata.json into metadata var
     try:
         metadata = json.load(open("./services/external_sources/staging/dataset-metadata.json"))
+        if isinstance(metadata, str):
+            # if metadata is a string, it means the file is empty or not found
+            try:
+                metadata = json.loads(metadata)
+            except json.JSONDecodeError:
+                logger.error(f"KAGGLE INDEX:: Metadata for {ref} is empty or not valid JSON, skipping.")
+                return f"Metadata for {ref} is empty or not valid JSON, skipping."
     except Exception as e:
         logger.error(f"KAGGLE INDEX:: Unable to read the metadata file for {ref}, skipping: {str(e)}")  # NOQA: 501
         return f"Unable to read the metadata file for {ref}, skipping."
@@ -164,7 +172,6 @@ def _create_external_source_object(row, update=False, update_item=None):
     external_dataset["datePublished"] = row["lastUpdated"]  # Kaggle only provides the lastUpdated date
     external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     external_dataset["dateSourceLastUpdated"] = row["lastUpdated"]  # Kaggle only provides the lastUpdated date
-
     for i in range(len(filenames)):
         file_ref = filenames[i]
         f = pretty_filenames[i]
@@ -200,9 +207,7 @@ def _get_filenames(ref, pretty=False):
     # get the files for the dataset
     command = f"kaggle datasets files -v {ref}"
     output = subprocess.check_output(command, shell=True, text=True)
-
     output = handle_update_log(output)
-
     # If the output does not start with name,size,creationDate,return an error
     if "name,size,creationDate" not in output:
         logger.error(f"KAGGLE:: Error in _get_filenames - files are not found, maybe there is a kaggle update: {output}")  # NOQA: 501
