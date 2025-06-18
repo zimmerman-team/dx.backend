@@ -39,7 +39,7 @@ def external_search_index():
     """
     logger.info("Indexing external sources...")
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        # Fire the 4 index functions at the same time
+        # Fire the index functions at the same time
         kaggle_res = executor.submit(kaggle_index)
         hdx_res = executor.submit(hdx_index)
         worldbank_res = executor.submit(worldbank_index)
@@ -114,11 +114,39 @@ def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset
         for item in res
         if item.get('source') in sources
     ]
+    res = [item for item in res if validate_search_result(item, query) ]
     # For legacy requests, convert the results
     if legacy:
         res = _convert_legacy_search_results(res)
 
     return res
+
+
+def validate_search_result(item, query):
+    """
+    Validate the search result against the query.
+    This function checks if the query is present in the title or description of the item.
+
+    :param item: The search result item to validate.
+    :param query: The query text to check against.
+    :return: True if the item is valid, False otherwise.
+    """
+    # If the query is empty, or contains quotes, we return True to include all results.
+    if not query or '"' in query:
+        return True
+    query = query.lower()
+    # split query on spaces and commas
+    query = query.split()
+    query = [q.strip() for q in query if q.strip()]  # remove empty strings
+    logger.info("validating result with query: %s", query)
+    title = item.get("title", "").lower()
+    description = item.get("description", "").lower()
+    logger.info("title: %s, description: %s", title, description)
+    for q in query:
+        if not q in title and not q in description:
+            print("Q not in title or description:", q, title, description)
+            return False
+    return True
 
 
 def _convert_legacy_search_results(all_res):
