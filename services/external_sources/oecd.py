@@ -1,6 +1,7 @@
 import copy
 import datetime
 import logging
+from urllib.parse import parse_qs, unquote, urlparse
 
 import pandas as pd
 
@@ -106,7 +107,7 @@ def _create_external_source_object(dataset):
 def oecd_download(external_dataset):
     logger.debug("OECD:: Downloading oecd dataset")
     try:
-        url = external_dataset["url"]
+        url = convert_oecd_url(external_dataset["url"])
         df = pd.read_csv(url)
         try:
             res = preprocess_data(df, create_ssr=True)
@@ -141,3 +142,34 @@ def _get_end_and_id_from_url(_input):
             _end = None
             _id = None
     return _end, _id
+
+
+def convert_oecd_url(original_url):
+    # Parse the URL and extract the query string parameters
+    parsed_url = urlparse(original_url)
+    query_params = parse_qs(parsed_url.query)
+
+    # Extract required parts
+    df_ag = query_params.get('df[ag]', [None])[0]
+    df_id = query_params.get('df[id]', [None])[0]
+
+    # Decode and sanitize
+    if df_ag is None or df_id is None:
+        df_ag = query_params.get('df%5bag%5d', [None])[0]
+        df_id = query_params.get('df%5bid%5d', [None])[0]
+    if df_ag is None or df_id is None:
+        df_ag = query_params.get('dataflow[agencyId]', [None])[0]
+        df_id = query_params.get('dataflow[dataflowId]', [None])[0]
+    if df_ag is None or df_id is None:
+        raise ValueError("Required parameters 'df[ag]' and 'df[id]' not found in the URL")
+    df_id = unquote(df_id)
+    df_ag = unquote(df_ag)
+
+    # Construct new SDMX API URL
+    new_url = (
+        f"https://sdmx.oecd.org/public/rest/data/"
+        f"{df_ag},{df_id}"
+        f"?startPeriod=2020&endPeriod=2025&dimensionAtObservation=AllDimensions&format=csvfilewithlabels"
+    )
+
+    return new_url
