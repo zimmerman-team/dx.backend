@@ -8,7 +8,11 @@ from services.external_sources.external_sources import (
     download_external_source, search_external_sources)
 from services.external_sources.index import (external_search_force_reindex,
                                              external_search_index)
-from services.mongo import mongo_create_text_index_for_external_sources
+from services.mongo import (
+  mongo_create_text_index_for_external_sources, 
+  mongo_migrate_local_parsed_data_files,
+  mongo_create_index_for_dataset_data
+)
 from services.preprocess_dataset import preprocess_data
 from services.ssr import (duplicate_ssr_parsed_files, get_dataset_size,
                           load_parsed_data, load_sample_data,
@@ -26,6 +30,9 @@ app = Flask(__name__)
 confirm_logger()
 # Ensure we always have a text index for FederatedSearchIndex
 mongo_create_text_index_for_external_sources()
+
+# Ensure we have an index for dataset data
+mongo_create_index_for_dataset_data()
 
 
 """
@@ -432,6 +439,21 @@ def force_update_dw():
     code = 200 if res == "Indexing successful" else 500
     return json_return(code, res)
 
+# Migrate ParsedData to MongoDB
+@app.route('/migrate-parsed-data', methods=['GET'])
+def migrate_parsed_data():
+    """
+    Migrate parsed data from the old format to the new MongoDB format.
+    This is a one-time operation to ensure all parsed data is in the correct format.
+    """
+    logging.debug("route: /migrate-parsed-data - Migrating parsed data to MongoDB")
+    try:
+        # This function should be implemented in services/mongo.py
+        res = mongo_migrate_local_parsed_data_files()
+    except Exception as e:
+        logging.error(f"Error in route: /migrate-parsed-data - {str(e)}")
+        res = "Sorry, something went wrong during migration. Contact the admin for more information."
+    return json_return(200, res)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=105, debug=True)

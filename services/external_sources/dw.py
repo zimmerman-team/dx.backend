@@ -2,7 +2,6 @@ import copy
 import datetime
 import logging
 import re
-import pandas as pd
 import datadotworld as dw
 
 from services.external_sources.util import (EXTERNAL_DATASET_FORMAT,
@@ -36,7 +35,8 @@ def dw_index(delete=False):
     n_ds = 0
     n_success = 0
     for dataset in all_dataset.get('records'):
-        if dataset.get('license') not in ['Public Domain', 'CC0', 'CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'CC-BY-NC-ND', 'CC-BY-ND']:
+        if dataset.get('license') not in ['Public Domain', 'CC0', 'CC-BY', 'CC-BY-SA',
+                                          'CC-BY-NC', 'CC-BY-NC-SA', 'CC-BY-NC-ND', 'CC-BY-ND']:
             continue
         n_ds += 1
         # We use the name as the internal ref, as the id might change.
@@ -76,7 +76,6 @@ def _create_external_source_object(dataset, update=False, update_item=None):
         external_dataset["resources"] = []
     else:
         external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
-
 
     # Build the external dataset
     external_dataset["title"] = dataset.get("title", "")

@@ -1,11 +1,20 @@
-import json
 import logging
 import math
-import os
-import shutil
+import bson
 
 import pandas as pd
 
+from services.mongo import (
+    mongo_duplicate_dataset_data,
+    mongo_get_dataset_size_in_bytes,
+    mongo_delete_documents,
+    mongo_update_document_by_id,
+    mongo_get_document_by_id,
+    mongo_insert_documents,
+    mongo_get_documents,
+    DATASET_COLLECTION,
+    PARSED_DATA_COLLECTION
+)
 from services.util import setup_parsed_loc, setup_solr_url, setup_ssr_loc
 
 logger = logging.getLogger(__name__)
@@ -31,13 +40,9 @@ def remove_ssr_parsed_files(ds_name):
     try:
         if ds_name.startswith('dx'):
             ds_name = ds_name[2:]
-        parsed_df = f"{DF_LOC}parsed-data-files/{ds_name}.json"
-        sample_df = f"{DF_LOC}sample-data-files/{ds_name}.json"
-        # remove the parsed files if they exist
-        if os.path.exists(parsed_df):
-            os.remove(parsed_df)
-        if os.path.exists(sample_df):
-            os.remove(sample_df)
+        count = mongo_delete_documents(PARSED_DATA_COLLECTION, {"datasetId": bson.ObjectId(ds_name)})
+        if count == 0:
+            return "Sorry, this dataset is not available. Please contact the admin for more information."
         return "Success"
     except Exception as e:
         logger.error(f"Error in remove_ssr_parsed_files: {str(e)}")
@@ -58,15 +63,8 @@ def duplicate_ssr_parsed_files(ds_name, new_ds_name):
             ds_name = ds_name[2:]
         if new_ds_name.startswith('dx'):
             new_ds_name = new_ds_name[2:]
-        parsed_df = f"{DF_LOC}parsed-data-files/{ds_name}.json"
-        sample_df = f"{DF_LOC}sample-data-files/{ds_name}.json"
-        new_parsed_df = f"{DF_LOC}parsed-data-files/{new_ds_name}.json"
-        new_sample_df = f"{DF_LOC}sample-data-files/{new_ds_name}.json"
-        # duplicate the parsed files if they exist
-        if os.path.exists(parsed_df):
-            shutil.copy(parsed_df, new_parsed_df)
-        if os.path.exists(sample_df):
-            shutil.copy(sample_df, new_sample_df)
+
+        mongo_duplicate_dataset_data(ds_name, new_ds_name)
         return "Success"
     except Exception as e:
         logger.error(f"Error in duplicate_ssr_parsed_files: {str(e)}")
@@ -136,9 +134,7 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
     """
     logger.debug("Creating SSR parsed file")
     # if filename starts with dx, remove the dx
-    name = filename[2:] if filename.startswith('dx') else filename
-    loc = f"{DF_LOC}parsed-data-files/{name}.json"
-    sample_loc = f"{DF_LOC}sample-data-files/{name}.json"
+    file_id = filename[2:] if filename.startswith('dx') else filename
     # Remove the prefix if present
     df.columns = df.columns.str.replace(prefix, "")
 
@@ -149,31 +145,31 @@ def create_ssr_parsed_file(df, prefix="", filename=""):
     date_columns = df.select_dtypes(include=['datetime64']).columns
     df[date_columns] = df[date_columns].applymap(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else x)
 
+    stats = get_dataset_stats(df)
+
+    df['datasetId'] = bson.ObjectId(file_id)
+
     # Convert data to a dictionary
     data = df.to_dict(orient="records")
     cleaned_data = [{k: v for k, v in e.items() if not isinstance(v, float) or not math.isnan(v)} for e in data]
-    stats = get_dataset_stats(df)
-    # save parsed at loc
-    with open(loc, 'w') as f:
-        json.dump({
-            "dataset": cleaned_data,
-            "dataTypes": data_types,
-            "errors": [],
-            # Also include the sample data in the parsed file in case it is useful
-            "count": len(cleaned_data),
-            "sample": cleaned_data[:10],
-            "stats": stats
-        }, f, indent=4)
 
-    # save the first 10 items to the sample data file
-    with open(sample_loc, 'w') as f:
-        json.dump({
-            "dataset": cleaned_data[:10],
-            "dataTypes": data_types,
-            "errors": [],
-            "count": len(cleaned_data),
-            "stats": stats
-        }, f, indent=4)
+    # Update current dataset document in mongodb with stats
+
+    count = mongo_update_document_by_id(DATASET_COLLECTION, file_id, {
+        "stats": stats,
+        "dataTypes": data_types,
+        "count": len(cleaned_data),
+        "errors": [],
+        "sample": [{k: v for k, v in record.items() if k != 'datasetId'} for record in cleaned_data[:10]],
+        })
+    if count == 0:
+        logger.error(f"Dataset with id {file_id} not found in the database.")
+        return "Sorry, this dataset is not available. Please contact the admin for more information."
+
+    # Save dataset data to mongodb
+    mongo_insert_documents(PARSED_DATA_COLLECTION, cleaned_data)
+
+    logger.info("SSR parsed file created successfully")
 
 
 def load_sample_data(dataset_id):
@@ -185,18 +181,15 @@ def load_sample_data(dataset_id):
     """
     try:
         logger.debug("Sampling data")
-        loc = f"{DF_LOC}sample-data-files/{dataset_id}.json"
-        try:
-            with open(loc, 'r') as f:
-                data = json.load(f)
-        except Exception:
+        data = mongo_get_document_by_id(DATASET_COLLECTION, dataset_id)
+        if not data:
             return "Sorry, this dataset is not available. Please contact the admin for more information."
         res = {
-            "count": data["count"],
-            "dataTypes": data["dataTypes"],
-            "sample": data["dataset"][:10],
-            "filterOptionGroups": list(data["dataTypes"].keys()),
-            "stats": data["stats"]
+            "count": data.get("count", 0),
+            "dataTypes": data.get("dataTypes", {}),
+            "sample": data.get("sample", []),
+            "filterOptionGroups": list(data.get("dataTypes", {}).keys()),
+            "stats": data.get("stats", [])
         }
 
         return res
@@ -217,16 +210,22 @@ def load_parsed_data(dataset_id, page: int = 1, page_size: int = 10):
     """
     try:
         logger.debug("Loading parsed data, paginated")
-        loc = f"{DF_LOC}parsed-data-files/{dataset_id}.json"
-        with open(loc, 'r') as f:
-            data = json.load(f)
+        data = mongo_get_document_by_id(DATASET_COLLECTION, dataset_id)
+        if not data:
+            return "Sorry, this dataset is not available. Please contact the admin for more information."
 
         start = (page - 1) * page_size
-        end = start + page_size
+        documents = mongo_get_documents(
+                PARSED_DATA_COLLECTION,
+                {"datasetId": bson.ObjectId(dataset_id)},
+                skip=start,
+                limit=page_size,
+                sort_by="datasetId"
+            )
         res = {
-            "count": data["count"],
-            "data": data["dataset"][start:end]
-        }
+            "count": data.get("count", 0),
+            "data": [{k: v for k, v in record.items() if k not in ['datasetId', '_id']} for record in documents],
+            }
 
         return res
     except Exception as e:
@@ -243,14 +242,10 @@ def get_dataset_size(dataset_ids):
     try:
         total_size_in_mb = 0
         logger.debug("Computing dataset sizes")
-
         for dataset_id in dataset_ids:
-            loc = f"{DF_LOC}parsed-data-files/{dataset_id}.json"
-            try:
-                file_stats = os.stat(loc)
-                total_size_in_mb += file_stats.st_size / (1024 * 1024)
-            except FileNotFoundError:
-                continue
+            size = mongo_get_dataset_size_in_bytes(dataset_id)
+            total_size_in_mb += size / (1024 * 1024)
+
         return total_size_in_mb
     except Exception as e:
         logger.error(f"Error in get_dataset_size: {str(e)}")

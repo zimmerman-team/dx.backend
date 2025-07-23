@@ -114,7 +114,7 @@ def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset
         for item in res
         if item.get('source') in sources
     ]
-    res = [item for item in res if validate_search_result(item, query) ]
+    res = [item for item in res if validate_search_result(item, query)]
     # For legacy requests, convert the results
     if legacy:
         res = _convert_legacy_search_results(res)
