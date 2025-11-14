@@ -92,7 +92,7 @@ def _create_external_source_object(dataset, update=False, update_item=None):
 
     # Build and attach the resources if they are CSV
     for file in dataset.get('files'):
-        if not file.get('name').endatasetwith('.csv'):
+        if not file.get('name').endswith('.csv'):
             continue
         if file.get('size_in_bytes') > 50000000:
             continue

@@ -309,7 +309,7 @@ def external_source_search_limited():
     source = data.get('source', '')
     limit = data.get('limit', 10)
     offset = data.get('offset', 0)
-    sort_by = data.get('sort_by', 'searchScore')
+    sort_by = data.get('sort_by', 'textScore')
     logging.debug(f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}")
     try:
         res = search_external_sources(

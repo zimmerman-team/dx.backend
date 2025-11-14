@@ -7,7 +7,7 @@ flake8==6.0.0
 isort==5.12.0
 
 # Kaggle connection
-kaggle==1.6.6
+kaggle==1.7.4.5
 # Worldbank connection
 wbgapi==1.0.12
 # HDX Connection
@@ -41,7 +41,7 @@ requests==2.32.0
 urllib3==1.26.20
 
 # Server hosting
-gunicorn==22.0.0
+gunicorn==23.0.0
 
 # Type detection
 chardet==5.1.0

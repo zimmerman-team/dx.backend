@@ -1,6 +1,7 @@
 import copy
 import datetime
 import logging
+from urllib.parse import parse_qs, unquote, urlparse
 
 import pandas as pd
 
@@ -14,8 +15,8 @@ logger = logging.getLogger(__name__)
 RE_SUB = r'[^a-zA-Z0-9]'
 OECD_COLS = [
     'OECD.Stat Dataset code', 'OECD.Stat Dataset name (EN)', 'OECD.Stat Dataset name (FR)',
-    'OECD.Stat link', 'OECD Data Explorer dataset name (EN)', 'OECD Data Explorer dataset name (FR)',
-    'OECD Data Explorer link'
+    'OECD.Stat url', 'OECD Data Explorer dataset name (EN)', 'OECD Data Explorer dataset name (FR)',
+    'OECD Data Explorer url'
 ]
 
 
@@ -33,8 +34,8 @@ def oecd_index(delete=True):
     logger.info("OECD:: Indexing OECD data...")
     # Get datasets
     url = "https://gitlab.com/sis-cc/topologies/oecd-migration/-/raw/main/OECDDatasetsCorrespondence.xlsx"
-    df = pd.read_excel(url, header=12)  # Drop first 12 rows, as the datasets start at 13
-    df = df.iloc[:, :-2]  # Drop the last 2 columns, as they are unused references
+    df = pd.read_excel(url, header=5)  # Drop first 12 rows, as the datasets start at 13
+    df = df.iloc[:, :-1]  # Drop the last column, as they are unused references
     n_ds = 0
     n_success = 0
     # for row in df.iterrows():
@@ -84,6 +85,7 @@ def _create_external_source_object(dataset):
     _id = _input.split("df[id]=")[1].split("&")[0]
     resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id},/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
 
+    resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id}/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
     external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
     external_resource["title"] = _title
     external_resource["description"] = _desc
@@ -106,7 +108,7 @@ def _create_external_source_object(dataset):
 def oecd_download(external_dataset):
     logger.debug("OECD:: Downloading oecd dataset")
     try:
-        url = external_dataset["url"]
+        url = convert_oecd_url(external_dataset["url"])
         df = pd.read_csv(url)
         try:
             res = preprocess_data(df, create_ssr=True)
@@ -117,3 +119,58 @@ def oecd_download(external_dataset):
         logger.error(f"OECD:: Failed to download file: {str(e)}")
         res = "Sorry, we were unable to download the OECD Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
     return res
+
+
+def _get_end_and_id_from_url(_input):
+    try:
+        _end = _input.split("df[ag]=")[1]
+        _id = _input.split("df[id]=")[1].split("&")[0]
+    except IndexError:
+        _end = None
+        _id = None
+    if not _end or not _id:
+        try:
+            _end = _input.split("df%5bag%5d=")[1].split("&")[0]
+            _id = _input.split("df%5bid%5d=")[1].split("&")[0]
+        except IndexError:
+            _end = None
+            _id = None
+    if not _end or not _id:
+        try:
+            _end = _input.split("dataflow[datasourceId]=")[1].split("&")[0]
+            _id = _input.split("dataflow[agencyId]=")[1].split("&")[0]
+        except IndexError:
+            _end = None
+            _id = None
+    return _end, _id
+
+
+def convert_oecd_url(original_url):
+    # Parse the URL and extract the query string parameters
+    parsed_url = urlparse(original_url)
+    query_params = parse_qs(parsed_url.query)
+
+    # Extract required parts
+    df_ag = query_params.get('df[ag]', [None])[0]
+    df_id = query_params.get('df[id]', [None])[0]
+
+    # Decode and sanitize
+    if df_ag is None or df_id is None:
+        df_ag = query_params.get('df%5bag%5d', [None])[0]
+        df_id = query_params.get('df%5bid%5d', [None])[0]
+    if df_ag is None or df_id is None:
+        df_ag = query_params.get('dataflow[agencyId]', [None])[0]
+        df_id = query_params.get('dataflow[dataflowId]', [None])[0]
+    if df_ag is None or df_id is None:
+        raise ValueError("Required parameters 'df[ag]' and 'df[id]' not found in the URL")
+    df_id = unquote(df_id)
+    df_ag = unquote(df_ag)
+
+    # Construct new SDMX API URL
+    new_url = (
+        f"https://sdmx.oecd.org/public/rest/data/"
+        f"{df_ag},{df_id}"
+        f"?startPeriod=2020&endPeriod=2025&dimensionAtObservation=AllDimensions&format=csvfilewithlabels"
+    )
+
+    return new_url
