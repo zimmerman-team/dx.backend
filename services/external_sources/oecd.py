@@ -79,10 +79,11 @@ def _create_external_source_object(dataset):
 
     # Build and attach the resources if they are CSV
     _input = dataset[OECD_COLS[6]]
-    _end, _id = _get_end_and_id_from_url(_input)
-    if not _end or not _id:
-        logger.error(f"OECD:: Failed to parse URL: {_input}")
-        return "Failed to parse the dataset URL."
+    if "df[ag]=" not in _input or "df[id]=" not in _input:
+        return "Invalid link"
+    _end = _input.split("df[ag]=")[1]
+    _id = _input.split("df[id]=")[1].split("&")[0]
+    resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id},/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
 
     resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id}/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
     external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
