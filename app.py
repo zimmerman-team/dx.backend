@@ -104,7 +104,7 @@ def health_check():
     return json_return(200, "OK")
 
 
-@app.route("/upload-file/<string:ds_name>", methods=["GET", "POST"])
+@app.route("/upload-file/<string:ds_name>", methods=["POST"])
 def process_dataset(ds_name):
     logging.debug(
         f"route: /upload-file/<string:ds_name> - Processing dataset {ds_name}"
@@ -130,7 +130,7 @@ def process_dataset(ds_name):
 
 
 @app.route(
-    "/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["GET", "POST"]
+    "/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["POST"]
 )
 def duplicate_dataset(ds_name, new_ds_name):
     logging.debug(
@@ -151,7 +151,7 @@ def duplicate_dataset(ds_name, new_ds_name):
     return json_return(code, res)
 
 
-@app.route("/duplicate-datasets", methods=["GET", "POST"])
+@app.route("/duplicate-datasets", methods=["POST"])
 def duplicate_datasets():
     """
     Duplicate a list of datasets
@@ -211,7 +211,7 @@ def dataset_size():
     return json_return(code, res)
 
 
-@app.route("/upload-file/<string:ds_name>/<string:table>", methods=["GET", "POST"])
+@app.route("/upload-file/<string:ds_name>/<string:table>", methods=["POST"])
 def process_dataset_sqlite(ds_name, table):
     logging.debug(
         f"route: /upload-file/<string:ds_name>/<string:table> - Processing dataset {ds_name} with table {table}"
@@ -232,7 +232,7 @@ def process_dataset_sqlite(ds_name, table):
 
 @app.route(
     "/upload-file/<string:ds_name>/<string:username>/<string:password>/<string:host>/<string:port>/<string:database>/<string:table>",  # NOQA: E501
-    methods=["GET", "POST"],
+    methods=["POST"],
 )
 def process_dataset_sql(ds_name, username, password, host, port, database, table):
     logging.debug(
@@ -260,7 +260,7 @@ def process_dataset_sql(ds_name, username, password, host, port, database, table
 
 @app.route(
     "/upload-file/<string:ds_name>/<string:api_url>/<string:json_root>/<string:xml_root>",
-    methods=["GET", "POST"],
+    methods=["POST"],
 )  # noqa: E501
 def process_dataset_api(ds_name, api_url, json_root, xml_root):
     logging.debug(
@@ -283,7 +283,7 @@ def process_dataset_api(ds_name, api_url, json_root, xml_root):
     return res
 
 
-@app.route("/delete-dataset/<string:ds_name>", methods=["GET", "POST"])
+@app.route("/delete-dataset/<string:ds_name>", methods=["POST"])
 def delete_dataset(ds_name):
     """
     Delete the dataset's content from the SSR data folders
@@ -313,7 +313,7 @@ def delete_dataset(ds_name):
     return json_return(code, res)
 
 
-@app.route("/delete-datasets", methods=["GET", "POST"])
+@app.route("/delete-datasets", methods=["POST"])
 def delete_datasets():
     """
     Delete datasets content from the SSR data folders
@@ -345,7 +345,7 @@ def delete_datasets():
     return json_return(code, res)
 
 
-@app.route("/sample-data/<string:ds_name>", methods=["GET", "POST"])
+@app.route("/sample-data/<string:ds_name>", methods=["GET"])
 def sample_data(ds_name):
     """
     Return sample data for a given dataset id
@@ -360,7 +360,7 @@ def sample_data(ds_name):
     return json_return(code, res)
 
 
-@app.route("/dataset/<string:ds_name>", methods=["GET", "POST"])
+@app.route("/dataset/<string:ds_name>", methods=["GET"])
 def get_dataset(ds_name):
     """
     Return the dataset for a given dataset id
@@ -559,4 +559,4 @@ def force_update_dw():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=105, debug=True)
+    app.run(host="0.0.0.0", port=105)
