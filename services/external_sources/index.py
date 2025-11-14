@@ -114,7 +114,7 @@ def external_search(query, sources=ALL_SOURCES, legacy=False, limit=None, offset
         for item in res
         if item.get('source') in sources
     ]
-    res = [item for item in res if validate_search_result(item, query) ]
+    res = [item for item in res if validate_search_result(item, query)]
     # For legacy requests, convert the results
     if legacy:
         res = _convert_legacy_search_results(res)
@@ -143,7 +143,7 @@ def validate_search_result(item, query):
     description = item.get("description", "").lower()
     logger.info("title: %s, description: %s", title, description)
     for q in query:
-        if not q in title and not q in description:
+        if q not in title and q not in description:
             print("Q not in title or description:", q, title, description)
             return False
     return True
