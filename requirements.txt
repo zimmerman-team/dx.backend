@@ -38,7 +38,7 @@ pymssql==2.2.8  # MSSQL connection
 oracledb==1.4.0  # Oracle connection
 
 # URL connection
-requests==2.32.0
+requests==2.32.4
 urllib3==1.26.20
 
 # Server hosting
