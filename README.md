@@ -68,7 +68,7 @@ Stop it with `pkill gunicorns`
 When setting up the repository, after locally setting up an environment, ensure pre-commit is installed:
 
 - Add pre-commit: `uv add pre-commit` or `pip install pre-commit`.
-- Install pre-commit to git: `uv run pre-commit --install` or `pre-commit --install`.
+- Install pre-commit to git: `uv run pre-commit install` or `pre-commit install`.
 - Install the commit hook to git: `uv run pre-commit install --hook-type commit-msg` or `pre-commit install --hook-type commit-msg`.
 
 ### Code Management
