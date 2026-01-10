@@ -164,14 +164,12 @@ def check_and_convert_dates(df):
             continue
         # get the presumed date format
         presumed_dateformat = None
-        has_time = False
         for date_format in DATE_FORMATS:
             # check if my_date is in the date_format
             try:
                 # value is not used, just checking for a ValueError
                 datetime.datetime.strptime(str(first_value), date_format)
                 presumed_dateformat = date_format
-                has_time = "H" in date_format or "I" in date_format
                 break
             except ValueError:
                 continue
@@ -179,18 +177,7 @@ def check_and_convert_dates(df):
         # Convert to YYYY-MM-DD if there is no time, otherwise convert to ISO8601
         if presumed_dateformat is None:
             continue
-        if has_time:
-            try:
-                df[header] = df[header].apply(
-                    lambda x, fmt=presumed_dateformat: datetime.datetime.strptime(str(x), fmt).isoformat())
-                # if all the time values end up as 00:00:00, remove the time
-                if df[header].apply(lambda x: x.endswith("00:00:00")).all():
-                    df[header] = df[header].apply(lambda x: x[:10])
-            except ValueError:
-                continue
-        else:
-            df[header] = df[header].apply(
-                lambda x, fmt=presumed_dateformat: datetime.datetime.strptime(str(x), fmt).strftime("%Y-%m-%d"))
+        df[header] = pd.to_datetime(df[header], format=presumed_dateformat)
     return df
 
 
