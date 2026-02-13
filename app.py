@@ -8,7 +8,10 @@ from rb_core_backend.data_management import RBCoreDataManagement
 from rb_core_backend.external_sources.index import RBCoreExternalSources
 from rb_core_backend.external_sources.kaggle import RBCoreExternalSourceKaggle
 from rb_core_backend.mongo import RBCoreBackendMongo
-from rb_core_backend.preprocess_dataset import PreprocessDataOptions, RBCoreDatasetPreprocessor
+from rb_core_backend.preprocess_dataset import (
+    PreprocessDataOptions,
+    RBCoreDatasetPreprocessor,
+)
 from rb_core_backend.util import configure_logger, json_return, remove_files
 
 from services.external_sources._hdx import DXExternalSourceHDX
@@ -111,7 +114,7 @@ def process_dataset(ds_name):
     )
     try:
         # Preprocess
-        preprocess_res = dataset_preprocessor.preprocess_data(ds_name, create_ssr=True)
+        preprocess_res = dataset_preprocessor.preprocess_data(ds_name, create_ds=True)
         if preprocess_res != "Success":
             return json_return(500, preprocess_res)
         # Create a solr core and post the dataset
@@ -129,9 +132,7 @@ def process_dataset(ds_name):
     return res
 
 
-@app.route(
-    "/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["POST"]
-)
+@app.route("/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["POST"])
 def duplicate_dataset(ds_name, new_ds_name):
     logging.debug(
         f"route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - Duplicating dataset {ds_name} to {new_ds_name}"  # NOQA: E501
@@ -218,7 +219,7 @@ def process_dataset_sqlite(ds_name, table):
     )  # noqa: E501
     try:
         # Preprocess
-        dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, table=table)
+        dataset_preprocessor.preprocess_data(ds_name, create_ds=True, table=table)
         remove_files([ds_name])
         res = "Success"
     except Exception as e:
@@ -248,7 +249,7 @@ def process_dataset_sql(ds_name, username, password, host, port, database, table
             "database": database,
             "table": table,
         }
-        res = dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, db=db)
+        res = dataset_preprocessor.preprocess_data(ds_name, create_ds=True, db=db)
     except Exception as e:
         logging.error(
             f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}"
@@ -273,7 +274,7 @@ def process_dataset_api(ds_name, api_url, json_root, xml_root):
             "json_root": json_root,
             "xml_root": xml_root,
         }
-        dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, api=api)
+        dataset_preprocessor.preprocess_data(ds_name, create_ds=True, api=api)
         res = "Success"
     except Exception as e:
         logging.error(

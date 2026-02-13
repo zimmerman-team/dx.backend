@@ -15,7 +15,7 @@ kaggle==1.7.4.5
 # Worldbank connection
 wbgapi==1.0.12
 # HDX Connection
-hdx-python-api==6.2.6
+hdx-python-api==6.6.3
 
 # Data processing
 pandas==2.0.3
