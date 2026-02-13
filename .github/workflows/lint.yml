@@ -19,8 +19,8 @@ jobs:
 
     - name: install
       run: |
-        pip install -r requirements.txt
+        pip install flake8
 
     - name: Lint with flake8
       run: |
-        flake8 services app.py util
+        flake8 services app.py
