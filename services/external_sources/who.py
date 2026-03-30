@@ -13,9 +13,7 @@ from rb_core_backend.mongo import RBCoreBackendMongo
 from rb_core_backend.preprocess_dataset import RBCoreDatasetPreprocessor
 
 logger = logging.getLogger(__name__)
-WB_SOURCE_NOTICE = (
-    "  - This Datasource was retrieved from https://apps.who.int/gho/athena/api/GHO."
-)
+WB_SOURCE_NOTICE = "  - This Datasource was retrieved from https://apps.who.int/gho/athena/api/GHO."
 
 
 class DXExternalSourceWHO(ExternalSourceModel):
@@ -41,9 +39,7 @@ class DXExternalSourceWHO(ExternalSourceModel):
             logger.info("WHO:: - Removing old WHO data")
             self.mongo_client.mongo_remove_data_for_external_sources("WHO")
         existing_external_sources = self.mongo_client.mongo_get_all_external_sources()
-        existing_external_sources = {
-            source["internalRef"]: source for source in existing_external_sources
-        }
+        existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
 
         # Get WHO data
         gho_xml_url = "https://apps.who.int/gho/athena/api/GHO"
@@ -67,9 +63,7 @@ class DXExternalSourceWHO(ExternalSourceModel):
                 if res == "Success":
                     n_success += 1
             except Exception as e:
-                logger.error(
-                    f"WHO:: Failed to index dataset {code.get('Label')} due to: {e}"
-                )
+                logger.error(f"WHO:: Failed to index dataset {code.get('Label')} due to: {e}")
         return f"WHO - Successfully indexed {n_success} out of {n_ds} datasets."
 
     def _create_external_source_object(self, code):
@@ -110,9 +104,7 @@ class DXExternalSourceWHO(ExternalSourceModel):
             external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
             external_resource["title"] = title
             external_resource["description"] = description
-            external_resource["URI"] = (
-                f"https://ghoapi.azureedge.net/api/{internal_ref}"
-            )
+            external_resource["URI"] = f"https://ghoapi.azureedge.net/api/{internal_ref}"
             external_resource["internalRef"] = internal_ref
             external_resource["format"] = "csv"
             external_resource["datePublished"] = now
@@ -121,9 +113,7 @@ class DXExternalSourceWHO(ExternalSourceModel):
             external_dataset["resources"].append(external_resource)
             if len(external_dataset["resources"]) == 0:
                 return "No resources attached to this dataset."
-            mongo_res = self.mongo_client.mongo_create_external_source(
-                external_dataset, update=False
-            )
+            mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=False)
             if mongo_res is not None:
                 return "Success"
             return "MongoDB Error"
@@ -155,13 +145,11 @@ class DXExternalSourceWHO(ExternalSourceModel):
 
             # save df as a csv file
             dx_id = external_dataset["id"]
-            dx_name = f"dx{dx_id}.csv"
+            dx_name = f"{dx_id}.csv"
             dx_loc = f"./staging/{dx_name}"
             df.to_csv(dx_loc, index=False)
             try:
-                res = self.dataset_preprocessor.preprocess_data(
-                    dx_name, create_ssr=True
-                )
+                res = self.dataset_preprocessor.preprocess_data(dx_name, create_ds=True)
             except Exception:
                 res = "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501
             os.remove(dx_loc)

@@ -31,7 +31,7 @@ Through docker, we copy it from the dx.backend root directory.
 >`hdx_key: "HDX API KEY"`
 
 ## Data.World
-We use `datadotworld`. For this, we retrieve the API key at https://data.world/settings/advanced. 
+We use `datadotworld`. For this, we retrieve the API key at https://data.world/settings/advanced.
 Use the following export to locally enable the data.world integration.
 ```
 export DW_AUTH_TOKEN=<YOUR_TOKEN>

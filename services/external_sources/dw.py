@@ -37,9 +37,7 @@ class DXExternalSourceDW(ExternalSourceModel):
         logger.info("DW:: Indexing DW data...")
         # Get existing sources
         existing_external_sources = self.mongo_client.mongo_get_all_external_sources()
-        existing_external_sources = {
-            source["internalRef"]: source for source in existing_external_sources
-        }
+        existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
         # Get all datasets and process
         all_dataset = dw.api_client().fetch_liked_datasets()
         n_ds = 0
@@ -62,9 +60,7 @@ class DXExternalSourceDW(ExternalSourceModel):
             update = False
             update_item = None
             if internal_ref in existing_external_sources:
-                if existing_external_sources[internal_ref][
-                    "dateSourceLastUpdated"
-                ] == dataset.get("updated", ""):
+                if existing_external_sources[internal_ref]["dateSourceLastUpdated"] == dataset.get("updated", ""):
                     continue
                 else:
                     update = True
@@ -98,20 +94,14 @@ class DXExternalSourceDW(ExternalSourceModel):
 
         # Build the external dataset
         external_dataset["title"] = dataset.get("title", "")
-        external_dataset["description"] = (
-            f"{dataset.get('description', '')} - [Data World]."
-        )
+        external_dataset["description"] = f"{dataset.get('description', '')} - [Data World]."
         external_dataset["source"] = "DW"
-        external_dataset["URI"] = (
-            f"https://data.world/{dataset.get('owner')}/{dataset.get('id')}"
-        )
+        external_dataset["URI"] = f"https://data.world/{dataset.get('owner')}/{dataset.get('id')}"
         external_dataset["internalRef"] = dataset.get("id", "")
         external_dataset["mainCategory"] = "Data.World"
         external_dataset["subCategories"] = dataset.get("tags", [])
         external_dataset["datePublished"] = dataset.get("created", "")
-        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         external_dataset["dateSourceLastUpdated"] = dataset.get("updated", "")
 
         # Build and attach the resources if they are CSV
@@ -122,31 +112,20 @@ class DXExternalSourceDW(ExternalSourceModel):
                 continue
             external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
             external_resource["title"] = (
-                re.sub(RE_SUB, "", file.get("name", "    ")[:-4])
-                + f" - Dataset file name: {file.get('name', '')}"
+                re.sub(RE_SUB, "", file.get("name", "    ")[:-4]) + f" - Dataset file name: {file.get('name', '')}"
             )  # NOQA: 501
-            external_resource["description"] = (
-                f"{file.get('name', '')} - Retrieved from Data.World."
-            )
-            external_resource["URI"] = (
-                f"https://data.world/{dataset.get('owner')}/{dataset.get('id')}"
-            )
-            external_resource["internalRef"] = (
-                f"{dataset.get('id', '')}/{file.get('name')}"
-            )
+            external_resource["description"] = f"{file.get('name', '')} - Retrieved from Data.World."
+            external_resource["URI"] = f"https://data.world/{dataset.get('owner')}/{dataset.get('id')}"
+            external_resource["internalRef"] = f"{dataset.get('id', '')}/{file.get('name')}"
             external_resource["format"] = "csv"
             external_resource["datePublished"] = file.get("created", "")
-            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
+            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             external_resource["dateResourceLastUpdated"] = file.get("updated", "")
             external_dataset["resources"].append(external_resource)
 
         if len(external_dataset["resources"]) == 0:
             return "No resources attached to this dataset."
-        mongo_res = self.mongo_client.mongo_create_external_source(
-            external_dataset, update=update
-        )
+        mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=update)
         if mongo_res is not None:
             return "Success"
         return "MongoDB Error"
@@ -160,7 +139,7 @@ class DXExternalSourceDW(ExternalSourceModel):
             datasets = dw.load_dataset(file_path)
             df = datasets.dataframes[name]
             try:
-                res = self.dataset_preprocessor.preprocess_data(df, create_ssr=True)
+                res = self.dataset_preprocessor.preprocess_data(df, create_ds=True)
             except Exception as e:
                 logger.error(f"DW:: Failed to preprocess data for {url} due to: {e}")
                 res = "Sorry, we were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501

@@ -38,9 +38,7 @@ class DXExternalSourceWB(ExternalSourceModel):
             logger.info("WB:: - Removing old World Bank data")
             self.mongo_client.mongo_remove_data_for_external_sources("World Bank")
         existing_external_sources = self.mongo_client.mongo_get_all_external_sources()
-        existing_external_sources = {
-            source["internalRef"]: source for source in existing_external_sources
-        }
+        existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
         # Get all datasets and process
         search_meta = wb.series.list()
         n_ds = 0
@@ -74,9 +72,7 @@ class DXExternalSourceWB(ExternalSourceModel):
         # Build the external dataset
         external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
         external_dataset["title"] = dataset.get("IndicatorName", "")
-        external_dataset["description"] = (
-            dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
-        )
+        external_dataset["description"] = dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
         external_dataset["source"] = "World Bank"
         external_dataset["URI"] = f"https://data.worldbank.org/indicator/{meta_id}"
         external_dataset["internalRef"] = meta_id
@@ -88,12 +84,8 @@ class DXExternalSourceWB(ExternalSourceModel):
 
         external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
         external_resource["title"] = dataset.get("IndicatorName", "")
-        external_resource["description"] = (
-            dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
-        )
-        external_resource["URI"] = (
-            f"https://api.worldbank.org/v2/en/indicator/{meta_id}?downloadformat=csv"
-        )
+        external_resource["description"] = dataset.get("Longdefinition", "") + WB_SOURCE_NOTICE
+        external_resource["URI"] = f"https://api.worldbank.org/v2/en/indicator/{meta_id}?downloadformat=csv"
         external_resource["internalRef"] = meta_id
         external_resource["format"] = "csv"
         external_resource["datePublished"] = now
@@ -102,9 +94,7 @@ class DXExternalSourceWB(ExternalSourceModel):
         external_dataset["resources"].append(external_resource)
         if len(external_dataset["resources"]) == 0:
             return "No resources attached to this dataset."
-        mongo_res = self.mongo_client.mongo_create_external_source(
-            external_dataset, update=False
-        )
+        mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=False)
         if mongo_res is not None:
             return "Success"
         return "MongoDB Error"
@@ -136,13 +126,11 @@ class DXExternalSourceWB(ExternalSourceModel):
 
             # save df as a csv file
             dx_id = external_dataset["id"]
-            dx_name = f"dx{dx_id}.csv"
+            dx_name = f"{dx_id}.csv"
             dx_loc = f"./staging/{dx_name}"
             df.to_csv(dx_loc, index=False)
             try:
-                res = self.dataset_preprocessor.preprocess_data(
-                    dx_name, create_ssr=True
-                )
+                res = self.dataset_preprocessor.preprocess_data(dx_name, create_ds=True)
             except Exception:
                 return "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # noqa
             os.remove(dx_loc)
