@@ -46,9 +46,7 @@ class DXExternalSourceOECD(ExternalSourceModel):
         logger.info("OECD:: Indexing OECD data...")
         # Get datasets
         url = "https://gitlab.com/sis-cc/topologies/oecd-migration/-/raw/main/OECDDatasetsCorrespondence.xlsx"
-        df = pd.read_excel(
-            url, header=5
-        )  # Drop first 12 rows, as the datasets start at 13
+        df = pd.read_excel(url, header=5)  # Drop first 12 rows, as the datasets start at 13
         df = df.iloc[:, :-1]  # Drop the last column, as they are unused references
         n_ds = 0
         n_success = 0
@@ -63,9 +61,7 @@ class DXExternalSourceOECD(ExternalSourceModel):
                 if res == "Success":
                     n_success += 1
             except Exception as e:
-                logger.error(
-                    f"OECD:: Failed to index dataset {internal_ref} due to: {e}"
-                )
+                logger.error(f"OECD:: Failed to index dataset {internal_ref} due to: {e}")
         return f"OECD - Successfully indexed {n_success} out of {n_ds} datasets."
 
     def _create_external_source_object(self, dataset):
@@ -88,15 +84,9 @@ class DXExternalSourceOECD(ExternalSourceModel):
         external_dataset["internalRef"] = dataset[OECD_COLS[0]]
         external_dataset["mainCategory"] = "OECD"
         external_dataset["subCategories"] = []
-        external_dataset["datePublished"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        external_dataset["dateSourceLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        external_dataset["datePublished"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        external_dataset["dateSourceLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Build and attach the resources if they are CSV
         _input = dataset[OECD_COLS[6]]
@@ -104,7 +94,6 @@ class DXExternalSourceOECD(ExternalSourceModel):
             return "Invalid link"
         _end = _input.split("df[ag]=")[1]
         _id = _input.split("df[id]=")[1].split("&")[0]
-        resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id},/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
 
         resource_url = f"https://sdmx.oecd.org/public/rest/data/{_end},{_id}/all?dimensionAtObservation=AllDimensions&format=csvfilewithlabels"  # NOQA: 501
         external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
@@ -113,15 +102,9 @@ class DXExternalSourceOECD(ExternalSourceModel):
         external_resource["URI"] = resource_url
         external_resource["internalRef"] = dataset[OECD_COLS[0]]
         external_resource["format"] = "csv"
-        external_resource["datePublished"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        external_resource["dateLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        external_resource["dateResourceLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        external_resource["datePublished"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        external_resource["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        external_resource["dateResourceLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         external_dataset["resources"].append(external_resource)
 
         if len(external_dataset["resources"]) == 0:
@@ -137,7 +120,7 @@ class DXExternalSourceOECD(ExternalSourceModel):
             url = self._convert_oecd_url(external_dataset["url"])
             df = pd.read_csv(url)
             try:
-                res = self.dataset_preprocessor.preprocess_data(df, create_ssr=True)
+                res = self.dataset_preprocessor.preprocess_data(df, create_ds=True)
             except Exception as e:
                 logger.error(f"OECD:: Failed to preprocess data for {url} due to: {e}")
                 res = "Sorry, we were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501
@@ -188,9 +171,7 @@ class DXExternalSourceOECD(ExternalSourceModel):
             df_ag = query_params.get("dataflow[agencyId]", [None])[0]
             df_id = query_params.get("dataflow[dataflowId]", [None])[0]
         if df_ag is None or df_id is None:
-            raise ValueError(
-                "Required parameters 'df[ag]' and 'df[id]' not found in the URL"
-            )
+            raise ValueError("Required parameters 'df[ag]' and 'df[id]' not found in the URL")
         df_id = unquote(df_id)
         df_ag = unquote(df_ag)
 

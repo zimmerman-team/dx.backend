@@ -5,17 +5,17 @@ Flask==2.3.2
 python-dotenv==1.0.0
 flake8==6.0.0
 isort==5.12.0
-pre-commit==3.7.1
+pre-commit==4.5.1
 
 # RB Core Backend
-rb-core-backend @ git+https://github.com/globalfund/rb-core.backend.git@fe0b392943c06d55fac0ba9807759aaa65716912
+rb-core-backend @ git+https://github.com/globalfund/rb-core.backend.git@bde8d596dcf472c17ea5c8c725c2327d8ddc517d
 
 # Kaggle connection
-kaggle==1.7.4.5
+kaggle==1.8.3
 # Worldbank connection
 wbgapi==1.0.12
 # HDX Connection
-hdx-python-api==6.2.6
+hdx-python-api==6.6.3
 
 # Data processing
 pandas==2.0.3
@@ -37,7 +37,7 @@ pyxlsb==1.0.10  # .xlsb files
 odfpy==1.4.1  # .odf files
 pymysql==1.1.1  # MySQL connection
 psycopg==3.1.10  # PostgreSQL connection
-pymssql==2.2.8  # MSSQL connection
+pymssql==2.3.11  # MSSQL connection
 oracledb==1.4.0  # Oracle connection
 
 # URL connection

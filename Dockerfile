@@ -9,7 +9,7 @@ RUN chmod 600 /root/.kaggle/kaggle.json
 COPY ./.hdx_configuration.yaml /root/.hdx_configuration.yaml
 RUN chmod 600 /root/.hdx_configuration.yaml
 
-RUN apt-get update && apt-get install -y freetds-dev
+RUN apt-get update && apt-get install -y freetds-dev build-essential python3-dev pkg-config gcc
 
 WORKDIR /app
 

@@ -18,6 +18,8 @@ from services.external_sources.tgf import DXExternalSourceTGF
 from services.external_sources.who import DXExternalSourceWHO
 from services.external_sources.worldbank import DXExternalSourceWB
 
+INDEXING_SUCCESSFUL = "Indexing successful"
+
 
 # Create a subclass implementing RBCoreDatasetPreprocessor
 class DXRBCoreDatasetPreprocessor(RBCoreDatasetPreprocessor):
@@ -44,9 +46,7 @@ logger = logging.getLogger(__name__)
 data_manager = RBCoreDataManagement(location=os.getenv("DATA_EXPLORER_SSR"))
 # - Create a RBCorePreprocessDataset instance
 # -- Instantiate the subclass
-dataset_preprocessor = DXRBCoreDatasetPreprocessor(
-    data_manager=data_manager, logger=logger
-)
+dataset_preprocessor = DXRBCoreDatasetPreprocessor(data_manager=data_manager, logger=logger)
 # - Create a RBCoreBackendMongo instance
 mongo_client = RBCoreBackendMongo(
     mongo_host=os.getenv("MONGO_HOST"),
@@ -70,12 +70,14 @@ source_classes = {
     "WB": DXExternalSourceWB,
 }
 # If you want the download and index methods directly:
+# sources_dict = {
+#     name: cls(mongo_client=mongo_client, dataset_preprocessor=dataset_preprocessor)
+#     for name, cls in source_classes.items()
+# }
+# # --- Create the external sources manager
+# external_sources_manager = RBCoreExternalSources(mongo_client=mongo_client, all_sources=sources_dict)
 sources_dict = {
-    name: {
-        "instance": cls(
-            mongo_client=mongo_client, dataset_preprocessor=dataset_preprocessor
-        )
-    }
+    name: {"instance": cls(mongo_client=mongo_client, dataset_preprocessor=dataset_preprocessor)}
     for name, cls in source_classes.items()
 }
 sources_dict = {
@@ -86,9 +88,7 @@ sources_dict = {
     for name, instance in sources_dict.items()
 }
 # --- Create the external sources manager
-external_sources_manager = RBCoreExternalSources(
-    mongo_client=mongo_client, all_sources=sources_dict
-)
+external_sources_manager = RBCoreExternalSources(mongo_client=mongo_client, all_sources=sources_dict)
 
 # - Set up the flask app
 app = Flask(__name__)
@@ -106,12 +106,10 @@ def health_check():
 
 @app.route("/upload-file/<string:ds_name>", methods=["POST"])
 def process_dataset(ds_name):
-    logging.debug(
-        f"route: /upload-file/<string:ds_name> - Processing dataset {ds_name}"
-    )
+    logging.debug(f"route: /upload-file/<string:ds_name> - Processing dataset {ds_name}")
     try:
         # Preprocess
-        preprocess_res = dataset_preprocessor.preprocess_data(ds_name, create_ssr=True)
+        preprocess_res = dataset_preprocessor.preprocess_data(ds_name, create_ds=True)
         if preprocess_res != "Success":
             return json_return(500, preprocess_res)
         # Create a solr core and post the dataset
@@ -129,23 +127,19 @@ def process_dataset(ds_name):
     return res
 
 
-@app.route(
-    "/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["POST"]
-)
+@app.route("/duplicate-dataset/<string:ds_name>/<string:new_ds_name>", methods=["POST"])
 def duplicate_dataset(ds_name, new_ds_name):
     logging.debug(
         f"route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - Duplicating dataset {ds_name} to {new_ds_name}"  # NOQA: E501
     )
     try:
-        if ds_name.startswith('dx') or ds_name.startswith('ds'):
+        if ds_name.startswith("dx") or ds_name.startswith("ds"):
             ds_name = ds_name[2:]
-        if new_ds_name.startswith('dx') or new_ds_name.startswith('ds'):
+        if new_ds_name.startswith("dx") or new_ds_name.startswith("ds"):
             new_ds_name = new_ds_name[2:]
         res = data_manager.duplicate_parsed_files(ds_name, new_ds_name)
     except Exception as e:
-        logging.error(
-            f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}"
-        )
+        logging.error(f"Error in route: /duplicate-dataset/<string:ds_name>/<string:new_ds_name> - {str(e)}")
         res = "Sorry, something went wrong in our dataset duplication. Contact the admin for more information."
     code = 200 if res == "Success" else 500
     return json_return(code, res)
@@ -169,9 +163,7 @@ def duplicate_datasets():
     ]
     """
     data = request.get_json()
-    logging.debug(
-        f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets"
-    )  # noqa: E501
+    logging.debug(f"route: /duplicate-datasets - Duplicating dataset {len(data)} datasets")
     try:
         errors = []
         for ds in data:
@@ -199,9 +191,7 @@ def dataset_size():
     ]
     """
     data = request.get_json()
-    logging.debug(
-        f"route: /dataset-size - Getting total size of {len(data)} datasets"
-    )  # noqa: E501
+    logging.debug(f"route: /dataset-size - Getting total size of {len(data)} datasets")
     try:
         res = data_manager.get_dataset_size(dataset_ids=data)
     except Exception as e:
@@ -215,16 +205,14 @@ def dataset_size():
 def process_dataset_sqlite(ds_name, table):
     logging.debug(
         f"route: /upload-file/<string:ds_name>/<string:table> - Processing dataset {ds_name} with table {table}"
-    )  # noqa: E501
+    )
     try:
         # Preprocess
-        dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, table=table)
+        dataset_preprocessor.preprocess_data(ds_name, create_ds=True, table=table)
         remove_files([ds_name])
         res = "Success"
     except Exception as e:
-        logging.error(
-            f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}"
-        )
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
         res = "Sorry, something went wrong in our sqlite dataset processing. Contact the admin for more information."
     code = 200 if res == "Success" else 500
     return json_return(code, res)
@@ -248,11 +236,9 @@ def process_dataset_sql(ds_name, username, password, host, port, database, table
             "database": database,
             "table": table,
         }
-        res = dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, db=db)
+        res = dataset_preprocessor.preprocess_data(ds_name, create_ds=True, db=db)
     except Exception as e:
-        logging.error(
-            f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}"
-        )
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
         res = "Sorry, something went wrong in our sql dataset processing. Contact the admin for more information."
     code = 200 if res == "Success" else 500
     return json_return(code, res)
@@ -273,12 +259,10 @@ def process_dataset_api(ds_name, api_url, json_root, xml_root):
             "json_root": json_root,
             "xml_root": xml_root,
         }
-        dataset_preprocessor.preprocess_data(ds_name, create_ssr=True, api=api)
+        dataset_preprocessor.preprocess_data(ds_name, create_ds=True, api=api)
         res = "Success"
     except Exception as e:
-        logging.error(
-            f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}"
-        )
+        logging.error(f"Error in route: /upload-file/<string:ds_name>/<string:table> - {str(e)}")
         res = "Sorry, something went wrong in our api dataset processing. Contact the admin for more information."
     return res
 
@@ -291,9 +275,7 @@ def delete_dataset(ds_name):
     :param ds_name: The name of the dataset to be deleted
     :return: A string indicating the result of the deletion
     """
-    logging.debug(
-        f"route: /delete-dataset/<string:ds_name> - Deleting dataset {ds_name}"
-    )
+    logging.debug(f"route: /delete-dataset/<string:ds_name> - Deleting dataset {ds_name}")
     try:
         # Remove the dataset from the datasets list in solr
         # this is in case the dataset was created through the update feature
@@ -303,7 +285,7 @@ def delete_dataset(ds_name):
         # delete_solr_core(ds_name)  # TODO: Disabled solr until data processing required
 
         # Remove the dataset from SSR
-        if ds_name.startswith('dx') or ds_name.startswith('ds'):
+        if ds_name.startswith("dx") or ds_name.startswith("ds"):
             ds_name = ds_name[2:]
         res = data_manager.remove_parsed_files(ds_name)
     except Exception as e:
@@ -330,7 +312,7 @@ def delete_datasets():
     try:
         errors = []
         for ds_name in data:
-            if ds_name.startswith("dx") or ds_name.startswith('ds'):
+            if ds_name.startswith("dx") or ds_name.startswith("ds"):
                 ds_name = ds_name[2:]
             res = data_manager.remove_parsed_files(ds_name)
             if res != "Success":
@@ -391,7 +373,7 @@ def external_sources_index():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/index - {str(e)}")
         res = "Sorry, something went wrong in our external source indexing. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -400,15 +382,11 @@ def external_sources_index():
 def external_source_search():
     data = request.get_json()
     query = data.get("query")
-    logging.debug(
-        f"route: /external-sources/search/<string:query> - Searching external sources for {query}"
-    )
+    logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {query}")
     try:
-        res = external_sources_manager.search_external_sources(query, legacy=True)
+        res = external_sources_manager.search_external_sources(query, sources=[], legacy=True)
     except Exception as e:
-        logging.error(
-            f"Error in route: /external-sources/search/<string:query> - {str(e)}"
-        )
+        logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
     code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)
@@ -423,22 +401,18 @@ def external_source_search_limited():
     limit = data.get("limit", 10)
     offset = data.get("offset", 0)
     sort_by = data.get("sort_by", "textScore")
-    logging.debug(
-        f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}"
-    )
+    logging.debug(f"route: /external-sources/search-limited/<string:query> - Searching external sources for {query}")
     try:
         res = external_sources_manager.search_external_sources(
-            query,
-            source.split(","),
+            query=query,
+            sources=source.split(","),
             legacy=True,
             limit=limit,
             offset=offset,
             sort_by=sort_by,
         )
     except Exception as e:
-        logging.error(
-            f"Error in route: /external-sources/search-limited/<string:query> - {str(e)}"
-        )
+        logging.error(f"Error in route: /external-sources/search-limited/<string:query> - {str(e)}")
         res = "Sorry, something went wrong in our external source search. Contact the admin for more information."
     code = 200 if not isinstance(res, str) else 500
     return json_return(code, res)
@@ -449,15 +423,11 @@ def external_source_search_limited():
 def external_source_download():
     data = request.get_json()
     external_source = data.get("externalSource")
-    logging.debug(
-        f"route: /external-sources/search/<string:query> - Searching external sources for {external_source}"
-    )
+    logging.debug(f"route: /external-sources/search/<string:query> - Searching external sources for {external_source}")
     try:
         res = external_sources_manager.download_external_source(external_source)
     except Exception as e:
-        logging.error(
-            f"Error in route: /external-sources/search/<string:query> - {str(e)}"
-        )
+        logging.error(f"Error in route: /external-sources/search/<string:query> - {str(e)}")
         res = "Sorry, we were unable to download your selected file. Contact the admin for more information."
     code = 200 if res == "Success" else 500
     return json_return(code, res)
@@ -472,24 +442,20 @@ def force_update_who():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-who - {str(e)}")
         res = "Sorry, something went wrong in our WHO update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
 # Force updates
 @app.route("/external-sources/force-update-kaggle", methods=["GET"])
 def force_update_kaggle():
-    logging.debug(
-        "route: /external-sources/force-update-kaggle - Forcing kaggle update"
-    )
+    logging.debug("route: /external-sources/force-update-kaggle - Forcing kaggle update")
     try:
         res = external_sources_manager.external_search_force_reindex("Kaggle")
     except Exception as e:
-        logging.error(
-            f"Error in route: /external-sources/force-update-kaggle - {str(e)}"
-        )
+        logging.error(f"Error in route: /external-sources/force-update-kaggle - {str(e)}")
         res = "Sorry, something went wrong in our kaggle update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -502,7 +468,7 @@ def force_update_wb():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-wb - {str(e)}")
         res = "Sorry, something went wrong in our wb update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -515,7 +481,7 @@ def force_update_hdx():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-hdx - {str(e)}")
         res = "Sorry, something went wrong in our hdx update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -523,12 +489,13 @@ def force_update_hdx():
 @app.route("/external-sources/force-update-tgf", methods=["GET"])
 def force_update_tgf():
     logging.debug("route: /external-sources/force-update-tgf - Forcing tgf update")
+    logging.debug("route: /external-sources/force-update-tgf - DEBUG TEST")
     try:
         res = external_sources_manager.external_search_force_reindex("TGF")
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-tgf - {str(e)}")
         res = "Sorry, something went wrong in our tgf update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -541,7 +508,7 @@ def force_update_oecd():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-oecd - {str(e)}")
         res = "Sorry, something went wrong in our oecd update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
@@ -554,9 +521,9 @@ def force_update_dw():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-dw - {str(e)}")
         res = "Sorry, something went wrong in our dw update. Contact the admin for more information."
-    code = 200 if res == "Indexing successful" else 500
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=105)
+    app.run(host="127.0.0.1", port=105)

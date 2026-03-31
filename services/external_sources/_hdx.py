@@ -44,9 +44,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
         logger.info("HDX:: Indexing HDX data...")
         # Get existing sources
         existing_external_sources = self.mongo_client.mongo_get_all_external_sources()
-        existing_external_sources = {
-            source["internalRef"]: source for source in existing_external_sources
-        }
+        existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
         # Get all datasets and process
         res = Dataset.search_in_hdx(fq="isopen:true")
         n_ds = 0
@@ -58,9 +56,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
             update = False
             update_item = None
             if internal_ref in existing_external_sources:
-                if existing_external_sources[internal_ref][
-                    "dateSourceLastUpdated"
-                ] == dataset.get("last_modified", ""):
+                if existing_external_sources[internal_ref]["dateSourceLastUpdated"] == dataset.get("last_modified", ""):
                     continue
                 else:
                     update = True
@@ -70,14 +66,10 @@ class DXExternalSourceHDX(ExternalSourceModel):
                 if res == "Success":
                     n_success += 1
             except Exception as e:
-                logger.error(
-                    f"HDX:: Failed to index dataset {internal_ref} due to: {e}"
-                )
+                logger.error(f"HDX:: Failed to index dataset {internal_ref} due to: {e}")
         return f"HDX - Successfully indexed {n_success} out of {n_ds} datasets."
 
-    def _create_external_source_object(
-        self, dataset: Dataset, update=False, update_item=None
-    ):
+    def _create_external_source_object(self, dataset: Dataset, update=False, update_item=None):
         """
         Core functionality of indexing.
         This function creates the external source object and sends it to MongoDB.
@@ -100,9 +92,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
         # Prep values
         dsn = dataset.get("name", None)
         if dsn is None:
-            logger.info(
-                f"HDX INDEX:: Unable to get name for dataset: {dataset.get('id', 'NO_ID')}"
-            )
+            logger.info(f"HDX INDEX:: Unable to get name for dataset: {dataset.get('id', 'NO_ID')}")
             return "Unable to process this dataset."
 
         main_category = ""
@@ -115,24 +105,16 @@ class DXExternalSourceHDX(ExternalSourceModel):
         # Build the external dataset
         external_dataset["title"] = dataset.get("title", "")
         try:
-            external_dataset["description"] = (
-                dataset.get("notes", "") + HDX_SOURCE_NOTICE
-            )
+            external_dataset["description"] = dataset.get("notes", "") + HDX_SOURCE_NOTICE
         except Exception:
-            external_dataset["description"] = (
-                "No description available." + HDX_SOURCE_NOTICE
-            )
+            external_dataset["description"] = "No description available." + HDX_SOURCE_NOTICE
         external_dataset["source"] = "HDX"
-        external_dataset["URI"] = (
-            f"https://data.humdata.org/dataset/{dataset.get('name', '')}"
-        )
+        external_dataset["URI"] = f"https://data.humdata.org/dataset/{dataset.get('name', '')}"
         external_dataset["internalRef"] = dataset.get("name", "")
         external_dataset["mainCategory"] = main_category
         external_dataset["subCategories"] = sub_categories
         external_dataset["datePublished"] = dataset.get("metadata_created", "")
-        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         external_dataset["dateSourceLastUpdated"] = dataset.get("last_modified", "")
 
         # Build and attach the resources if they are CSV
@@ -141,36 +123,25 @@ class DXExternalSourceHDX(ExternalSourceModel):
                 continue
             external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
             external_resource["title"] = (
-                re.sub(RE_SUB, "", resource.get("name", "")[:-4])
-                + f" - Dataset file name: {resource.get('name', '')}"
+                re.sub(RE_SUB, "", resource.get("name", "")[:-4]) + f" - Dataset file name: {resource.get('name', '')}"
             )  # NOQA: 501
             if "QuickCharts" in external_resource["title"]:
                 continue
             try:
-                external_resource["description"] = (
-                    resource.get("description", "") + HDX_SOURCE_NOTICE
-                )
+                external_resource["description"] = resource.get("description", "") + HDX_SOURCE_NOTICE
             except Exception:
-                external_resource["description"] = (
-                    "No description available." + HDX_SOURCE_NOTICE
-                )
+                external_resource["description"] = "No description available." + HDX_SOURCE_NOTICE
             external_resource["URI"] = resource.get("download_url", "")
             external_resource["internalRef"] = resource.get("id", "")
             external_resource["format"] = resource.get("format", "")
             external_resource["datePublished"] = resource.get("created", "")
-            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-            external_resource["dateResourceLastUpdated"] = resource.get(
-                "last_modified", ""
-            )
+            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            external_resource["dateResourceLastUpdated"] = resource.get("last_modified", "")
             external_dataset["resources"].append(external_resource)
 
         if len(external_dataset["resources"]) == 0:
             return "No resources attached to this dataset."
-        mongo_res = self.mongo_client.mongo_create_external_source(
-            external_dataset, update=update
-        )
+        mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=update)
         if mongo_res is not None:
             return "Success"
         return "MongoDB Error"
@@ -183,9 +154,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
             if dx_id == "":
                 dx_id = "0tmp0"
 
-            dataset_title, file_information = external_dataset["name"].split(
-                " - Data file: "
-            )
+            dataset_title, file_information = external_dataset["name"].split(" - Data file: ")
             filename = file_information.split(" - Dataset file name: ")[-1]
             # Get the first result where the title is an exact match
             dataset = Dataset.search_in_hdx(query=f'title:"{dataset_title}"', rows=1)[0]
@@ -204,9 +173,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
             logger.error(f"HDX:: Failed to download file: {str(e)}")
             return "Sorry, we were unable to download the HDX Dataset, please try again later. Contact the admin if the problem persists."  # NOQA: 501
 
-    def _download_file(
-        self, url, dx_id, found_filename, destination_folder="./staging"
-    ):
+    def _download_file(self, url, dx_id, found_filename, destination_folder="./staging"):
         # Ensure the destination folder exists
         os.makedirs(destination_folder, exist_ok=True)
 
@@ -239,7 +206,7 @@ class DXExternalSourceHDX(ExternalSourceModel):
                 # replace _csv with .csv
                 os.rename(filepath, filepath.replace("_csv", ".csv"))
             # rename ./staging/filepath to ./staging/dx{dx_id}.csv
-            dx_name = f"dx{dx_id}.csv"
+            dx_name = f"{dx_id}.csv"
             try:
                 os.rename(filepath, f"./staging/{dx_name}")
             except Exception:
@@ -254,14 +221,10 @@ class DXExternalSourceHDX(ExternalSourceModel):
                     logger.error("HDX:: Failed to rename original file name as well")
                     return "Sorry, the HDX source file does not match the expected format, please try a different dataset."  # NOQA: 501
             try:
-                res = self.dataset_preprocessor.preprocess_data(
-                    dx_name, create_ssr=True
-                )
+                res = self.dataset_preprocessor.preprocess_data(dx_name, create_ds=True)
             except Exception as e:
                 res = "Sorry, we were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # NOQA: 501
-                logger.error(
-                    f"HDX:: Failed to preprocess data for {dx_name} due to: {e}"
-                )
+                logger.error(f"HDX:: Failed to preprocess data for {dx_name} due to: {e}")
             return res
         except Exception as e:
             logger.error(f"HDX:: Failed to download file from {url}: {e}")

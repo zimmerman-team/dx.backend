@@ -71,7 +71,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
     ) -> None:
         super().__init__(mongo_client, dataset_preprocessor)
 
-    def index(self, delete=False):
+    def index(self, delete) -> str:
         """
         Indexing function for The Global Fund data.
         Using the The Global Fund data source page we hardcode all the sources.
@@ -86,9 +86,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
             logger.info("TGF:: - Removing old The Global Fund data")
             self.mongo_client.mongo_remove_data_for_external_sources("TGF")
         existing_external_sources = self.mongo_client.mongo_get_all_external_sources()
-        existing_external_sources = {
-            source["internalRef"]: source for source in existing_external_sources
-        }
+        existing_external_sources = {source["internalRef"]: source for source in existing_external_sources}
         n_ds = 0
         n_success = 0
         for key, values in TGF_DATASETS.items():
@@ -116,9 +114,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
         # Build the external dataset
         external_dataset = copy.deepcopy(EXTERNAL_DATASET_FORMAT)
         external_dataset["title"] = key
-        external_dataset["description"] = (
-            values.get("description", "") + TGF_SOURCE_NOTICE
-        )
+        external_dataset["description"] = values.get("description", "") + TGF_SOURCE_NOTICE
         external_dataset["source"] = "TGF"
         external_dataset["URI"] = values.get("url", TGF_DEFAULT_URL)
         external_dataset["internalRef"] = key
@@ -130,9 +126,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
 
         external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
         external_resource["title"] = key
-        external_resource["description"] = (
-            values.get("description", "") + TGF_SOURCE_NOTICE
-        )
+        external_resource["description"] = values.get("description", "") + TGF_SOURCE_NOTICE
         external_resource["URI"] = values.get("url", TGF_DEFAULT_URL)
         external_resource["internalRef"] = key
         external_resource["format"] = "csv"
@@ -143,9 +137,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
         if len(external_dataset["resources"]) == 0:
             return "No resources attached to this dataset."
         logger.info(f"Submitting external dataset to MongoDB {external_dataset}")
-        mongo_res = self.mongo_client.mongo_create_external_source(
-            external_dataset, update=False
-        )
+        mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=False)
         if mongo_res is not None:
             return "Success"
         return "MongoDB Error"
@@ -157,7 +149,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
 
         try:
             dx_id = external_dataset["id"]
-            dx_name = f"dx{dx_id}.csv"
+            dx_name = f"{dx_id}.csv"
             dx_loc = f"./staging/{dx_name}"
 
             # download `url` to `dx_loc`
@@ -167,9 +159,7 @@ class DXExternalSourceTGF(ExternalSourceModel):
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
             try:
-                res = self.dataset_preprocessor.preprocess_data(
-                    dx_name, create_ssr=True
-                )
+                res = self.dataset_preprocessor.preprocess_data(dx_name, create_ds=True)
             except Exception:
                 return "We were unable to process the dataset, please try a different dataset. Contact the admin for more information."  # noqa
             os.remove(dx_loc)
