@@ -13,6 +13,7 @@ from rb_core_backend.util import configure_logger, json_return, remove_files
 
 from services.external_sources._hdx import DXExternalSourceHDX
 from services.external_sources.dw import DXExternalSourceDW
+from services.external_sources.huggingface import DXExternalSourceHuggingFace
 from services.external_sources.oecd import DXExternalSourceOECD
 from services.external_sources.tgf import DXExternalSourceTGF
 from services.external_sources.who import DXExternalSourceWHO
@@ -64,6 +65,7 @@ source_classes = {
     "Kaggle": RBCoreExternalSourceKaggle,
     "HDX": DXExternalSourceHDX,
     "DW": DXExternalSourceDW,
+    "HuggingFace": DXExternalSourceHuggingFace,
     "OECD": DXExternalSourceOECD,
     "TGF": DXExternalSourceTGF,
     "WHO": DXExternalSourceWHO,
@@ -521,6 +523,19 @@ def force_update_dw():
     except Exception as e:
         logging.error(f"Error in route: /external-sources/force-update-dw - {str(e)}")
         res = "Sorry, something went wrong in our dw update. Contact the admin for more information."
+    code = 200 if res == INDEXING_SUCCESSFUL else 500
+    return json_return(code, res)
+
+
+# Force updates huggingface
+@app.route("/external-sources/force-update-huggingface", methods=["GET"])
+def force_update_huggingface():
+    logging.debug("route: /external-sources/force-update-huggingface - Forcing huggingface update")
+    try:
+        res = external_sources_manager.external_search_force_reindex("HuggingFace")
+    except Exception as e:
+        logging.error(f"Error in route: /external-sources/force-update-huggingface - {str(e)}")
+        res = "Sorry, something went wrong in our huggingface update. Contact the admin for more information."
     code = 200 if res == INDEXING_SUCCESSFUL else 500
     return json_return(code, res)
 
