@@ -8,10 +8,12 @@ isort==5.12.0
 pre-commit==4.5.1
 
 # RB Core Backend
-rb-core-backend @ git+https://github.com/globalfund/rb-core.backend.git@bde8d596dcf472c17ea5c8c725c2327d8ddc517d
+rb-core-backend @ git+https://github.com/globalfund/rb-core.backend.git@4cab3aa65ee21c76d51f0e8021f2fd979271feeb
 
 # Kaggle connection
-kaggle==1.8.3
+kaggle==2.0.1
+# HuggingFace connection
+huggingface-hub>=1.8.0
 # Worldbank connection
 wbgapi==1.0.12
 # HDX Connection
@@ -29,7 +31,7 @@ pymongo==4.15.4
 python-magic==0.4.27  # File type detection
 lxml==4.9.3  # xml processing
 SQLAlchemy==2.0.44  # Database connection
-pyarrow==14.0.1  # alternative file extensions
+pyarrow==23.0.1  # alternative file extensions
 pyreadstat==1.2.3  # .sav files
 xlrd==2.0.1  # .xls files
 openpyxl==3.1.2  # .xlsx files
@@ -41,7 +43,7 @@ pymssql==2.3.11  # MSSQL connection
 oracledb==1.4.0  # Oracle connection
 
 # URL connection
-requests==2.32.5
+requests==2.33.0
 urllib3==1.26.20
 
 # Server hosting
