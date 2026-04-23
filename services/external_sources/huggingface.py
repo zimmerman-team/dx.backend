@@ -10,31 +10,63 @@ Filter for the following:
 * format is "csv"
 
 """
+
 import copy
 import datetime
 import logging
 import os
 
 import requests
-from huggingface_hub import HfApi
+from huggingface_hub import DatasetInfo, HfApi
 from rb_core_backend.external_sources.model import ExternalSourceModel
-from rb_core_backend.external_sources.util import EXTERNAL_DATASET_FORMAT, EXTERNAL_DATASET_RESOURCE_FORMAT
+from rb_core_backend.external_sources.util import (
+    EXTERNAL_DATASET_FORMAT,
+    EXTERNAL_DATASET_RESOURCE_FORMAT,
+)
 from rb_core_backend.mongo import RBCoreBackendMongo
 from rb_core_backend.preprocess_dataset import RBCoreDatasetPreprocessor
 
 PERMISSIVE_LICENSES = [
-    "apache-2.0", "mit", "bsd-2-clause", "bsd-3-clause", "bsd-3-clause-clear", "bsd",
-    "afl-3.0", "artistic-2.0", "bsl-1.0", "wtfpl", "unlicense", "zlib", "isc",
-    "postgresql", "ncsa", "ms-pl", "ecl-2.0", "epl-2.0", "epl-1.0",
-    "mpl-2.0", "eupl-1.1", "eupl-1.2", "osl-3.0",
-    "cdla-permissive-1.0", "cdla-permissive-2.0",
-    "cc0-1.0", "cc-by-2.0", "cc-by-2.5", "cc-by-3.0", "cc-by-4.0",
-    "odc-by", "etalab-2.0", "ofl-1.1"
+    "apache-2.0",
+    "mit",
+    "bsd-2-clause",
+    "bsd-3-clause",
+    "bsd-3-clause-clear",
+    "bsd",
+    "afl-3.0",
+    "artistic-2.0",
+    "bsl-1.0",
+    "wtfpl",
+    "unlicense",
+    "zlib",
+    "isc",
+    "postgresql",
+    "ncsa",
+    "ms-pl",
+    "ecl-2.0",
+    "epl-2.0",
+    "epl-1.0",
+    "mpl-2.0",
+    "eupl-1.1",
+    "eupl-1.2",
+    "osl-3.0",
+    "cdla-permissive-1.0",
+    "cdla-permissive-2.0",
+    "cc0-1.0",
+    "cc-by-2.0",
+    "cc-by-2.5",
+    "cc-by-3.0",
+    "cc-by-4.0",
+    "odc-by",
+    "etalab-2.0",
+    "ofl-1.1",
 ]
 FORMATS = ["csv", "parquet"]
 MODALITIES = ["tabular"]
 
-HF_SOURCE_NOTICE = "  - This Datasource was retrieved from https://huggingface.co/datasets/."
+HF_SOURCE_NOTICE = (
+    "  - This Datasource was retrieved from https://huggingface.co/datasets/."
+)
 HF_TABULAR_FILTER = "modality:tabular"
 STAGING_DIR = "./staging"
 
@@ -82,28 +114,48 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
         for dataset in datasets:
             n_ds += 1
             logger.info(f"HuggingFace:: Processing dataset nr {n_ds}...")
-            # Filter by permissive license
-            if not self._has_permissive_license(dataset):
-                continue
-            logger.info(f"HuggingFace:: Processing dataset {dataset.id} with license {dataset.card_data.license}")
-            internal_ref = dataset.id
-            update = False
-            update_item = None
-            if internal_ref in existing_external_sources:
-                dataset_updated = (
-                    dataset.last_modified.strftime("%Y-%m-%d %H:%M:%S") if dataset.last_modified else ""
-                )
-                if existing_external_sources[internal_ref].get("dateSourceLastUpdated", "") == dataset_updated:
-                    continue
-                update = True
-                update_item = existing_external_sources[internal_ref]
-            try:
-                res = self._create_external_source_object(dataset, update, update_item)
-                if res == "Success":
-                    n_success += 1
-            except Exception as e:
-                logger.error(f"HuggingFace:: Failed to index dataset {internal_ref} due to: {e}")
+            n_success = self._index_dataset(
+                dataset, existing_external_sources, n_success
+            )
         return f"HuggingFace - Successfully indexed {n_success} out of {n_ds} datasets."
+
+    def _index_dataset(
+        self,
+        dataset: DatasetInfo,
+        existing_external_sources: dict[str, dict],
+        n_success: int,
+    ):
+        # Filter by permissive license
+        if not self._has_permissive_license(dataset):
+            return n_success
+        logger.info(
+            f"HuggingFace:: Processing dataset {dataset.id} with license {dataset.card_data.license}"
+        )
+        internal_ref = dataset.id
+        update = False
+        update_item = None
+        if internal_ref in existing_external_sources:
+            dataset_updated = (
+                dataset.last_modified.strftime("%Y-%m-%d %H:%M:%S")
+                if dataset.last_modified
+                else ""
+            )
+            if (
+                existing_external_sources[internal_ref].get("dateSourceLastUpdated", "")
+                == dataset_updated
+            ):
+                return n_success
+            update = True
+            update_item = existing_external_sources[internal_ref]
+        try:
+            res = self._create_external_source_object(dataset, update, update_item)
+            if res == "Success":
+                n_success += 1
+        except Exception as e:
+            logger.error(
+                f"HuggingFace:: Failed to index dataset {internal_ref} due to: {e}"
+            )
+        return n_success
 
     def _has_permissive_license(self, dataset) -> bool:
         """Check whether a HuggingFace DatasetInfo has a permissive license."""
@@ -153,12 +205,22 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
 
         description = title
         try:
-            description = (getattr(dataset.card_data, "description", None) or title) + HF_SOURCE_NOTICE
+            description = (
+                getattr(dataset.card_data, "description", None) or title
+            ) + HF_SOURCE_NOTICE
         except Exception:
             description = title + HF_SOURCE_NOTICE
 
-        date_updated = dataset.last_modified.strftime("%Y-%m-%d %H:%M:%S") if dataset.last_modified else ""
-        date_created = dataset.created_at.strftime("%Y-%m-%d %H:%M:%S") if dataset.created_at else ""
+        date_updated = (
+            dataset.last_modified.strftime("%Y-%m-%d %H:%M:%S")
+            if dataset.last_modified
+            else ""
+        )
+        date_created = (
+            dataset.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            if dataset.created_at
+            else ""
+        )
 
         external_dataset["title"] = title
         external_dataset["description"] = description
@@ -168,7 +230,9 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
         external_dataset["mainCategory"] = "Tabular"
         external_dataset["subCategories"] = []
         external_dataset["datePublished"] = date_created
-        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        external_dataset["dateLastUpdated"] = datetime.datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         external_dataset["dateSourceLastUpdated"] = date_updated
 
         # Attach one resource per data file (CSV or Parquet)
@@ -177,15 +241,21 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
             external_resource = copy.deepcopy(EXTERNAL_DATASET_RESOURCE_FORMAT)
             external_resource["title"] = f"{dataset.id} - {data_file}"
             external_resource["description"] = f"{data_file}{HF_SOURCE_NOTICE}"
-            external_resource["URI"] = f"https://huggingface.co/datasets/{dataset.id}/resolve/main/{data_file}"
+            external_resource["URI"] = (
+                f"https://huggingface.co/datasets/{dataset.id}/resolve/main/{data_file}"
+            )
             external_resource["internalRef"] = f"{dataset.id}/{data_file}"
             external_resource["format"] = ext
             external_resource["datePublished"] = date_created
-            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            external_resource["dateLastUpdated"] = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
             external_resource["dateResourceLastUpdated"] = date_updated
             external_dataset["resources"].append(external_resource)
 
-        mongo_res = self.mongo_client.mongo_create_external_source(external_dataset, update=update)
+        mongo_res = self.mongo_client.mongo_create_external_source(
+            external_dataset, update=update
+        )
         if mongo_res is not None:
             return "Success"
         return "MongoDB Error"
@@ -217,17 +287,23 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
             if not page_url:
                 logger.error("HuggingFace:: No url found in external_dataset")
                 return error_msg
-            dataset_id = page_url.replace("https://huggingface.co/datasets/", "").strip("/")
+            dataset_id = page_url.replace("https://huggingface.co/datasets/", "").strip(
+                "/"
+            )
 
             # Extract filename from name: "{title} - Data file: {dataset_id} - {filename}"
             name = external_dataset.get("name", "")
             separator = f" - Data file: {dataset_id} - "
             if separator not in name:
-                logger.error(f"HuggingFace:: Could not parse filename from name: {name!r}")
+                logger.error(
+                    f"HuggingFace:: Could not parse filename from name: {name!r}"
+                )
                 return error_msg
             filename = name.split(separator, 1)[1]
 
-            download_url = f"https://huggingface.co/datasets/{dataset_id}/resolve/main/{filename}"
+            download_url = (
+                f"https://huggingface.co/datasets/{dataset_id}/resolve/main/{filename}"
+            )
             logger.info(f"HuggingFace:: Downloading {download_url}")
 
             ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else "csv"
@@ -237,7 +313,9 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
 
             response = requests.get(download_url, timeout=120)
             if response.status_code != 200:
-                logger.error(f"HuggingFace:: Failed to download from {download_url}, status {response.status_code}")
+                logger.error(
+                    f"HuggingFace:: Failed to download from {download_url}, status {response.status_code}"
+                )
                 return error_msg
             with open(filepath, "wb") as f:
                 f.write(response.content)
@@ -246,7 +324,9 @@ class DXExternalSourceHuggingFace(ExternalSourceModel):
             try:
                 res = self.dataset_preprocessor.preprocess_data(dx_name, create_ds=True)
             except Exception as e:
-                logger.error(f"HuggingFace:: Failed to preprocess {dx_name} due to: {e}")
+                logger.error(
+                    f"HuggingFace:: Failed to preprocess {dx_name} due to: {e}"
+                )
                 res = "Sorry, we were unable to process the dataset, please try a different dataset."
             finally:
                 if os.path.exists(filepath):
