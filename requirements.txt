@@ -48,7 +48,7 @@ urllib3==1.26.20
 gunicorn==23.0.0
 
 # Type detection
-chardet==5.2.0
+chardet==6.0
 
 # Data world
 datadotworld==2.0.0
