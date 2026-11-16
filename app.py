@@ -1,6 +1,7 @@
 # Imports
 import logging
 import os
+import sys
 
 from dotenv import load_dotenv
 from flask import Flask, request
@@ -41,6 +42,13 @@ class DXRBCoreDatasetPreprocessor(RBCoreDatasetPreprocessor):
 load_dotenv()
 # - Setup and confirm the logger
 configure_logger()
+# -- rb-core logs to logging/backend.log only. Log to stdout as well: Docker keeps it, and
+#    that's where the central log agent collects it. LOG_LEVEL sets how much (default INFO).
+stdout_level = os.getenv("LOG_LEVEL", "INFO").upper()
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(stdout_level if stdout_level in logging.getLevelNamesMapping() else "INFO")
+stdout_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(module)s:%(lineno)d]: %(message)s"))
+logging.getLogger().addHandler(stdout_handler)
 logger = logging.getLogger(__name__)
 # - Create a RBCoreDataManagement instance
 data_manager = RBCoreDataManagement(location=os.getenv("DATA_EXPLORER_SSR"))
