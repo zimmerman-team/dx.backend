@@ -4,3 +4,16 @@
 ./dev
 ./env
 ./.venv
+
+# Keep secrets, git history and local data out of the image.
+.git
+.env
+.env.*
+kaggle.json
+.hdx_configuration.yaml
+**/__pycache__
+logging/*
+parsed-data-files/*
+sample-data-files/*
+staging/*
+!*/.gitignore

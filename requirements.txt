@@ -16,6 +16,9 @@ kaggle==1.8.3
 wbgapi==1.0.12
 # HDX Connection
 hdx-python-api==6.6.3
+# Pulled in by hdx-python-utilities. 5.19+ needs chardet>=6, which clashes with
+# chardet==5.2.0 below, and pip can't resolve that on its own.
+frictionless==5.18.1
 
 # Data processing
 pandas==2.0.3

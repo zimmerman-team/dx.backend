@@ -1,5 +1,21 @@
 # DX Backend
 
+## Running it
+
+This repo has the same `make` commands as the other DX repos, which [infra.dx](https://github.com/zimmerman-team/DX) clones side by side (`make repos` there).
+
+| Command | What it does |
+|---|---|
+| `make setup` | Create a Python 3.11 virtualenv in `.venv` with the requirements (uses [uv](https://docs.astral.sh/uv/) if you have it), create `.env` from `.env.example` |
+| `make dev` | Run the backend on http://localhost:4004, reloading on changes |
+| `make build` | Build the Docker image, as CI does |
+| `make logs` | Follow `logging/backend.log` |
+| `make lint` | Run flake8 |
+
+`make dev` needs MongoDB on this machine: `make native` in infra.dx starts it along with the rest of the stack. To run everything in Docker instead, use `make dev` in infra.dx.
+
+Production runs the Docker image: CI builds it on every push (`.github/workflows/image.yaml`) and infra.dx deploys it. The Kaggle and HDX keys are no longer copied into the image; infra.dx mounts them.
+
 ## Requirements
 
 - Set up a python environment (this project was built with python 3.11)
@@ -19,13 +35,12 @@
 ## Kaggle
 
 For kaggle, as mentioned we need to set up the kaggle token.
-Through docker, we copy it from the dx.backend root directory.
-Make sure to download it set up your token as [from your account](https://www.kaggle.com/settings/account), and place it in the dx.backend root folder.
+Download it [from your account](https://www.kaggle.com/settings/account). Locally it goes in `~/.kaggle/kaggle.json`; in Docker, infra.dx mounts it from its secrets folder.
 
 ## HDX
 
 For HDX, we need to have a HDX API Key, you can obtain one by signing in to https://data.humdata.org/user/<YOUR USER NAME>/api-tokens, and getting the API key.
-Through docker, we copy it from the dx.backend root directory.
+In Docker, infra.dx mounts it from its secrets folder.
 
 > Create a JSON or YAML file. The default path is .hdx_configuration.yaml in the current user's home directory. Then put in the YAML file:
 >`hdx_key: "HDX API KEY"`
